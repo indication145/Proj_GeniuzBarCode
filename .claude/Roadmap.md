@@ -26,10 +26,10 @@
 - [x] หน้า Connection กด "เชื่อมต่อ" → `loadData()` ดึง SKU จริงมาแทน `defaultSku()` (มี loading/error)
 - [x] เลือก "ธุรกิจ" (bizId) จาก `CsPara/GetList` → บันทึกลง `.env` (`/api/biz` GET/POST + dropdown ในหน้า Connection)
 - [x] โหลด "ร้าน/สาขา" จาก `Shop/GetShopList?BizId=<env>` (`/api/shops`) → เลือกร้าน → ผูกเป็น binding `shop.*` พิมพ์ลง label ได้
-- [ ] **รอ endpoint สินค้าจริง** + ตัวอย่าง JSON เพื่อ set `CSITH_PRODUCTS_PATH` + field mapping (ตอนนี้เดา `/api/products` → 404)
-      น่าจะใช้ flow: bizId → `Shop/GetShopList` (ShopId) → สินค้า/`BarCode/GetBarCode`
+- [x] **ข้อมูลสินค้าจริง** — `BarCode/GetBarCode` (POST `{Fg,SearchCode,BizId}`); map `skuCode/skuDesc/pluCode/sellUnitPrice1/sellUnit`
+- [x] ค้นหา SKU ฝั่ง server ตาม Fg (1=รหัส,2=PLU,3=ชื่อ,4=ราคา,5=หน่วย,6=หมวด,11=แบรนด์) — ช่องค้นหาในแถบ DATA SOURCE
 - [ ] SQL Server: `npm install mssql` + ใส่ credentials/query ใน `.env`
-- [ ] ค้นหา/กรอง SKU จากฐานข้อมูลจริง (ตอนนี้โหลดทั้งชุด)
+- [ ] ปรับ duplicate rows (1 SKU มีหลายแถวตาม PLU/หน่วย) + paging (Fg=0 cap ~100)
 
 ### P1 — บันทึก/จัดการแม่แบบ
 - [ ] `save()` บันทึกจริง (localStorage ก่อน แล้วค่อย backend) — ตอนนี้แค่ toast

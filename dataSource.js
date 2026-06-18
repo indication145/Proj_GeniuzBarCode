@@ -22,17 +22,17 @@ const CFG = {
   baseUrl: (E.CSITH_BASE_URL || "http://cli.csith.com").replace(/\/+$/, ""),
   apiKey: E.CSITH_API_KEY || "",
   tokenPath: E.CSITH_TOKEN_PATH || "/api/system/token",
-  productsPath: E.CSITH_PRODUCTS_PATH || "/api/products",
+  productsPath: E.CSITH_PRODUCTS_PATH || "/Services/Geniuz/BarCode/GetBarCode",
   productsArrayPath: E.CSITH_PRODUCTS_ARRAY_PATH || "",
   bizListPath: E.CSITH_BIZ_LIST_PATH || "/Services/Administration/CsPara/GetList",
   bizId: E.CSITH_BIZ_ID || "",
   shopListPath: E.CSITH_SHOP_LIST_PATH || "/Services/Geniuz/Shop/GetShopList",
   map: {
-    sku: E.MAP_SKU || "sku,code",
-    name: E.MAP_NAME || "name,productName",
-    price: E.MAP_PRICE || "price",
-    barcode: E.MAP_BARCODE || "barcode",
-    unit: E.MAP_UNIT || "unit",
+    sku: E.MAP_SKU || "skuCode",
+    name: E.MAP_NAME || "skuDesc,pluDesc",
+    price: E.MAP_PRICE || "sellUnitPrice1,price",
+    barcode: E.MAP_BARCODE || "pluCode,barcode",
+    unit: E.MAP_UNIT || "sellUnit,stkUnit",
   },
 };
 
@@ -139,15 +139,24 @@ function setEnvVar(key, value) {
   if (key === "CSITH_BIZ_ID") CFG.bizId = v;
 }
 
-async function fromApi() {
+// สินค้า: POST GetBarCode { Fg, SearchCode, BizId }. Fg=0 ทั้งหมด, 1..21 ค้นหาตามฟิลด์
+async function fromApi(opts) {
+  opts = opts || {};
   const token = await getToken();
+  const body = {
+    Fg: String(opts.fg != null && opts.fg !== "" ? opts.fg : 0),
+    SearchCode: opts.code != null ? String(opts.code) : "",
+    BizId: String(CFG.bizId || ""),
+  };
   const res = await fetch(CFG.baseUrl + CFG.productsPath, {
-    headers: { Authorization: "Bearer " + token, Accept: "application/json" },
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token, Accept: "application/json" },
+    body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error("โหลดสินค้าไม่สำเร็จ (HTTP " + res.status + ")");
   const j = await res.json();
   const arr = Array.isArray(j) ? j
-    : (getPath(j, CFG.productsArrayPath) || j.data || j.items || j.products || j.rows || []);
+    : ((CFG.productsArrayPath ? getPath(j, CFG.productsArrayPath) : null) || j.data || j.items || j.products || j.rows || []);
   return normalize(arr);
 }
 
@@ -172,8 +181,8 @@ async function fromSql() {
   return normalize(result.recordset);
 }
 
-async function getSkus(source) {
-  return source === "sql" ? fromSql() : fromApi();
+async function getSkus(source, opts) {
+  return source === "sql" ? fromSql() : fromApi(opts);
 }
 
 module.exports = { getSkus, getToken, getBizList, getShopList, setEnvVar, CFG };

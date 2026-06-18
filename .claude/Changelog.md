@@ -15,6 +15,12 @@
 - **ข้อมูลร้าน/สาขา (shop)** — `/api/shops` ดึงจาก `Shop/GetShopList?BizId=<CSITH_BIZ_ID>`; dropdown เลือกร้าน
   ในหน้า Connection; ฟิลด์ร้านผูกเป็น binding `shop.*` (ชื่อร้าน/สาขา/ที่อยู่/เลขภาษี) พิมพ์ลง label ได้
   (`resolve()` รองรับ prefix `shop.` ผ่าน `bindVal()`/`shopVal()`)
+- **ข้อมูลสินค้าหลัก** — `fromApi()` เรียก `BarCode/GetBarCode` (POST `{Fg,SearchCode,BizId}`); map
+  `skuCode/skuDesc/pluCode/sellUnitPrice1/sellUnit`; เพิ่มช่องค้นหาในแถบ DATA SOURCE (server-side ตาม Fg)
+  + badge บอกแหล่งข้อมูล (mock/REST API/SQL); แก้บั๊ก `getPath(j,"")` คืนทั้ง object (productsArrayPath ว่าง)
+
+### Changed (header UI)
+- ย้าย dropdown ธุรกิจ + ร้าน/สาขา ไปไว้ที่ header มุมบนขวา (auto-load ตอน mount) — เลือก/เปลี่ยนสะดวกขึ้น
 - **พิมพ์ได้จริง (P0)** — `doPrint()` เปิดหน้าต่างพิมพ์ที่ render ป้ายทุกดวงเป็นหน่วย mm จริง
   แล้วเรียก `window.print()`; รองรับ A4 (จัดเรียง grid หลายดวง/แผ่น) และม้วนสติกเกอร์ (1 ดวง/หน้า
   ผ่าน `@page size`); บาร์โค้ดเป็น SVG, QR เป็น canvas; ได้ PDF ผ่าน "Save as PDF" ของเบราว์เซอร์

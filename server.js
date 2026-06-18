@@ -68,8 +68,9 @@ async function handleApi(req, res) {
   }
   if (u.pathname === "/api/skus") {
     const source = u.searchParams.get("source") === "sql" ? "sql" : "api";
+    const opts = { fg: u.searchParams.get("fg"), code: u.searchParams.get("code") || "" };
     try {
-      const rows = await dataSource.getSkus(source);
+      const rows = await dataSource.getSkus(source, opts);
       sendJson(res, 200, { ok: true, source, count: rows.length, rows });
     } catch (e) {
       sendJson(res, 502, { ok: false, source, error: String((e && e.message) || e) });

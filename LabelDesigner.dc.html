@@ -190,9 +190,22 @@
       <div style="flex-shrink:0;height:120px;background:#fff;border-top:1px solid #E6E3DF;display:flex;flex-direction:column;">
         <div style="display:flex;align-items:center;gap:10px;padding:9px 16px 6px;">
           <span style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;">DATA SOURCE · ข้อมูล SKU</span>
-          <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;background:#F0F7F2;color:#1F8A5B;border:1px solid #cde9d8;padding:2px 8px;border-radius:20px;font-family:'IBM Plex Mono',monospace;">{{ skuRowCount }} SKU · mock</span>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;background:#F0F7F2;color:#1F8A5B;border:1px solid #cde9d8;padding:2px 8px;border-radius:20px;font-family:'IBM Plex Mono',monospace;">{{ skuRowCount }} SKU · {{ skuSourceLabel }}</span>
           <div style="flex:1;"></div>
-          <span style="font-size:11px;color:#9A938A;">คลิกเพื่อดู live preview บนป้าย →</span>
+          <select value="{{ skuFg }}" onChange="{{ onSkuFg }}" style="font-family:'IBM Plex Sans Thai';font-size:11.5px;border:1px solid #E6E3DF;border-radius:7px;padding:5px 7px;background:#FBFAF9;cursor:pointer;" style-focus="border-color:#7b1fa2;background:#fff;">
+            <option value="1">รหัสสินค้า</option>
+            <option value="2">PLU</option>
+            <option value="3">ชื่อสินค้า</option>
+            <option value="4">ราคา</option>
+            <option value="5">หน่วย</option>
+            <option value="6">หมวด</option>
+            <option value="11">แบรนด์</option>
+          </select>
+          <input value="{{ skuSearch }}" onChange="{{ onSkuSearch }}" onKeyDown="{{ onSkuSearchKey }}" placeholder="ค้นหาสินค้า…" style="font-family:'IBM Plex Sans Thai';font-size:11.5px;border:1px solid #E6E3DF;border-radius:7px;padding:5px 9px;background:#FBFAF9;width:150px;" style-focus="border-color:#7b1fa2;background:#fff;" />
+          <button onClick="{{ doSkuSearch }}" style="display:flex;align-items:center;gap:5px;height:28px;padding:0 11px;border-radius:7px;border:1px solid #7b1fa2;background:#7b1fa2;color:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:11.5px;font-weight:500;transition:all .15s;" style-hover="background:#6a1a8e;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+            ค้นหา
+          </button>
         </div>
         <div style="flex:1;display:flex;gap:8px;padding:2px 16px 12px;overflow-x:auto;align-items:stretch;">
           <sc-for list="{{ skuView }}" as="s" hint-placeholder-count="8">
@@ -601,6 +614,7 @@ class Component extends DCLogic {
       rollCols: 2, rollRows: 3,
       bizList: [], bizId: '', bizBusy: false,
       shopList: [], shopId: '', shop: null, shopBusy: false,
+      skuSource: 'mock', skuSearch: '', skuFg: '3',
       spaceHeld: false,
     };
     this._drag = null;
@@ -949,6 +963,12 @@ class Component extends DCLogic {
       shopPlaceholder: S.shopBusy ? 'กำลังโหลดรายการร้าน…' : '— เลือกร้าน —',
       shopOptions:(S.shopList||[]).map(s=>({ value:s.shopId, label:s.shopId+' · '+(s.shopName||'') })),
       onSelectShop:(e)=>this.selectShop(e.target.value), reloadShop:()=>this.loadShopList(),
+      skuSearch:S.skuSearch, skuFg:S.skuFg,
+      skuSourceLabel: S.skuSource==='mock' ? 'mock' : (S.skuSource==='sql' ? 'SQL Server' : 'REST API'),
+      onSkuSearch:(e)=>this.setState({skuSearch:e.target.value}),
+      onSkuSearchKey:(e)=>{ if(e.key==='Enter') this.searchProducts(); },
+      onSkuFg:(e)=>this.setState({skuFg:e.target.value}),
+      doSkuSearch:()=>this.searchProducts(),
       connDot: S.connStatus==='connected'?'#1F8A5B':'#7b1fa2',
       connLabel: connInfo.label, connSub: connInfo.sub,
       connMode:S.connMode, modeIsApi:S.connMode==='api', modeIsSql:S.connMode==='sql',
@@ -1253,22 +1273,38 @@ class Component extends DCLogic {
     if(s) this.toast('ใช้ข้อมูลร้าน "'+(s.shopName||s.shopId)+'" สำหรับพิมพ์');
   }
 
-  // โหลดข้อมูล SKU จริงจาก backend proxy (/api/skus) แทน mock
-  loadData(source){
+  // โหลดข้อมูล SKU จริงจาก backend proxy (/api/skus) แทน mock — opts:{fg,code} = ค้นหาตาม Fg
+  loadData(source, opts){
+    opts = opts || {};
+    const searching = !!(opts.code && String(opts.code).length);
     this.setState({ connStatus:'connecting' });
-    this.toast('กำลังเชื่อมต่อ '+(source==='sql'?'SQL Server':'REST API')+'…');
-    fetch('/api/skus?source='+encodeURIComponent(source))
+    if(!searching) this.toast('กำลังเชื่อมต่อ '+(source==='sql'?'SQL Server':'REST API')+'…');
+    let url = '/api/skus?source='+encodeURIComponent(source);
+    if(opts.fg!=null && opts.fg!=='') url += '&fg='+encodeURIComponent(opts.fg);
+    if(opts.code) url += '&code='+encodeURIComponent(opts.code);
+    fetch(url)
       .then(r=>r.json())
       .then(j=>{
         if(!j.ok) throw new Error(j.error||'เชื่อมต่อไม่สำเร็จ');
-        if(!j.rows || !j.rows.length) throw new Error('ไม่พบข้อมูลสินค้า');
-        this.setState({ skuRows:j.rows, activeSku:0, skuSel:{}, connStatus:'connected', connOpen:false });
-        this.toast('โหลด '+j.count+' SKU จาก '+(source==='sql'?'SQL Server':'REST API')+' สำเร็จ');
+        const rows = j.rows||[];
+        if(!rows.length){
+          this.setState({ connStatus: searching?'connected':'error' });
+          this.toast(searching ? 'ไม่พบสินค้าที่ค้นหา' : 'ไม่พบข้อมูลสินค้า');
+          return;
+        }
+        this.setState({ skuRows:rows, activeSku:0, skuSel:{}, skuSource:source, connStatus:'connected', connOpen:false });
+        this.toast((searching?'พบ ':'โหลด ')+rows.length+' SKU'+(searching?' (ค้นหา)':' จาก '+(source==='sql'?'SQL Server':'REST API')));
       })
       .catch(e=>{
         this.setState({ connStatus:'error' });
         this.toast('เชื่อมต่อไม่สำเร็จ: '+((e&&e.message)||e));
       });
+  }
+
+  // ค้นหาสินค้าจาก master ตามฟิลด์ Fg (server-side)
+  searchProducts(){
+    const code = (this.state.skuSearch||'').trim();
+    this.loadData('api', { fg: code ? (this.state.skuFg||'3') : '0', code });
   }
 
   toast(msg){
