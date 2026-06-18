@@ -6,6 +6,9 @@
 ## [Unreleased]
 
 ### Added
+- **Deploy (Windows Server)** — `deploy/windows/` พร้อม README ขั้นตอน, NSSM service installer
+  (`install-service.ps1`/`uninstall-service.ps1`), และ IIS reverse-proxy `web.config`;
+  `server.js` ข้าม auto-open browser เมื่อ `NODE_ENV=production` หรือ `NO_OPEN`
 - **ข้อมูลจริง (P1, กำลังทำ)** — backend proxy: `dataSource.js` + `/api/skus?source=api|sql` ใน `server.js`
   REST auth ผ่าน POST `/api/system/token` (X-API-Key) แล้ว cache `AccessToken` ใช้เป็น Bearer;
   หน้า Connection กด "เชื่อมต่อ" → `loadData()` แทน `defaultSku()`; secret อยู่ใน `.env` (gitignored),

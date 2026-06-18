@@ -146,8 +146,12 @@ function listen(port, attemptsLeft) {
     console.log("  GeniuzBarCode Label Designer is running at:");
     console.log("    " + url);
     console.log("");
-    console.log("  Opening your browser… (press Ctrl+C to stop)");
-    openBrowser(url);
+    if (process.env.NO_OPEN || process.env.NODE_ENV === "production") {
+      console.log("  (auto-open browser disabled)");
+    } else {
+      console.log("  Opening your browser… (press Ctrl+C to stop)");
+      openBrowser(url);
+    }
   });
 }
 
