@@ -10,6 +10,8 @@
   REST auth ผ่าน POST `/api/system/token` (X-API-Key) แล้ว cache `AccessToken` ใช้เป็น Bearer;
   หน้า Connection กด "เชื่อมต่อ" → `loadData()` แทน `defaultSku()`; secret อยู่ใน `.env` (gitignored),
   มี `.env.example` + `package.json` (mssql เป็น optional dep). รอ endpoint สินค้าจริงเพื่อ set path + mapping
+- **เลือกธุรกิจ (bizId)** — `/api/biz` (GET โหลด list จาก `CsPara/GetList`, POST บันทึก `CSITH_BIZ_ID` ลง `.env`)
+  + dropdown "ธุรกิจ" ในหน้า Connection (โหมด API); `dataSource.setEnvVar()` เขียนค่า setting ลง `.env` แบบถาวร
 - **พิมพ์ได้จริง (P0)** — `doPrint()` เปิดหน้าต่างพิมพ์ที่ render ป้ายทุกดวงเป็นหน่วย mm จริง
   แล้วเรียก `window.print()`; รองรับ A4 (จัดเรียง grid หลายดวง/แผ่น) และม้วนสติกเกอร์ (1 ดวง/หน้า
   ผ่าน `@page size`); บาร์โค้ดเป็น SVG, QR เป็น canvas; ได้ PDF ผ่าน "Save as PDF" ของเบราว์เซอร์

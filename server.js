@@ -29,9 +29,34 @@ function sendJson(res, status, obj) {
   res.end(JSON.stringify(obj));
 }
 
+function readJsonBody(req) {
+  return new Promise((resolve) => {
+    let d = "";
+    req.on("data", c => { d += c; if (d.length > 1e6) req.destroy(); });
+    req.on("end", () => { try { resolve(d ? JSON.parse(d) : {}); } catch (e) { resolve({}); } });
+    req.on("error", () => resolve({}));
+  });
+}
+
 async function handleApi(req, res) {
   const u = new URL(req.url, "http://localhost");
   if (u.pathname === "/api/health") { sendJson(res, 200, { ok: true }); return; }
+  if (u.pathname === "/api/biz") {
+    try {
+      if (req.method === "POST") {
+        const body = await readJsonBody(req);
+        if (body.bizId == null || body.bizId === "") { sendJson(res, 400, { ok: false, error: "ต้องระบุ bizId" }); return; }
+        dataSource.setEnvVar("CSITH_BIZ_ID", body.bizId);
+        sendJson(res, 200, { ok: true, bizId: String(body.bizId) });
+      } else {
+        const rows = await dataSource.getBizList();
+        sendJson(res, 200, { ok: true, rows, current: dataSource.CFG.bizId });
+      }
+    } catch (e) {
+      sendJson(res, 502, { ok: false, error: String((e && e.message) || e) });
+    }
+    return;
+  }
   if (u.pathname === "/api/skus") {
     const source = u.searchParams.get("source") === "sql" ? "sql" : "api";
     try {

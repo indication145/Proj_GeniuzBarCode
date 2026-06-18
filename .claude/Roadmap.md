@@ -24,7 +24,9 @@
 - [x] Backend proxy ใน `server.js` + `dataSource.js` → `/api/skus?source=api|sql` (secret อยู่ใน `.env`)
 - [x] REST auth flow: POST `/api/system/token` (X-API-Key) → cache `AccessToken` → `Bearer`
 - [x] หน้า Connection กด "เชื่อมต่อ" → `loadData()` ดึง SKU จริงมาแทน `defaultSku()` (มี loading/error)
+- [x] เลือก "ธุรกิจ" (bizId) จาก `CsPara/GetList` → บันทึกลง `.env` (`/api/biz` GET/POST + dropdown ในหน้า Connection)
 - [ ] **รอ endpoint สินค้าจริง** + ตัวอย่าง JSON เพื่อ set `CSITH_PRODUCTS_PATH` + field mapping (ตอนนี้เดา `/api/products` → 404)
+      น่าจะใช้ flow: bizId → `Shop/GetShopList` (ShopId) → สินค้า/`BarCode/GetBarCode`
 - [ ] SQL Server: `npm install mssql` + ใส่ credentials/query ใน `.env`
 - [ ] ค้นหา/กรอง SKU จากฐานข้อมูลจริง (ตอนนี้โหลดทั้งชุด)
 

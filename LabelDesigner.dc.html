@@ -496,6 +496,16 @@
                 <span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">Endpoint</span>
                 <input value="http://cli.csith.com" readonly style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;color:#44403B;" />
               </label>
+              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">ธุรกิจ · BUSINESS (bizId → .env)</div>
+              <div style="display:flex;gap:8px;margin-bottom:14px;">
+                <select value="{{ bizId }}" onChange="{{ onSelectBiz }}" style="flex:1;font-family:'IBM Plex Sans Thai';font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;cursor:pointer;" style-focus="border-color:#7b1fa2;background:#fff;">
+                  <option value="">{{ bizPlaceholder }}</option>
+                  <sc-for list="{{ bizOptions }}" as="b" hint-placeholder-count="3"><option value="{{ b.value }}">{{ b.label }}</option></sc-for>
+                </select>
+                <button onClick="{{ reloadBiz }}" title="โหลดรายการธุรกิจใหม่" style="width:40px;flex-shrink:0;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="background:#F4F3F1;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                </button>
+              </div>
               <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">ENDPOINTS</div>
               <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;">
                 <div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:#FBFAF9;border:1px solid #EBE8E3;border-radius:8px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:600;color:#fff;background:#7b1fa2;padding:2px 6px;border-radius:5px;">POST</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#44403B;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">/api/system/token</span><span style="font-size:9.5px;color:#9A938A;">Bearer</span></div>
@@ -575,6 +585,7 @@ class Component extends DCLogic {
       connMode: 'api', connStatus: 'connected',
       printMedia: 'a4', printCopies: 1, skuSel: {}, printing: false,
       rollCols: 2, rollRows: 3,
+      bizList: [], bizId: '', bizBusy: false,
       spaceHeld: false,
     };
     this._drag = null;
@@ -908,7 +919,11 @@ class Component extends DCLogic {
       showTextStyle, showTextKnob,
       dupSel:()=>this.dupSel(), deleteSel:()=>this.deleteSel(),
       // connection
-      openConn:()=>this.setState({connOpen:true}), closeConn:()=>this.setState({connOpen:false}),
+      openConn:()=>{ this.setState({connOpen:true}); this.loadBizList(); }, closeConn:()=>this.setState({connOpen:false}),
+      bizId:S.bizId, bizBusy:S.bizBusy, hasBiz:(S.bizList||[]).length>0,
+      bizPlaceholder: S.bizBusy ? 'กำลังโหลดรายการธุรกิจ…' : '— เลือกธุรกิจ —',
+      bizOptions:(S.bizList||[]).map(b=>({ value:String(b.bizId), label:(b.bizCode?(b.bizCode+' · '):'')+b.bizName })),
+      onSelectBiz:(e)=>this.selectBiz(e.target.value), reloadBiz:()=>this.loadBizList(),
       connDot: S.connStatus==='connected'?'#1F8A5B':'#7b1fa2',
       connLabel: connInfo.label, connSub: connInfo.sub,
       connMode:S.connMode, modeIsApi:S.connMode==='api', modeIsSql:S.connMode==='sql',
@@ -1165,6 +1180,31 @@ class Component extends DCLogic {
       '<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>'+
       '</head><body>'+body+'<script>'+draw+'<\/script></body></html>';
   }
+  // โหลด list ธุรกิจ (bizId) จาก backend (/api/biz)
+  loadBizList(){
+    this.setState({ bizBusy:true });
+    fetch('/api/biz')
+      .then(r=>r.json())
+      .then(j=>{
+        if(!j.ok) throw new Error(j.error||'โหลดรายการธุรกิจไม่สำเร็จ');
+        this.setState({ bizList:j.rows||[], bizId:(j.current||'')+'', bizBusy:false });
+      })
+      .catch(e=>{ this.setState({bizBusy:false}); this.toast('โหลดธุรกิจไม่สำเร็จ: '+((e&&e.message)||e)); });
+  }
+
+  // เลือกธุรกิจ → บันทึก bizId ลง .env (setting ถาวร)
+  selectBiz(id){
+    this.setState({ bizId:(id||'')+'' });
+    if(id==='' || id==null) return;
+    fetch('/api/biz',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({bizId:id}) })
+      .then(r=>r.json())
+      .then(j=>{
+        if(!j.ok) throw new Error(j.error||'บันทึกไม่สำเร็จ');
+        this.toast('ตั้งค่าธุรกิจ bizId='+j.bizId+' และเก็บใน .env แล้ว');
+      })
+      .catch(e=>this.toast('บันทึก bizId ไม่สำเร็จ: '+((e&&e.message)||e)));
+  }
+
   // โหลดข้อมูล SKU จริงจาก backend proxy (/api/skus) แทน mock
   loadData(source){
     this.setState({ connStatus:'connecting' });

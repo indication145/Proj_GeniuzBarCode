@@ -24,6 +24,8 @@ const CFG = {
   tokenPath: E.CSITH_TOKEN_PATH || "/api/system/token",
   productsPath: E.CSITH_PRODUCTS_PATH || "/api/products",
   productsArrayPath: E.CSITH_PRODUCTS_ARRAY_PATH || "",
+  bizListPath: E.CSITH_BIZ_LIST_PATH || "/Services/Administration/CsPara/GetList",
+  bizId: E.CSITH_BIZ_ID || "",
   map: {
     sku: E.MAP_SKU || "sku,code",
     name: E.MAP_NAME || "name,productName",
@@ -73,6 +75,47 @@ function normalize(rows) {
   })).filter(r => r.sku || r.name || r.barcode);
 }
 
+// POST helper with Bearer token (csith services use POST + JSON body)
+async function apiPost(p, body) {
+  const token = await getToken();
+  const res = await fetch(CFG.baseUrl + p, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+    body: JSON.stringify(body || {}),
+  });
+  if (!res.ok) throw new Error("HTTP " + res.status + " จาก " + p);
+  return res.json();
+}
+
+// list ธุรกิจ (bizId) จาก CsPara/GetList
+async function getBizList() {
+  const j = await apiPost(CFG.bizListPath, {});
+  const arr = Array.isArray(j) ? j : (j.data || j.items || j.rows || []);
+  return arr.map(b => ({
+    bizId: b.bizId,
+    bizCode: b.bizCode != null ? String(b.bizCode) : "",
+    bizName: b.bizName || b.taxInvName || String(b.bizId),
+    taxInvName: b.taxInvName || "",
+  }));
+}
+
+// เขียน/อัปเดตค่าใน .env (เก็บ setting แบบถาวร) แล้วอัปเดต runtime ทันที
+function setEnvVar(key, value) {
+  const p = path.join(__dirname, ".env");
+  const v = String(value);
+  let lines = fs.existsSync(p) ? fs.readFileSync(p, "utf8").split(/\r?\n/) : [];
+  const re = new RegExp("^\\s*" + key + "\\s*=");
+  let found = false;
+  lines = lines.map(l => (re.test(l) ? ((found = true), key + "=" + v) : l));
+  if (!found) {
+    if (lines.length && lines[lines.length - 1] === "") lines.splice(lines.length - 1, 0, key + "=" + v);
+    else lines.push(key + "=" + v);
+  }
+  fs.writeFileSync(p, lines.join("\n"), "utf8");
+  process.env[key] = v;
+  if (key === "CSITH_BIZ_ID") CFG.bizId = v;
+}
+
 async function fromApi() {
   const token = await getToken();
   const res = await fetch(CFG.baseUrl + CFG.productsPath, {
@@ -110,4 +153,4 @@ async function getSkus(source) {
   return source === "sql" ? fromSql() : fromApi();
 }
 
-module.exports = { getSkus, getToken, CFG };
+module.exports = { getSkus, getToken, getBizList, setEnvVar, CFG };
