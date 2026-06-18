@@ -5,6 +5,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
+const dataSource = require("./dataSource");
 
 const ROOT = __dirname;
 const START_PORT = Number(process.env.PORT) || 8080;
@@ -23,7 +24,30 @@ const MIME = {
   ".woff2": "font/woff2",
 };
 
+function sendJson(res, status, obj) {
+  res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
+  res.end(JSON.stringify(obj));
+}
+
+async function handleApi(req, res) {
+  const u = new URL(req.url, "http://localhost");
+  if (u.pathname === "/api/health") { sendJson(res, 200, { ok: true }); return; }
+  if (u.pathname === "/api/skus") {
+    const source = u.searchParams.get("source") === "sql" ? "sql" : "api";
+    try {
+      const rows = await dataSource.getSkus(source);
+      sendJson(res, 200, { ok: true, source, count: rows.length, rows });
+    } catch (e) {
+      sendJson(res, 502, { ok: false, source, error: String((e && e.message) || e) });
+    }
+    return;
+  }
+  sendJson(res, 404, { ok: false, error: "unknown api endpoint" });
+}
+
 const server = http.createServer((req, res) => {
+  if (req.url.startsWith("/api/")) { handleApi(req, res); return; }
+
   let urlPath = decodeURIComponent(req.url.split("?")[0]);
   if (urlPath === "/") urlPath = "/index.html";
 

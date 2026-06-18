@@ -914,7 +914,7 @@ class Component extends DCLogic {
       connMode:S.connMode, modeIsApi:S.connMode==='api', modeIsSql:S.connMode==='sql',
       setModeApi:()=>this.setState({connMode:'api'}), setModeSql:()=>this.setState({connMode:'sql'}),
       modeApiStyle:seg(S.connMode==='api'), modeSqlStyle:seg(S.connMode==='sql'),
-      doConnect:()=>{ this.setState({connStatus:'connected', connOpen:false}); this.toast('เชื่อมต่อ '+connInfo.label+' สำเร็จ'); },
+      doConnect:()=>this.loadData(S.connMode),
       save:()=>this.toast('บันทึกแม่แบบ "'+S.labelName+'" แล้ว'),
       // print
       openPrint:()=>this.setState({printOpen:true}), closePrint:()=>this.setState({printOpen:false}),
@@ -1165,6 +1165,24 @@ class Component extends DCLogic {
       '<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>'+
       '</head><body>'+body+'<script>'+draw+'<\/script></body></html>';
   }
+  // โหลดข้อมูล SKU จริงจาก backend proxy (/api/skus) แทน mock
+  loadData(source){
+    this.setState({ connStatus:'connecting' });
+    this.toast('กำลังเชื่อมต่อ '+(source==='sql'?'SQL Server':'REST API')+'…');
+    fetch('/api/skus?source='+encodeURIComponent(source))
+      .then(r=>r.json())
+      .then(j=>{
+        if(!j.ok) throw new Error(j.error||'เชื่อมต่อไม่สำเร็จ');
+        if(!j.rows || !j.rows.length) throw new Error('ไม่พบข้อมูลสินค้า');
+        this.setState({ skuRows:j.rows, activeSku:0, skuSel:{}, connStatus:'connected', connOpen:false });
+        this.toast('โหลด '+j.count+' SKU จาก '+(source==='sql'?'SQL Server':'REST API')+' สำเร็จ');
+      })
+      .catch(e=>{
+        this.setState({ connStatus:'error' });
+        this.toast('เชื่อมต่อไม่สำเร็จ: '+((e&&e.message)||e));
+      });
+  }
+
   toast(msg){
     const t={msg, ts:Date.now()};
     this.setState({toast:t});

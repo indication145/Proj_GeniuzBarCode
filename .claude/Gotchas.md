@@ -46,6 +46,18 @@
 - หน้าต่างพิมพ์โหลด JsBarcode/QR จาก CDN เอง แล้วรอ `document.fonts.ready` ก่อน `window.print()`
 - รูป/โลโก้ (`image`) ยังเป็น placeholder ในงานพิมพ์ — ดู [Roadmap.md](Roadmap.md)
 
+## ⚠️ Secret / .env — อย่า commit
+- token/API key/รหัสผ่าน SQL อยู่ใน **`.env` เท่านั้น** (gitignored) — มี `.env.example` เป็นแม่แบบ
+- repo นี้เป็น public บน GitHub — ถ้า key หลุดต้อง **rotate ทันที**
+- `dataSource.js` มี `.env` loader ของตัวเอง (ไม่ใช้ dotenv) — รูปแบบ `KEY=value` ต่อบรรทัด
+
+## ⚠️ ข้อมูลจริง: ต้องรันผ่าน backend (ไม่ใช่ file://)
+- `/api/skus` เสิร์ฟโดย `server.js` → ต้องเปิดด้วย `node server.js` (เปิด `.dc.html` ตรง ๆ `file://` จะ fetch ไม่ได้)
+- **REST**: เบราว์เซอร์ต่อ csith ตรง ๆ ติด CORS — จึงให้ backend เป็น proxy (`source=api`) และเก็บ token ฝั่ง server
+  flow: POST `/api/system/token` ต้องมี `Content-Length: 0` (ไม่งั้น HTTP 411); ได้ `AccessToken` อายุ `ExpiresIn` วิ → cache
+- **SQL Server**: เบราว์เซอร์ต่อตรงไม่ได้ → `source=sql` ผ่าน backend + `npm install mssql` (เป็น optional dep, require แบบ lazy)
+- ปรับ endpoint สินค้า/field mapping ได้ที่ `.env` (`CSITH_PRODUCTS_PATH`, `MAP_*`) โดยไม่ต้องแก้โค้ด
+
 ## ระบบพิกัด
 - ค่าใน state เป็น **mm** ไม่ใช่ px — คูณ `PX (3.7795)` เฉพาะตอน render
 - ราคา format ด้วย locale `th-TH` ใน `skuVal()` (มีคอมมา) — อย่าเอาค่า formatted ไปคำนวณต่อ

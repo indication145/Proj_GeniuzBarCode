@@ -20,10 +20,13 @@
 - [ ] รองรับเครื่องพิมพ์สติกเกอร์ความร้อน — export **ZPL/TSPL** สำหรับม้วนสติกเกอร์ (ยังไม่ทำ)
 - [ ] อัปโหลดรูป/โลโก้จริง (ตอน image ยังเป็น placeholder ในงานพิมพ์)
 
-### P1 — ข้อมูลจริง (เลิก mock)
-- [ ] เชื่อม REST API จริง (`connMode:'api'`) แทน `defaultSku()`
-- [ ] เชื่อม SQL Server / GeniuzPOS (`connMode:'sql'`)
-- [ ] ค้นหา/เลือก SKU จากฐานข้อมูลจริง
+### P1 — ข้อมูลจริง (เลิก mock)  (กำลังทำ)
+- [x] Backend proxy ใน `server.js` + `dataSource.js` → `/api/skus?source=api|sql` (secret อยู่ใน `.env`)
+- [x] REST auth flow: POST `/api/system/token` (X-API-Key) → cache `AccessToken` → `Bearer`
+- [x] หน้า Connection กด "เชื่อมต่อ" → `loadData()` ดึง SKU จริงมาแทน `defaultSku()` (มี loading/error)
+- [ ] **รอ endpoint สินค้าจริง** + ตัวอย่าง JSON เพื่อ set `CSITH_PRODUCTS_PATH` + field mapping (ตอนนี้เดา `/api/products` → 404)
+- [ ] SQL Server: `npm install mssql` + ใส่ credentials/query ใน `.env`
+- [ ] ค้นหา/กรอง SKU จากฐานข้อมูลจริง (ตอนนี้โหลดทั้งชุด)
 
 ### P1 — บันทึก/จัดการแม่แบบ
 - [ ] `save()` บันทึกจริง (localStorage ก่อน แล้วค่อย backend) — ตอนนี้แค่ toast

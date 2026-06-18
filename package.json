@@ -1,0 +1,12 @@
+{
+  "name": "geniuzbarcode-label-designer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GeniuzBarCode Label Designer — local server + data proxy",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "optionalDependencies": {
+    "mssql": "^11.0.1"
+  }
+}
