@@ -6,7 +6,13 @@
       "PowerShell(git -C $repo log --oneline -n 3)",
       "PowerShell($repo = \"f:\\\\Proj_GeniuzBarCode\\\\GeniuzBarCode\")",
       "PowerShell(git -C $repo log --oneline -n 1)",
-      "PowerShell(git -C $repo log --oneline -n 2)"
+      "PowerShell(git -C $repo log --oneline -n 2)",
+      "Bash(node -e ' *)",
+      "Bash(node --check /tmp/dc_component.js)",
+      "Bash(node _check.js)",
+      "Bash(node --check _dc_component.js)",
+      "Bash(node _harness.js)",
+      "PowerShell(git -C $repo status --short)"
     ]
   }
 }

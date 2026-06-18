@@ -33,6 +33,19 @@
 - มี **draw-cache**: `cv.dataset.drawn = txt+'|'+fmt+'|'+show` — ถ้าแก้ canvas เองต้องเปลี่ยน key ไม่งั้นมันข้าม
 - **EAN13** ต้องเป็นตัวเลข 12–13 หลัก; ถ้าค่าไม่ถูกจะ `try/catch` fallback เป็น CODE128
 
+## ⚠️ สร้าง HTML สตริงข้างใน data-dc-script — ต้อง escape `</script>`
+- โค้ด logic อยู่ใน `<script type="text/x-dc" data-dc-script>` — HTML parser ของเบราว์เซอร์จะปิด
+  script element ทันทีที่เจอ `</script>` แม้อยู่ในสตริง JS
+- เวลาเขียนสตริง HTML ที่มี `</script>` (เช่น `buildPrintHTML`) **ต้องเขียนเป็น `<\/script>` ในซอร์ส**
+  (ค่า runtime ยังเป็น `</script>` ถูกต้อง แต่ parser ไม่ตัด)
+- ตรวจ: raw `</script>` ที่อยู่ "ข้างใน" data-dc-script ต้องเป็น **0** เสมอ
+
+## ⚠️ พิมพ์ผ่าน popup — อาจโดน popup blocker
+- `doPrint()` ใช้ `window.open()` เปิดหน้าต่างพิมพ์ — ต้องถูกเรียกจาก user click (ปุ่มพิมพ์) เท่านั้น
+  ถ้าเรียกแบบ async/หน่วงเวลา เบราว์เซอร์จะบล็อก → มี toast เตือนให้อนุญาต popup
+- หน้าต่างพิมพ์โหลด JsBarcode/QR จาก CDN เอง แล้วรอ `document.fonts.ready` ก่อน `window.print()`
+- รูป/โลโก้ (`image`) ยังเป็น placeholder ในงานพิมพ์ — ดู [Roadmap.md](Roadmap.md)
+
 ## ระบบพิกัด
 - ค่าใน state เป็น **mm** ไม่ใช่ px — คูณ `PX (3.7795)` เฉพาะตอน render
 - ราคา format ด้วย locale `th-TH` ใน `skuVal()` (มีคอมมา) — อย่าเอาค่า formatted ไปคำนวณต่อ

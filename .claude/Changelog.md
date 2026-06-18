@@ -4,9 +4,17 @@
 รูปแบบอิง [Keep a Changelog](https://keepachangelog.com/) · วันที่เป็น YYYY-MM-DD
 
 ## [Unreleased]
-- เอกสาร `.claude/` (Roadmap, Architecture, Changelog, Decisions, Design, Gotchas)
+
+### Added
+- **พิมพ์ได้จริง (P0)** — `doPrint()` เปิดหน้าต่างพิมพ์ที่ render ป้ายทุกดวงเป็นหน่วย mm จริง
+  แล้วเรียก `window.print()`; รองรับ A4 (จัดเรียง grid หลายดวง/แผ่น) และม้วนสติกเกอร์ (1 ดวง/หน้า
+  ผ่าน `@page size`); บาร์โค้ดเป็น SVG, QR เป็น canvas; ได้ PDF ผ่าน "Save as PDF" ของเบราว์เซอร์
+  (helper ใหม่: `buildPrintHTML` / `printLabelHTML` / `printElHTML` / `_esc`)
 
 ## 2026-06-18
+
+### Added (docs)
+- เอกสาร `.claude/` (Roadmap, Architecture, Changelog, Decisions, Design, Gotchas) · `6cf3b29`
 
 ### Changed
 - เปลี่ยนสี accent หลักจากส้ม `#E24F2C` → ม่วงเข้ม `#7b1fa2` ทั้งระบบ
