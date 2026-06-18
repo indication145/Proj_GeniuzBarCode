@@ -379,6 +379,26 @@
             <button onClick="{{ setMediaRoll }}" style="{{ mediaRollStyle }}">ม้วนสติกเกอร์</button>
           </div>
 
+          <sc-if value="{{ mediaIsRoll }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-bottom:18px;">
+              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">จัดเรียงต่อหน้า · GRID</div>
+              <div style="display:flex;gap:8px;">
+                <div style="flex:1;display:flex;align-items:center;gap:6px;background:#FBFAF9;border:1px solid #E6E3DF;border-radius:8px;padding:4px 6px;">
+                  <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;width:34px;">คอลัมน์</span>
+                  <button onClick="{{ rollColsMinus }}" style="width:28px;height:28px;border:1px solid #E6E3DF;border-radius:6px;background:#fff;cursor:pointer;font-size:15px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">−</button>
+                  <div style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;">{{ rollCols }}</div>
+                  <button onClick="{{ rollColsPlus }}" style="width:28px;height:28px;border:1px solid #E6E3DF;border-radius:6px;background:#fff;cursor:pointer;font-size:15px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">+</button>
+                </div>
+                <div style="flex:1;display:flex;align-items:center;gap:6px;background:#FBFAF9;border:1px solid #E6E3DF;border-radius:8px;padding:4px 6px;">
+                  <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;width:24px;">แถว</span>
+                  <button onClick="{{ rollRowsMinus }}" style="width:28px;height:28px;border:1px solid #E6E3DF;border-radius:6px;background:#fff;cursor:pointer;font-size:15px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">−</button>
+                  <div style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;">{{ rollRows }}</div>
+                  <button onClick="{{ rollRowsPlus }}" style="width:28px;height:28px;border:1px solid #E6E3DF;border-radius:6px;background:#fff;cursor:pointer;font-size:15px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">+</button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
           <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">จำนวนต่อ SKU · COPIES</div>
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
             <button onClick="{{ copiesMinus }}" style="width:34px;height:34px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;font-size:18px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">−</button>
@@ -421,6 +441,8 @@
           <div style="padding:14px 20px;border-bottom:1px solid #E6E3DF;display:flex;align-items:center;gap:10px;">
             <span style="font-size:12px;font-weight:600;color:#44403B;">ตัวอย่างก่อนพิมพ์ · Preview</span>
             <span style="font-size:10.5px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">{{ printMediaLabel }}</span>
+            <span style="font-size:10.5px;color:#7b1fa2;font-family:'IBM Plex Mono',monospace;background:#F4EAF8;border:1px solid #e7d6f0;padding:2px 8px;border-radius:20px;">{{ previewPageInfo }}</span>
+            <span style="font-size:10.5px;color:#9A938A;">· แสดงเฉพาะหน้าแรก</span>
             <div style="flex:1;"></div>
             <button onClick="{{ closePrint }}" style="width:30px;height:30px;border:none;background:#fff;border:1px solid #E6E3DF;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="background:#F4F3F1;">
               <svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -552,6 +574,7 @@ class Component extends DCLogic {
       printOpen: false, connOpen: false,
       connMode: 'api', connStatus: 'connected',
       printMedia: 'a4', printCopies: 1, skuSel: {}, printing: false,
+      rollCols: 2, rollRows: 3,
       spaceHeld: false,
     };
     this._drag = null;
@@ -794,22 +817,33 @@ class Component extends DCLogic {
     const showTextKnob = { position:'absolute', top:'2px', left: showOn?'18px':'2px', width:'18px', height:'18px', borderRadius:'50%', background:'#fff', transition:'all .2s', boxShadow:'0 1px 3px rgba(0,0,0,0.2)' };
 
     // print
-    let printView=[], printCount=0, sheetStyle={}, printSkuList=[];
     const selected = S.skuRows.map((r,i)=>i).filter(i=>S.skuSel[i]!==false);
+    let pcols, prows;
+    if(S.printMedia==='a4'){ pcols=Math.max(1,Math.floor(210/(S.labelW+2))); prows=Math.max(1,Math.floor(297/(S.labelH+2))); }
+    else { pcols=Math.max(1,S.rollCols); prows=Math.max(1,S.rollRows); }
+    const perPage = Math.max(1, pcols*prows);
+    const mediaLabel = S.printMedia==='a4'
+      ? ('A4 · '+pcols+'×'+prows+' ดวง/แผ่น')
+      : ('ม้วน '+pcols+'×'+prows+' ดวง/หน้า · '+S.labelW+'mm');
+    let printView=[], printCount=0, sheetStyle={}, printSkuList=[], previewPageInfo='';
     if(S.printOpen){
       const ps = S.printMedia==='a4' ? 2.3 : 3.0;
-      const items=[];
-      selected.forEach(i=>{ for(let c=0;c<Math.max(1,S.printCopies) && items.length<60;c++) items.push(i); });
-      printCount = selected.length * Math.max(1,S.printCopies);
+      const copies = Math.max(1,S.printCopies);
+      const allItems=[];
+      selected.forEach(i=>{ for(let c=0;c<copies;c++) allItems.push(i); });
+      printCount = allItems.length;
+      const totalPages = Math.max(1, Math.ceil((printCount||1)/perPage));
+      previewPageInfo = 'หน้า 1 / '+totalPages;
+      const pageItems = allItems.slice(0, perPage);   // preview = หน้าแรกเท่านั้น
       const scale = ps/PX;
-      printView = items.map((idx,k)=>({
+      const gapPx = 2*ps;
+      printView = pageItems.map((idx)=>({
         cellStyle:{ position:'relative', overflow:'hidden', flex:'0 0 auto', width:(S.labelW*ps)+'px', height:(S.labelH*ps)+'px', background:S.bg, border:'1px solid #E6E3DF', borderRadius:'2px' },
         innerStyle:{ position:'absolute', left:'0', top:'0', width:(S.labelW*PX)+'px', height:(S.labelH*PX)+'px', transform:`scale(${scale})`, transformOrigin:'0 0' },
         elements: S.elements.map(el=>this.elView(el, idx)) }));
-      const cols = S.printMedia==='a4' ? Math.max(1, Math.floor(210/(S.labelW+2))) : 1;
-      sheetStyle = { display:'flex', flexWrap:'wrap', gap:(2*ps)+'px', alignContent:'flex-start',
-        width: S.printMedia==='a4' ? (210*ps)+'px' : (S.labelW*ps+ (2*ps))+'px',
-        padding:(4*ps)+'px', background:'#fff', borderRadius:'4px', boxShadow:'0 4px 24px rgba(0,0,0,0.1)', justifyContent:'flex-start' };
+      sheetStyle = { display:'flex', flexWrap:'wrap', gap:gapPx+'px', alignContent:'flex-start',
+        width: (pcols*(S.labelW*ps) + (pcols-1)*gapPx + 2*gapPx)+'px',
+        padding:gapPx+'px', background:'#fff', borderRadius:'4px', boxShadow:'0 4px 24px rgba(0,0,0,0.1)', justifyContent:'flex-start' };
       printSkuList = S.skuRows.map((r,i)=>{
         const on = S.skuSel[i]!==false;
         return { name:r.name, price:Number(r.price).toLocaleString('th-TH'),
@@ -889,7 +923,11 @@ class Component extends DCLogic {
       printCopies:S.printCopies, copiesPlus:()=>this.setState({printCopies:Math.min(99,S.printCopies+1)}), copiesMinus:()=>this.setState({printCopies:Math.max(1,S.printCopies-1)}),
       printMedia:S.printMedia, setMediaA4:()=>this.setState({printMedia:'a4'}), setMediaRoll:()=>this.setState({printMedia:'roll'}),
       mediaA4Style:printSeg(S.printMedia==='a4'), mediaRollStyle:printSeg(S.printMedia==='roll'),
-      printMediaLabel: S.printMedia==='a4' ? ('A4 · '+Math.max(1,Math.floor(210/(S.labelW+2)))+' คอลัมน์') : 'ม้วนสติกเกอร์ '+S.labelW+'mm',
+      printMediaLabel: mediaLabel,
+      mediaIsRoll: S.printMedia==='roll', previewPageInfo,
+      rollCols:S.rollCols, rollRows:S.rollRows,
+      rollColsPlus:()=>this.setState({rollCols:Math.min(10,S.rollCols+1)}), rollColsMinus:()=>this.setState({rollCols:Math.max(1,S.rollCols-1)}),
+      rollRowsPlus:()=>this.setState({rollRows:Math.min(50,S.rollRows+1)}), rollRowsMinus:()=>this.setState({rollRows:Math.max(1,S.rollRows-1)}),
       sheetStyle, printSkuList,
       selectAllLabel: allOn?'ไม่เลือกทั้งหมด':'เลือกทั้งหมด',
       toggleAllSku:()=>{ const ns={}; if(allOn){ S.skuRows.forEach((r,i)=>ns[i]=false); } this.setState({skuSel:ns}); },
@@ -1082,14 +1120,25 @@ class Component extends DCLogic {
   buildPrintHTML(items){
     const S = this.state;
     const roll = S.printMedia==='roll';
-    const labels = items.map(idx=>this.printLabelHTML(idx)).join('');
-    const pageCss = roll
-      ? '@page{size:'+S.labelW+'mm '+S.labelH+'mm;margin:0;}'
-      : '@page{size:A4;margin:8mm;}';
-    const layoutCss = roll
-      ? '.label{position:relative;overflow:hidden;box-sizing:border-box;page-break-after:always;}.label:last-child{page-break-after:auto;}'
-      : '.sheet{display:flex;flex-wrap:wrap;gap:2mm;align-content:flex-start;}.label{position:relative;overflow:hidden;box-sizing:border-box;border:0.2mm solid #e3e0db;break-inside:avoid;}';
-    const body = roll ? labels : '<div class="sheet">'+labels+'</div>';
+    let pageCss, layoutCss, body;
+    if(roll){
+      const cols=Math.max(1,S.rollCols), rows=Math.max(1,S.rollRows), gap=2, perPage=cols*rows;
+      const pageW=(cols*S.labelW + (cols-1)*gap).toFixed(2);
+      const pageH=(rows*S.labelH + (rows-1)*gap).toFixed(2);
+      let pages='';
+      for(let i=0;i<items.length;i+=perPage){
+        pages += '<div class="page">'+items.slice(i,i+perPage).map(idx=>this.printLabelHTML(idx)).join('')+'</div>';
+      }
+      pageCss = '@page{size:'+pageW+'mm '+pageH+'mm;margin:0;}';
+      layoutCss = '.page{display:grid;grid-template-columns:repeat('+cols+','+S.labelW+'mm);grid-auto-rows:'+S.labelH+'mm;gap:'+gap+'mm;page-break-after:always;}'+
+        '.page:last-child{page-break-after:auto;}.label{position:relative;overflow:hidden;box-sizing:border-box;}';
+      body = pages;
+    } else {
+      const labels = items.map(idx=>this.printLabelHTML(idx)).join('');
+      pageCss = '@page{size:A4;margin:8mm;}';
+      layoutCss = '.sheet{display:flex;flex-wrap:wrap;gap:2mm;align-content:flex-start;}.label{position:relative;overflow:hidden;box-sizing:border-box;border:0.2mm solid #e3e0db;break-inside:avoid;}';
+      body = '<div class="sheet">'+labels+'</div>';
+    }
     const draw =
       "(function(){function run(){"+
       "if(!window.JsBarcode||!window.QRCode){return setTimeout(run,80);}"+

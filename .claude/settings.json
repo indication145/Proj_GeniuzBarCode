@@ -12,7 +12,9 @@
       "Bash(node _check.js)",
       "Bash(node --check _dc_component.js)",
       "Bash(node _harness.js)",
-      "PowerShell(git -C $repo status --short)"
+      "PowerShell(git -C $repo status --short)",
+      "Bash(node _h.js)",
+      "Bash(rm -f _h.js _c.js)"
     ]
   }
 }
