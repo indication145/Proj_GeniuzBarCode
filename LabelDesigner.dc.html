@@ -122,6 +122,36 @@
 
       <div style="height:1px;background:#EFEDEA;margin:8px 16px;"></div>
 
+      <div style="padding:8px 16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;">SAVED · แม่แบบที่บันทึก</span>
+          <button onClick="{{ save }}" title="บันทึกแม่แบบปัจจุบัน" style="display:flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:7px;border:1px solid #7b1fa2;background:#7b1fa2;color:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:11px;font-weight:500;transition:all .15s;" style-hover="background:#6a1a8e;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            บันทึก
+          </button>
+        </div>
+        <sc-if value="{{ hasSaved }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <sc-for list="{{ savedView }}" as="t" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:8px;padding:8px 9px;border:1px solid #EBE8E3;border-radius:10px;background:#fff;transition:all .15s;">
+                <button onClick="{{ t.open }}" style="flex:1;min-width:0;text-align:left;border:none;background:transparent;cursor:pointer;padding:0;font-family:'IBM Plex Sans Thai';">
+                  <div style="font-size:12.5px;font-weight:600;color:#1B1A18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ t.name }}</div>
+                  <div style="font-size:10.5px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">{{ t.sub }}</div>
+                </button>
+                <button onClick="{{ t.del }}" title="ลบแม่แบบ" style="width:26px;height:26px;flex-shrink:0;border:1px solid #EBE8E3;border-radius:7px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#9A938A;transition:all .15s;" style-hover="border-color:#7b1fa2;color:#7b1fa2;background:#F4EAF8;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noSaved }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:11px;color:#9A938A;text-align:center;padding:6px;">ยังไม่มีแม่แบบที่บันทึก — กด "บันทึก"</div>
+        </sc-if>
+      </div>
+
+      <div style="height:1px;background:#EFEDEA;margin:8px 16px;"></div>
+
       <div style="padding:8px 16px 20px;">
         <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;margin-bottom:10px;">LABEL SIZE · ขนาดป้าย</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
@@ -692,6 +722,7 @@ class Component extends DCLogic {
       shopList: [], shopId: '', shop: null, shopBusy: false,
       skuSource: 'mock', skuSearch: '', skuFg: '3',
       poOpen: false, poList: [], poBusy: false, poSearch: '', poFg: '1', poDoc: '',
+      savedTemplates: [], templateId: '',
       spaceHeld: false,
     };
     this._drag = null;
@@ -1062,7 +1093,10 @@ class Component extends DCLogic {
       setModeApi:()=>this.setState({connMode:'api'}), setModeSql:()=>this.setState({connMode:'sql'}),
       modeApiStyle:seg(S.connMode==='api'), modeSqlStyle:seg(S.connMode==='sql'),
       doConnect:()=>this.loadData(S.connMode),
-      save:()=>this.toast('บันทึกแม่แบบ "'+S.labelName+'" แล้ว'),
+      save:()=>this.saveTemplate(),
+      hasSaved:(S.savedTemplates||[]).length>0, noSaved:(S.savedTemplates||[]).length===0,
+      savedView:(S.savedTemplates||[]).map(t=>({ name:t.name, sub:(t.labelW||'?')+'×'+(t.labelH||'?')+' มม. · '+t.count+' ชิ้น',
+        open:()=>this.openTemplate(t.id), del:()=>this.deleteTemplate(t.id) })),
       // print
       openPrint:()=>this.setState({printOpen:true}), closePrint:()=>this.setState({printOpen:false}),
       stop:(e)=>{ e.stopPropagation(); },
@@ -1440,6 +1474,51 @@ class Component extends DCLogic {
       .catch(e=>{ this.setState({poBusy:false}); this.toast('โหลด PO ไม่สำเร็จ: '+((e&&e.message)||e)); });
   }
 
+  // ---- บันทึก/โหลด/ลบ แม่แบบ label (เก็บฝั่ง server: templates.json) ----
+  loadTemplates(silent){
+    fetch('/api/templates')
+      .then(r=>r.json())
+      .then(j=>{ if(j.ok) this.setState({ savedTemplates:j.rows||[] }); })
+      .catch(e=>{ if(!silent) this.toast('โหลดแม่แบบไม่สำเร็จ'); });
+  }
+  saveTemplate(){
+    const S = this.state;
+    const design = { labelName:S.labelName, labelW:S.labelW, labelH:S.labelH, bg:S.bg, elements:S.elements };
+    fetch('/api/templates', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id:S.templateId||undefined, name:S.labelName, design }) })
+      .then(r=>r.json())
+      .then(j=>{
+        if(!j.ok) throw new Error(j.error||'บันทึกไม่สำเร็จ');
+        this.setState({ templateId:j.id });
+        this.toast('บันทึกแม่แบบ "'+j.name+'" แล้ว');
+        this.loadTemplates(true);
+      })
+      .catch(e=>this.toast('บันทึกไม่สำเร็จ: '+((e&&e.message)||e)));
+  }
+  openTemplate(id){
+    fetch('/api/templates?id='+encodeURIComponent(id))
+      .then(r=>r.json())
+      .then(j=>{
+        if(!j.ok || !j.template) throw new Error('ไม่พบแม่แบบ');
+        const d = j.template.design||{};
+        this.setState({ labelName:d.labelName||j.template.name, labelW:d.labelW||50, labelH:d.labelH||30, bg:d.bg||'#ffffff',
+          elements:Array.isArray(d.elements)?d.elements:[], selectedId:null, templateId:j.template.id });
+        setTimeout(()=>this.fitView(), 30);
+        this.toast('เปิดแม่แบบ "'+j.template.name+'"');
+      })
+      .catch(e=>this.toast('เปิดแม่แบบไม่สำเร็จ: '+((e&&e.message)||e)));
+  }
+  deleteTemplate(id){
+    fetch('/api/templates?id='+encodeURIComponent(id), { method:'DELETE' })
+      .then(r=>r.json())
+      .then(j=>{
+        if(!j.ok) throw new Error('ลบไม่สำเร็จ');
+        if(this.state.templateId===id) this.setState({ templateId:'' });
+        this.loadTemplates(true);
+        this.toast('ลบแม่แบบแล้ว');
+      })
+      .catch(e=>this.toast('ลบไม่สำเร็จ'));
+  }
+
   toast(msg){
     const t={msg, ts:Date.now()};
     this.setState({toast:t});
@@ -1518,7 +1597,7 @@ class Component extends DCLogic {
     if(this._vp) this._vp.addEventListener('wheel', this._wheel, { passive:false });
     setTimeout(()=>this.fitView(), 60);
     this.ensureLibs();
-    this.loadBizList(true); this.loadShopList(true);
+    this.loadBizList(true); this.loadShopList(true); this.loadTemplates(true);
   }
   componentDidUpdate(){ this.renderBarcodes(); }
   componentWillUnmount(){

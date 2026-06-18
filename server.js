@@ -6,6 +6,7 @@ const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
 const dataSource = require("./dataSource");
+const templates = require("./templates");
 
 const ROOT = __dirname;
 const START_PORT = Number(process.env.PORT) || 8080;
@@ -54,6 +55,26 @@ async function handleApi(req, res) {
       }
     } catch (e) {
       sendJson(res, 502, { ok: false, error: String((e && e.message) || e) });
+    }
+    return;
+  }
+  if (u.pathname === "/api/templates") {
+    try {
+      if (req.method === "POST") {
+        const body = await readJsonBody(req);
+        if (!body.design) { sendJson(res, 400, { ok: false, error: "ต้องมี design" }); return; }
+        const t = templates.save({ id: body.id, name: body.name, design: body.design });
+        sendJson(res, 200, { ok: true, id: t.id, name: t.name });
+      } else if (req.method === "DELETE") {
+        templates.remove(u.searchParams.get("id") || "");
+        sendJson(res, 200, { ok: true });
+      } else {
+        const id = u.searchParams.get("id");
+        if (id) sendJson(res, 200, { ok: true, template: templates.get(id) });
+        else sendJson(res, 200, { ok: true, rows: templates.list() });
+      }
+    } catch (e) {
+      sendJson(res, 500, { ok: false, error: String((e && e.message) || e) });
     }
     return;
   }

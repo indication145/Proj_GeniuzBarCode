@@ -6,6 +6,9 @@
 ## [Unreleased]
 
 ### Added
+- **บันทึก/โหลด/ลบ แม่แบบ label** — `save()` ใช้งานจริงแล้ว (เดิมเป็น mock); เก็บเป็น `templates.json`
+  ฝั่ง server (`templates.js` + `/api/templates` GET list/get, POST upsert ตามชื่อ, DELETE);
+  เพิ่ม section "SAVED · แม่แบบที่บันทึก" ใน sidebar (เปิด/ลบ) โหลด list ตอน mount; `templates.json` อยู่ใน .gitignore
 - **Single .exe สำหรับเครื่อง client** — `npm run build:exe` (@yao-pkg/pkg) แพ็ก static files เข้าตัว exe;
   `dataSource.js` อ่าน/เขียน `.env` ข้าง ๆ ตัว exe เมื่อ packaged (process.pkg); ดู `deploy/client/README.md`
   (SQL ไม่รองรับใน exe — REST เท่านั้น). ทดสอบแล้ว exe เสิร์ฟหน้าเว็บ + เรียก csith จริงได้

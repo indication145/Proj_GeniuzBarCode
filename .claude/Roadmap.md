@@ -34,8 +34,9 @@
 - [ ] ปรับ duplicate rows (1 SKU มีหลายแถวตาม PLU/หน่วย) + paging (Fg=0 cap ~100)
 
 ### P1 — บันทึก/จัดการแม่แบบ
-- [ ] `save()` บันทึกจริง (localStorage ก่อน แล้วค่อย backend) — ตอนนี้แค่ toast
-- [ ] โหลด/ลบ/ทำซ้ำแม่แบบที่บันทึกไว้
+- [x] `save()` บันทึกจริง — เก็บเป็น `templates.json` ฝั่ง server (`/api/templates` CRUD)
+- [x] โหลด/ลบ แม่แบบที่บันทึกไว้ (section "SAVED · แม่แบบที่บันทึก" ใน sidebar)
+- [ ] ทำซ้ำ (duplicate) แม่แบบ / export-import เป็นไฟล์
 - [ ] Undo / Redo
 
 ### P2 — คุณภาพ & ออฟไลน์
