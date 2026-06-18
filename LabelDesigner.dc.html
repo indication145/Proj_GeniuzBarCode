@@ -43,6 +43,21 @@
     <div style="width:1px;height:24px;background:#E6E3DF;"></div>
     <input value="{{ labelName }}" onChange="{{ onName }}" style="font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:500;color:#1B1A18;border:1px solid transparent;background:transparent;border-radius:6px;padding:6px 8px;width:200px;transition:all .15s;" style-hover="background:#F4F3F1;" style-focus="background:#F4F3F1;border-color:#E6E3DF;" />
     <div style="flex:1;"></div>
+    <label style="display:flex;align-items:center;gap:6px;height:34px;padding:0 10px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;" title="เลือกธุรกิจ (bizId)">
+      <span style="font-size:9px;font-weight:600;color:#9A938A;font-family:'IBM Plex Mono',monospace;letter-spacing:0.05em;">ธุรกิจ</span>
+      <select value="{{ bizId }}" onChange="{{ onSelectBiz }}" style="border:none;background:transparent;font-family:'IBM Plex Sans Thai';font-size:12px;color:#1B1A18;max-width:130px;cursor:pointer;outline:none;">
+        <option value="">{{ bizPlaceholder }}</option>
+        <sc-for list="{{ bizOptions }}" as="b" hint-placeholder-count="3"><option value="{{ b.value }}">{{ b.label }}</option></sc-for>
+      </select>
+    </label>
+    <label style="display:flex;align-items:center;gap:6px;height:34px;padding:0 10px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;" title="เลือกร้าน/สาขา">
+      <span style="font-size:9px;font-weight:600;color:#9A938A;font-family:'IBM Plex Mono',monospace;letter-spacing:0.05em;">ร้าน</span>
+      <select value="{{ shopId }}" onChange="{{ onSelectShop }}" style="border:none;background:transparent;font-family:'IBM Plex Sans Thai';font-size:12px;color:#1B1A18;max-width:150px;cursor:pointer;outline:none;">
+        <option value="">{{ shopPlaceholder }}</option>
+        <sc-for list="{{ shopOptions }}" as="s" hint-placeholder-count="3"><option value="{{ s.value }}">{{ s.label }}</option></sc-for>
+      </select>
+    </label>
+    <div style="width:1px;height:24px;background:#E6E3DF;"></div>
     <button onClick="{{ openConn }}" style="display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:8px;border:1px solid #E6E3DF;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:12px;transition:all .15s;" style-hover="border-color:#cfcbc4;background:#FAFAF9;">
       <span style="width:8px;height:8px;border-radius:50%;background:{{ connDot }};animation:gePulse 2.2s infinite;"></span>
       <span style="font-weight:500;">{{ connLabel }}</span>
@@ -501,25 +516,9 @@
                 <span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">Endpoint</span>
                 <input value="http://cli.csith.com" readonly style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;color:#44403B;" />
               </label>
-              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">ธุรกิจ · BUSINESS (bizId → .env)</div>
-              <div style="display:flex;gap:8px;margin-bottom:14px;">
-                <select value="{{ bizId }}" onChange="{{ onSelectBiz }}" style="flex:1;font-family:'IBM Plex Sans Thai';font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;cursor:pointer;" style-focus="border-color:#7b1fa2;background:#fff;">
-                  <option value="">{{ bizPlaceholder }}</option>
-                  <sc-for list="{{ bizOptions }}" as="b" hint-placeholder-count="3"><option value="{{ b.value }}">{{ b.label }}</option></sc-for>
-                </select>
-                <button onClick="{{ reloadBiz }}" title="โหลดรายการธุรกิจใหม่" style="width:40px;flex-shrink:0;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="background:#F4F3F1;">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                </button>
-              </div>
-              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">ร้าน / สาขา · SHOP (พิมพ์ลง label ได้)</div>
-              <div style="display:flex;gap:8px;margin-bottom:14px;">
-                <select value="{{ shopId }}" onChange="{{ onSelectShop }}" style="flex:1;font-family:'IBM Plex Sans Thai';font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;cursor:pointer;" style-focus="border-color:#7b1fa2;background:#fff;">
-                  <option value="">{{ shopPlaceholder }}</option>
-                  <sc-for list="{{ shopOptions }}" as="s" hint-placeholder-count="3"><option value="{{ s.value }}">{{ s.label }}</option></sc-for>
-                </select>
-                <button onClick="{{ reloadShop }}" title="โหลดรายการร้านใหม่" style="width:40px;flex-shrink:0;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="background:#F4F3F1;">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                </button>
+              <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:#7b1fa2;background:#F4EAF8;border:1px solid #e7d6f0;border-radius:8px;padding:8px 11px;margin-bottom:14px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                เลือก <b>ธุรกิจ</b> และ <b>ร้าน/สาขา</b> ได้ที่มุมบนขวาของจอ
               </div>
               <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">ENDPOINTS</div>
               <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;">
@@ -940,7 +939,7 @@ class Component extends DCLogic {
       showTextStyle, showTextKnob,
       dupSel:()=>this.dupSel(), deleteSel:()=>this.deleteSel(),
       // connection
-      openConn:()=>{ this.setState({connOpen:true}); this.loadBizList(); this.loadShopList(); }, closeConn:()=>this.setState({connOpen:false}),
+      openConn:()=>{ this.setState({connOpen:true}); this.loadBizList(true); this.loadShopList(true); }, closeConn:()=>this.setState({connOpen:false}),
       bizId:S.bizId, bizBusy:S.bizBusy, hasBiz:(S.bizList||[]).length>0,
       bizPlaceholder: S.bizBusy ? 'กำลังโหลดรายการธุรกิจ…' : '— เลือกธุรกิจ —',
       bizOptions:(S.bizList||[]).map(b=>({ value:String(b.bizId), label:(b.bizCode?(b.bizCode+' · '):'')+b.bizName })),
@@ -1207,7 +1206,7 @@ class Component extends DCLogic {
       '</head><body>'+body+'<script>'+draw+'<\/script></body></html>';
   }
   // โหลด list ธุรกิจ (bizId) จาก backend (/api/biz)
-  loadBizList(){
+  loadBizList(silent){
     this.setState({ bizBusy:true });
     fetch('/api/biz')
       .then(r=>r.json())
@@ -1215,7 +1214,7 @@ class Component extends DCLogic {
         if(!j.ok) throw new Error(j.error||'โหลดรายการธุรกิจไม่สำเร็จ');
         this.setState({ bizList:j.rows||[], bizId:(j.current||'')+'', bizBusy:false });
       })
-      .catch(e=>{ this.setState({bizBusy:false}); this.toast('โหลดธุรกิจไม่สำเร็จ: '+((e&&e.message)||e)); });
+      .catch(e=>{ this.setState({bizBusy:false}); if(!silent) this.toast('โหลดธุรกิจไม่สำเร็จ: '+((e&&e.message)||e)); });
   }
 
   // เลือกธุรกิจ → บันทึก bizId ลง .env (setting ถาวร)
@@ -1234,7 +1233,7 @@ class Component extends DCLogic {
   }
 
   // โหลด list ร้าน/สาขา ของ bizId ที่ตั้งไว้ (จาก env) — ใช้พิมพ์ข้อมูลร้านลง label
-  loadShopList(){
+  loadShopList(silent){
     this.setState({ shopBusy:true });
     fetch('/api/shops')
       .then(r=>r.json())
@@ -1244,7 +1243,7 @@ class Component extends DCLogic {
         const cur = (this.state.shop && rows.find(s=>s.shopId===this.state.shop.shopId)) || rows[0] || null;
         this.setState({ shopList:rows, shop:cur, shopId:cur?cur.shopId:'', shopBusy:false });
       })
-      .catch(e=>{ this.setState({shopBusy:false}); this.toast('โหลดร้านไม่สำเร็จ: '+((e&&e.message)||e)); });
+      .catch(e=>{ this.setState({shopBusy:false}); if(!silent) this.toast('โหลดร้านไม่สำเร็จ: '+((e&&e.message)||e)); });
   }
 
   // เลือกร้าน → เก็บ object ไว้ใช้ผูกข้อมูล (binding "shop.*") บน label
@@ -1350,6 +1349,7 @@ class Component extends DCLogic {
     if(this._vp) this._vp.addEventListener('wheel', this._wheel, { passive:false });
     setTimeout(()=>this.fitView(), 60);
     this.ensureLibs();
+    this.loadBizList(true); this.loadShopList(true);
   }
   componentDidUpdate(){ this.renderBarcodes(); }
   componentWillUnmount(){
