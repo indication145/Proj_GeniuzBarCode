@@ -25,6 +25,7 @@
 - [x] REST auth flow: POST `/api/system/token` (X-API-Key) → cache `AccessToken` → `Bearer`
 - [x] หน้า Connection กด "เชื่อมต่อ" → `loadData()` ดึง SKU จริงมาแทน `defaultSku()` (มี loading/error)
 - [x] เลือก "ธุรกิจ" (bizId) จาก `CsPara/GetList` → บันทึกลง `.env` (`/api/biz` GET/POST + dropdown ในหน้า Connection)
+- [x] โหลด "ร้าน/สาขา" จาก `Shop/GetShopList?BizId=<env>` (`/api/shops`) → เลือกร้าน → ผูกเป็น binding `shop.*` พิมพ์ลง label ได้
 - [ ] **รอ endpoint สินค้าจริง** + ตัวอย่าง JSON เพื่อ set `CSITH_PRODUCTS_PATH` + field mapping (ตอนนี้เดา `/api/products` → 404)
       น่าจะใช้ flow: bizId → `Shop/GetShopList` (ShopId) → สินค้า/`BarCode/GetBarCode`
 - [ ] SQL Server: `npm install mssql` + ใส่ credentials/query ใน `.env`

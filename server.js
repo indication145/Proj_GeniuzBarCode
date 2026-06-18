@@ -57,6 +57,15 @@ async function handleApi(req, res) {
     }
     return;
   }
+  if (u.pathname === "/api/shops") {
+    try {
+      const rows = await dataSource.getShopList(u.searchParams.get("bizId") || undefined);
+      sendJson(res, 200, { ok: true, rows, count: rows.length, bizId: dataSource.CFG.bizId });
+    } catch (e) {
+      sendJson(res, 502, { ok: false, error: String((e && e.message) || e) });
+    }
+    return;
+  }
   if (u.pathname === "/api/skus") {
     const source = u.searchParams.get("source") === "sql" ? "sql" : "api";
     try {

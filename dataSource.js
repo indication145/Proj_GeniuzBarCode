@@ -26,6 +26,7 @@ const CFG = {
   productsArrayPath: E.CSITH_PRODUCTS_ARRAY_PATH || "",
   bizListPath: E.CSITH_BIZ_LIST_PATH || "/Services/Administration/CsPara/GetList",
   bizId: E.CSITH_BIZ_ID || "",
+  shopListPath: E.CSITH_SHOP_LIST_PATH || "/Services/Geniuz/Shop/GetShopList",
   map: {
     sku: E.MAP_SKU || "sku,code",
     name: E.MAP_NAME || "name,productName",
@@ -99,6 +100,28 @@ async function getBizList() {
   }));
 }
 
+// list ร้าน/สาขา ของ bizId ที่ตั้งค่าไว้ (GET ?BizId=) — ใช้พิมพ์ข้อมูลร้านลง label
+async function getShopList(bizIdArg) {
+  const bizId = bizIdArg || CFG.bizId;
+  if (!bizId) throw new Error("ยังไม่ได้ตั้งค่า bizId — เลือกธุรกิจก่อน");
+  const token = await getToken();
+  const url = CFG.baseUrl + CFG.shopListPath + "?BizId=" + encodeURIComponent(bizId);
+  const res = await fetch(url, { headers: { Authorization: "Bearer " + token, Accept: "application/json" } });
+  if (!res.ok) throw new Error("โหลดร้านไม่สำเร็จ (HTTP " + res.status + ")");
+  const j = await res.json();
+  const arr = Array.isArray(j) ? j : (j.data || j.items || j.rows || []);
+  return arr.map(s => ({
+    shopId: s.shopId != null ? String(s.shopId) : "",
+    shopName: s.shopName || "",
+    shopNameEn: s.shopNameEn || "",
+    branchName: s.branchName || "",
+    shopAddress: s.shopAddress || "",
+    shopTaxId: s.shopTaxId || "",
+    shopRegName: s.shopRegName || "",
+    shopRegAddressLine1: s.shopRegAddressLine1 || "",
+  }));
+}
+
 // เขียน/อัปเดตค่าใน .env (เก็บ setting แบบถาวร) แล้วอัปเดต runtime ทันที
 function setEnvVar(key, value) {
   const p = path.join(__dirname, ".env");
@@ -153,4 +176,4 @@ async function getSkus(source) {
   return source === "sql" ? fromSql() : fromApi();
 }
 
-module.exports = { getSkus, getToken, getBizList, setEnvVar, CFG };
+module.exports = { getSkus, getToken, getBizList, getShopList, setEnvVar, CFG };
