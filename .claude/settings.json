@@ -4,7 +4,8 @@
       "PowerShell(git -C $repo add -A)",
       "PowerShell(git -C $repo push)",
       "PowerShell(git -C $repo log --oneline -n 3)",
-      "PowerShell($repo = \"f:\\\\Proj_GeniuzBarCode\\\\GeniuzBarCode\")"
+      "PowerShell($repo = \"f:\\\\Proj_GeniuzBarCode\\\\GeniuzBarCode\")",
+      "PowerShell(git -C $repo log --oneline -n 1)"
     ]
   }
 }
