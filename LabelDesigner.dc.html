@@ -465,11 +465,18 @@
           </div>
           <div style="flex:1;min-height:80px;display:flex;flex-direction:column;gap:5px;overflow-y:auto;margin-bottom:16px;">
             <sc-for list="{{ printSkuList }}" as="s" hint-placeholder-count="8">
-              <button onClick="{{ s.toggle }}" style="{{ s.rowStyle }}">
-                <span style="{{ s.checkStyle }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-                <span style="flex:1;text-align:left;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.name }}</span>
-                <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9A938A;">฿{{ s.price }}</span>
-              </button>
+              <div style="{{ s.rowStyle }}">
+                <button onClick="{{ s.toggle }}" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;border:none;background:transparent;cursor:pointer;padding:0;font-family:'IBM Plex Sans Thai';">
+                  <span style="{{ s.checkStyle }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                  <span style="flex:1;text-align:left;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.name }}</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9A938A;">฿{{ s.price }}</span>
+                </button>
+                <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+                  <button onClick="{{ s.minus }}" title="ลดจำนวนดวง" style="{{ s.stepBtnStyle }}">−</button>
+                  <span style="{{ s.countStyle }}">{{ s.count }}</span>
+                  <button onClick="{{ s.plus }}" title="เพิ่มจำนวนดวง" style="{{ s.stepBtnStyle }}">+</button>
+                </div>
+              </div>
             </sc-for>
           </div>
 
@@ -679,7 +686,7 @@ class Component extends DCLogic {
       toast: null,
       printOpen: false, connOpen: false,
       connMode: 'api', connStatus: 'connected',
-      printMedia: 'a4', printCopies: 1, skuSel: {}, printing: false, useQty: false,
+      printMedia: 'a4', printCopies: 1, skuSel: {}, printing: false, useQty: false, copiesMap: {},
       rollCols: 2, rollRows: 3,
       bizList: [], bizId: '', bizBusy: false,
       shopList: [], shopId: '', shop: null, shopBusy: false,
@@ -961,10 +968,14 @@ class Component extends DCLogic {
         padding:gapPx+'px', background:'#fff', borderRadius:'4px', boxShadow:'0 4px 24px rgba(0,0,0,0.1)', justifyContent:'flex-start' };
       printSkuList = S.skuRows.map((r,i)=>{
         const on = S.skuSel[i]!==false;
-        return { name:r.name, price:Number(r.price).toLocaleString('th-TH'),
+        const count = this.copiesFor(i);
+        return { name:r.name, price:Number(r.price).toLocaleString('th-TH'), on, count,
           toggle:()=>{ const ns=Object.assign({}, S.skuSel); ns[i]=!on; this.setState({skuSel:ns}); },
-          rowStyle:{ display:'flex', alignItems:'center', gap:'8px', padding:'7px 9px', borderRadius:'8px', cursor:'pointer', border:'1px solid '+(on?A.softBorder:'#EBE8E3'), background:on?A.soft:'#fff', transition:'all .12s', width:'100%' },
-          checkStyle:{ width:'18px', height:'18px', borderRadius:'5px', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', background:on?A.base:'#fff', border:'1px solid '+(on?A.base:'#cfcbc4'), transition:'all .12s' } };
+          minus:()=>this.setCopiesFor(i, count-1), plus:()=>this.setCopiesFor(i, count+1),
+          rowStyle:{ display:'flex', alignItems:'center', gap:'8px', padding:'5px 7px 5px 9px', borderRadius:'8px', border:'1px solid '+(on?A.softBorder:'#EBE8E3'), background:on?A.soft:'#fff', transition:'all .12s', width:'100%' },
+          checkStyle:{ width:'18px', height:'18px', borderRadius:'5px', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', background:on?A.base:'#fff', border:'1px solid '+(on?A.base:'#cfcbc4'), transition:'all .12s' },
+          stepBtnStyle:{ width:'24px', height:'24px', border:'1px solid #E6E3DF', borderRadius:'6px', background:'#fff', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', color:'#44403B', fontSize:'14px', lineHeight:1, flexShrink:0 },
+          countStyle:{ minWidth:'24px', textAlign:'center', fontFamily:"'IBM Plex Mono',monospace", fontSize:'12.5px', fontWeight:600, color: on?'#1B1A18':'#9A938A' } };
       });
     }
 
@@ -1057,7 +1068,7 @@ class Component extends DCLogic {
       stop:(e)=>{ e.stopPropagation(); },
       printOpen:S.printOpen, printView, printCount,
       printCopies:S.printCopies, copiesPlus:()=>this.setState({printCopies:Math.min(99,S.printCopies+1)}), copiesMinus:()=>this.setState({printCopies:Math.max(1,S.printCopies-1)}),
-      useQty:S.useQty, toggleUseQty:()=>this.setState({useQty:!S.useQty}),
+      useQty:S.useQty, toggleUseQty:()=>this.setState({useQty:!S.useQty, copiesMap:{}}),
       useQtyStyle:{ width:'38px', height:'22px', borderRadius:'12px', border:'none', cursor:'pointer', position:'relative', transition:'all .2s', background: S.useQty?A.base:'#d8d3cc', padding:0, flexShrink:0 },
       useQtyKnob:{ position:'absolute', top:'2px', left: S.useQty?'18px':'2px', width:'18px', height:'18px', borderRadius:'50%', background:'#fff', transition:'all .2s', boxShadow:'0 1px 3px rgba(0,0,0,0.2)' },
       copiesActive: !S.useQty,
@@ -1201,12 +1212,15 @@ class Component extends DCLogic {
     this.setState({ zoom:z, panX:(w-lw*z)/2, panY:(h-lh*z)/2 });
   }
 
-  // จำนวนป้ายของ SKU แต่ละชิ้น — ถ้า useQty ใช้ qty (ตาม PO) ไม่งั้นใช้ค่าคงที่ printCopies
+  // จำนวนป้ายของ SKU แต่ละชิ้น — ลำดับ: override ราย SKU > qty (PO) > ค่าคงที่ printCopies
   copiesFor(idx){
     const S = this.state;
+    const o = S.copiesMap[idx];
+    if(o!=null && o!=='') return Math.max(0, Math.round(Number(o)||0));
     if(S.useQty){ const q = Math.round(Number(S.skuRows[idx] && S.skuRows[idx].qty) || 0); return Math.max(0, q); }
     return Math.max(1, S.printCopies);
   }
+  setCopiesFor(i, n){ const m = Object.assign({}, this.state.copiesMap); m[i] = Math.max(0, Math.round(n)); this.setState({ copiesMap:m }); }
 
   doPrint(){
     const S = this.state;
@@ -1379,7 +1393,7 @@ class Component extends DCLogic {
           this.toast(searching ? 'ไม่พบสินค้าที่ค้นหา' : 'ไม่พบข้อมูลสินค้า');
           return;
         }
-        this.setState({ skuRows:rows, activeSku:0, skuSel:{}, skuSource:source, connStatus:'connected', connOpen:false, useQty:false });
+        this.setState({ skuRows:rows, activeSku:0, skuSel:{}, skuSource:source, connStatus:'connected', connOpen:false, useQty:false, copiesMap:{} });
         this.toast((searching?'พบ ':'โหลด ')+rows.length+' SKU'+(searching?' (ค้นหา)':' จาก '+(source==='sql'?'SQL Server':'REST API')));
       })
       .catch(e=>{
@@ -1420,7 +1434,7 @@ class Component extends DCLogic {
         if(!j.ok) throw new Error(j.error||'โหลดรายการ PO ไม่สำเร็จ');
         const rows = j.rows||[];
         if(!rows.length){ this.setState({poBusy:false}); this.toast('ใบสั่งซื้อนี้ไม่มีรายการสินค้า'); return; }
-        this.setState({ skuRows:rows, activeSku:0, skuSel:{}, skuSource:'po', poDoc:doc, poBusy:false, poOpen:false, useQty:true });
+        this.setState({ skuRows:rows, activeSku:0, skuSel:{}, skuSource:'po', poDoc:doc, poBusy:false, poOpen:false, useQty:true, copiesMap:{} });
         this.toast('โหลด '+rows.length+' รายการจากใบสั่งซื้อ '+doc+' (พิมพ์ตามจำนวน qty)');
       })
       .catch(e=>{ this.setState({poBusy:false}); this.toast('โหลด PO ไม่สำเร็จ: '+((e&&e.message)||e)); });
