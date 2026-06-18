@@ -27,6 +27,7 @@ const CFG = {
   bizListPath: E.CSITH_BIZ_LIST_PATH || "/Services/Administration/CsPara/GetList",
   bizId: E.CSITH_BIZ_ID || "",
   shopListPath: E.CSITH_SHOP_LIST_PATH || "/Services/Geniuz/Shop/GetShopList",
+  purInvoicePath: E.CSITH_PUR_INVOICE_PATH || "/Services/Geniuz/BarCode/GetPurInvoice",
   map: {
     sku: E.MAP_SKU || "skuCode",
     name: E.MAP_NAME || "skuDesc,pluDesc",
@@ -73,6 +74,7 @@ function normalize(rows) {
     price: Number(String(pick(r, CFG.map.price)).replace(/[^0-9.\-]/g, "")) || 0,
     barcode: String(pick(r, CFG.map.barcode)),
     unit: String(pick(r, CFG.map.unit)),
+    qty: Number(String(pick(r, "qty")).replace(/[^0-9.\-]/g, "")) || 0,
   })).filter(r => r.sku || r.name || r.barcode);
 }
 
@@ -120,6 +122,32 @@ async function getShopList(bizIdArg) {
     shopRegName: s.shopRegName || "",
     shopRegAddressLine1: s.shopRegAddressLine1 || "",
   }));
+}
+
+// list ใบสั่งซื้อ (PO) — POST GetPurInvoice { DocFg, Fg, SearchCode, BizId }
+// Fg: 0=ทั้งหมด, 1=SysDocNo, 2=SupplierId, 3=DocDate, 4=WhsId, 5=RefDocNo1
+async function getPurInvoices(opts) {
+  opts = opts || {};
+  const j = await apiPost(CFG.purInvoicePath, {
+    DocFg: 0,
+    Fg: Number(opts.fg != null && opts.fg !== "" ? opts.fg : 0),
+    SearchCode: opts.code != null ? String(opts.code) : "",
+    BizId: CFG.bizId || "",
+  });
+  const arr = Array.isArray(j) ? j : (j.data || j.items || j.rows || []);
+  return arr.map(p => ({
+    sysDocNo: p.sysDocNo || "",
+    supplierId: p.supplierId || "",
+    docDate: p.docDate ? String(p.docDate).slice(0, 10) : "",
+    whsId: p.whsId || "",
+    purIvNo: p.purIvNo || "",
+  })).filter(p => p.sysDocNo);
+}
+
+// รายการสินค้าของใบสั่งซื้อ — GetBarCode Fg=22, SearchCode=<sysDocNo>
+async function getPoLines(docNo) {
+  if (!docNo) throw new Error("ต้องระบุเลขใบสั่งซื้อ (sysDocNo)");
+  return fromApi({ fg: "22", code: docNo });
 }
 
 // เขียน/อัปเดตค่าใน .env (เก็บ setting แบบถาวร) แล้วอัปเดต runtime ทันที
@@ -185,4 +213,4 @@ async function getSkus(source, opts) {
   return source === "sql" ? fromSql() : fromApi(opts);
 }
 
-module.exports = { getSkus, getToken, getBizList, getShopList, setEnvVar, CFG };
+module.exports = { getSkus, getToken, getBizList, getShopList, getPurInvoices, getPoLines, setEnvVar, CFG };

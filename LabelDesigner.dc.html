@@ -191,6 +191,10 @@
         <div style="display:flex;align-items:center;gap:10px;padding:9px 16px 6px;">
           <span style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;">DATA SOURCE · ข้อมูล SKU</span>
           <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;background:#F0F7F2;color:#1F8A5B;border:1px solid #cde9d8;padding:2px 8px;border-radius:20px;font-family:'IBM Plex Mono',monospace;">{{ skuRowCount }} SKU · {{ skuSourceLabel }}</span>
+          <button onClick="{{ openPo }}" style="display:flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:7px;border:1px solid #E6E3DF;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:11.5px;font-weight:500;color:#44403B;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a2 2 0 0 1 2 2v1h1a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1V4a2 2 0 0 1 2-2z"/><path d="M9 12h6M9 16h4"/></svg>
+            พิมพ์จากใบสั่งซื้อ
+          </button>
           <div style="flex:1;"></div>
           <select value="{{ skuFg }}" onChange="{{ onSkuFg }}" style="font-family:'IBM Plex Sans Thai';font-size:11.5px;border:1px solid #E6E3DF;border-radius:7px;padding:5px 7px;background:#FBFAF9;cursor:pointer;" style-focus="border-color:#7b1fa2;background:#fff;">
             <option value="1">รหัสสินค้า</option>
@@ -565,6 +569,56 @@
     </div>
   </sc-if>
 
+  <sc-if value="{{ poOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closePo }}" style="position:fixed;inset:0;background:rgba(27,26,24,0.45);backdrop-filter:blur(3px);z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;animation:geFade .18s ease;">
+      <div onClick="{{ stop }}" style="width:580px;max-width:94vw;max-height:84vh;background:#fff;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,0.35);overflow:hidden;display:flex;flex-direction:column;animation:gePop .22s cubic-bezier(.2,.8,.3,1);">
+        <div style="padding:18px 20px;border-bottom:1px solid #EFEDEA;display:flex;align-items:center;gap:10px;">
+          <div style="width:34px;height:34px;border-radius:9px;background:#F4EAF8;display:flex;align-items:center;justify-content:center;color:#7b1fa2;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a2 2 0 0 1 2 2v1h1a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1V4a2 2 0 0 1 2-2z"/><path d="M9 12h6M9 16h4"/></svg>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:15px;font-weight:600;">พิมพ์จากใบสั่งซื้อ · Purchase Order</div>
+            <div style="font-size:11px;color:#9A938A;">เลือกใบสั่งซื้อเพื่อโหลดรายการสินค้ามาพิมพ์ป้าย</div>
+          </div>
+          <button onClick="{{ closePo }}" style="width:30px;height:30px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="background:#F4F3F1;"><svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+        <div style="padding:14px 20px;border-bottom:1px solid #EFEDEA;display:flex;gap:8px;">
+          <select value="{{ poFg }}" onChange="{{ onPoFg }}" style="font-family:'IBM Plex Sans Thai';font-size:12px;border:1px solid #E6E3DF;border-radius:8px;padding:8px 10px;background:#FBFAF9;cursor:pointer;" style-focus="border-color:#7b1fa2;background:#fff;">
+            <option value="1">เลขเอกสาร</option>
+            <option value="2">ผู้ขาย</option>
+            <option value="3">วันที่ (YYYY-MM-DD)</option>
+            <option value="4">คลัง</option>
+            <option value="5">อ้างอิง</option>
+          </select>
+          <input value="{{ poSearch }}" onChange="{{ onPoSearch }}" onKeyDown="{{ onPoSearchKey }}" placeholder="ค้นหาใบสั่งซื้อ…" style="flex:1;font-family:'IBM Plex Sans Thai';font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:8px 11px;background:#FBFAF9;" style-focus="border-color:#7b1fa2;background:#fff;" />
+          <button onClick="{{ doPoSearch }}" style="display:flex;align-items:center;gap:5px;padding:0 14px;border-radius:8px;border:1px solid #7b1fa2;background:#7b1fa2;color:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:12.5px;font-weight:500;transition:all .15s;" style-hover="background:#6a1a8e;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+            ค้นหา
+          </button>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:10px 20px 18px;">
+          <sc-if value="{{ hasPo }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <sc-for list="{{ poView }}" as="p" hint-placeholder-count="6">
+                <button onClick="{{ p.use }}" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #EBE8E3;border-radius:9px;background:#fff;cursor:pointer;text-align:left;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#FBFAF9;transform:translateX(2px);">
+                  <div style="width:34px;height:34px;flex-shrink:0;border-radius:8px;background:#F4EAF8;color:#7b1fa2;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg></div>
+                  <div style="flex:1;min-width:0;line-height:1.3;">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:#1B1A18;">{{ p.doc }}</div>
+                    <div style="font-size:10.5px;color:#9A938A;font-family:'IBM Plex Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">ผู้ขาย {{ p.supplier }} · คลัง {{ p.whs }}</div>
+                  </div>
+                  <div style="font-size:11px;color:#78716c;font-family:'IBM Plex Mono',monospace;flex-shrink:0;">{{ p.date }}</div>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ poBusy }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center;color:#9A938A;font-size:12.5px;padding:24px;">กำลังโหลดใบสั่งซื้อ…</div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ printing }}" hint-placeholder-val="{{ false }}">
     <div style="position:fixed;inset:0;background:rgba(27,26,24,0.55);backdrop-filter:blur(4px);z-index:80;display:flex;align-items:center;justify-content:center;animation:geFade .2s ease;">
       <div style="background:#fff;border-radius:18px;padding:34px 44px;box-shadow:0 24px 80px rgba(0,0,0,0.4);display:flex;flex-direction:column;align-items:center;animation:gePop .25s cubic-bezier(.2,.8,.3,1);">
@@ -615,6 +669,7 @@ class Component extends DCLogic {
       bizList: [], bizId: '', bizBusy: false,
       shopList: [], shopId: '', shop: null, shopBusy: false,
       skuSource: 'mock', skuSearch: '', skuFg: '3',
+      poOpen: false, poList: [], poBusy: false, poSearch: '', poFg: '1', poDoc: '',
       spaceHeld: false,
     };
     this._drag = null;
@@ -964,7 +1019,13 @@ class Component extends DCLogic {
       shopOptions:(S.shopList||[]).map(s=>({ value:s.shopId, label:s.shopId+' · '+(s.shopName||'') })),
       onSelectShop:(e)=>this.selectShop(e.target.value), reloadShop:()=>this.loadShopList(),
       skuSearch:S.skuSearch, skuFg:S.skuFg,
-      skuSourceLabel: S.skuSource==='mock' ? 'mock' : (S.skuSource==='sql' ? 'SQL Server' : 'REST API'),
+      skuSourceLabel: S.skuSource==='mock' ? 'mock' : (S.skuSource==='sql' ? 'SQL Server' : (S.skuSource==='po' ? ('PO '+S.poDoc) : 'REST API')),
+      poOpen:S.poOpen, poBusy:S.poBusy, poSearch:S.poSearch, poFg:S.poFg, hasPo:(S.poList||[]).length>0,
+      poPlaceholder: S.poBusy ? 'กำลังโหลด…' : 'ไม่พบใบสั่งซื้อ',
+      poView:(S.poList||[]).map(p=>({ doc:p.sysDocNo, supplier:p.supplierId, date:p.docDate, whs:p.whsId, use:()=>this.usePo(p.sysDocNo) })),
+      openPo:()=>this.openPo(), closePo:()=>this.setState({poOpen:false}),
+      onPoSearch:(e)=>this.setState({poSearch:e.target.value}), onPoSearchKey:(e)=>{ if(e.key==='Enter') this.searchPo(); },
+      onPoFg:(e)=>this.setState({poFg:e.target.value}), doPoSearch:()=>this.searchPo(),
       onSkuSearch:(e)=>this.setState({skuSearch:e.target.value}),
       onSkuSearchKey:(e)=>{ if(e.key==='Enter') this.searchProducts(); },
       onSkuFg:(e)=>this.setState({skuFg:e.target.value}),
@@ -1305,6 +1366,38 @@ class Component extends DCLogic {
   searchProducts(){
     const code = (this.state.skuSearch||'').trim();
     this.loadData('api', { fg: code ? (this.state.skuFg||'3') : '0', code });
+  }
+
+  // ---- พิมพ์จากใบสั่งซื้อ (PO) ----
+  openPo(){ this.setState({ poOpen:true }); this.loadPoList(true); }
+  loadPoList(silent){
+    this.setState({ poBusy:true });
+    const code = (this.state.poSearch||'').trim();
+    let url = '/api/po';
+    if(code) url += '?fg='+encodeURIComponent(this.state.poFg||'1')+'&code='+encodeURIComponent(code);
+    fetch(url)
+      .then(r=>r.json())
+      .then(j=>{
+        if(!j.ok) throw new Error(j.error||'โหลดใบสั่งซื้อไม่สำเร็จ');
+        this.setState({ poList:j.rows||[], poBusy:false });
+      })
+      .catch(e=>{ this.setState({poBusy:false}); if(!silent) this.toast('โหลดใบสั่งซื้อไม่สำเร็จ: '+((e&&e.message)||e)); });
+  }
+  searchPo(){ this.loadPoList(false); }
+
+  // เลือกใบสั่งซื้อ → โหลดรายการสินค้าของ PO เข้าแถบ SKU เพื่อพิมพ์
+  usePo(doc){
+    this.setState({ poBusy:true });
+    fetch('/api/po/lines?doc='+encodeURIComponent(doc))
+      .then(r=>r.json())
+      .then(j=>{
+        if(!j.ok) throw new Error(j.error||'โหลดรายการ PO ไม่สำเร็จ');
+        const rows = j.rows||[];
+        if(!rows.length){ this.setState({poBusy:false}); this.toast('ใบสั่งซื้อนี้ไม่มีรายการสินค้า'); return; }
+        this.setState({ skuRows:rows, activeSku:0, skuSel:{}, skuSource:'po', poDoc:doc, poBusy:false, poOpen:false });
+        this.toast('โหลด '+rows.length+' รายการจากใบสั่งซื้อ '+doc);
+      })
+      .catch(e=>{ this.setState({poBusy:false}); this.toast('โหลด PO ไม่สำเร็จ: '+((e&&e.message)||e)); });
   }
 
   toast(msg){

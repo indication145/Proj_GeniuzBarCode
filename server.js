@@ -57,6 +57,24 @@ async function handleApi(req, res) {
     }
     return;
   }
+  if (u.pathname === "/api/po") {
+    try {
+      const rows = await dataSource.getPurInvoices({ fg: u.searchParams.get("fg"), code: u.searchParams.get("code") || "" });
+      sendJson(res, 200, { ok: true, rows, count: rows.length });
+    } catch (e) {
+      sendJson(res, 502, { ok: false, error: String((e && e.message) || e) });
+    }
+    return;
+  }
+  if (u.pathname === "/api/po/lines") {
+    try {
+      const rows = await dataSource.getPoLines(u.searchParams.get("doc") || "");
+      sendJson(res, 200, { ok: true, rows, count: rows.length, doc: u.searchParams.get("doc") || "" });
+    } catch (e) {
+      sendJson(res, 502, { ok: false, error: String((e && e.message) || e) });
+    }
+    return;
+  }
   if (u.pathname === "/api/shops") {
     try {
       const rows = await dataSource.getShopList(u.searchParams.get("bizId") || undefined);

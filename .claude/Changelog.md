@@ -19,6 +19,10 @@
   `skuCode/skuDesc/pluCode/sellUnitPrice1/sellUnit`; เพิ่มช่องค้นหาในแถบ DATA SOURCE (server-side ตาม Fg)
   + badge บอกแหล่งข้อมูล (mock/REST API/SQL); แก้บั๊ก `getPath(j,"")` คืนทั้ง object (productsArrayPath ว่าง)
 
+- **พิมพ์จากใบสั่งซื้อ (PO)** — `/api/po` (list+ค้นหาตาม Fg: เลขเอกสาร/ผู้ขาย/วันที่/คลัง/อ้างอิง) จาก `GetPurInvoice`
+  และ `/api/po/lines?doc=` (รายการสินค้าใน PO ผ่าน `GetBarCode Fg=22`); ปุ่ม "พิมพ์จากใบสั่งซื้อ" + modal เลือก PO
+  → โหลดรายการเข้าแถบ SKU (skuSource=po); normalize เก็บ `qty` เพิ่ม
+
 ### Changed (header UI)
 - ย้าย dropdown ธุรกิจ + ร้าน/สาขา ไปไว้ที่ header มุมบนขวา (auto-load ตอน mount) — เลือก/เปลี่ยนสะดวกขึ้น
 - **พิมพ์ได้จริง (P0)** — `doPrint()` เปิดหน้าต่างพิมพ์ที่ render ป้ายทุกดวงเป็นหน่วย mm จริง

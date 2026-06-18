@@ -28,6 +28,8 @@
 - [x] โหลด "ร้าน/สาขา" จาก `Shop/GetShopList?BizId=<env>` (`/api/shops`) → เลือกร้าน → ผูกเป็น binding `shop.*` พิมพ์ลง label ได้
 - [x] **ข้อมูลสินค้าจริง** — `BarCode/GetBarCode` (POST `{Fg,SearchCode,BizId}`); map `skuCode/skuDesc/pluCode/sellUnitPrice1/sellUnit`
 - [x] ค้นหา SKU ฝั่ง server ตาม Fg (1=รหัส,2=PLU,3=ชื่อ,4=ราคา,5=หน่วย,6=หมวด,11=แบรนด์) — ช่องค้นหาในแถบ DATA SOURCE
+- [x] **พิมพ์จากใบสั่งซื้อ (PO)** — `GetPurInvoice` (เลือก PO) → `GetBarCode Fg=22` (รายการใน PO) → โหลดเข้าแถบ SKU
+      (`/api/po`, `/api/po/lines`, modal เลือก PO + ค้นหา); รายการ PO มี qty ติดมาด้วย (เผื่อทำ copies ต่อชิ้น)
 - [ ] SQL Server: `npm install mssql` + ใส่ credentials/query ใน `.env`
 - [ ] ปรับ duplicate rows (1 SKU มีหลายแถวตาม PLU/หน่วย) + paging (Fg=0 cap ~100)
 
