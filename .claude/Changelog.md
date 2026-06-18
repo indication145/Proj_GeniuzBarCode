@@ -6,6 +6,9 @@
 ## [Unreleased]
 
 ### Added
+- **Single .exe สำหรับเครื่อง client** — `npm run build:exe` (@yao-pkg/pkg) แพ็ก static files เข้าตัว exe;
+  `dataSource.js` อ่าน/เขียน `.env` ข้าง ๆ ตัว exe เมื่อ packaged (process.pkg); ดู `deploy/client/README.md`
+  (SQL ไม่รองรับใน exe — REST เท่านั้น). ทดสอบแล้ว exe เสิร์ฟหน้าเว็บ + เรียก csith จริงได้
 - **Deploy (Windows Server)** — `deploy/windows/` พร้อม README ขั้นตอน, NSSM service installer
   (`install-service.ps1`/`uninstall-service.ps1`), และ IIS reverse-proxy `web.config`;
   `server.js` ข้าม auto-open browser เมื่อ `NODE_ENV=production` หรือ `NO_OPEN`

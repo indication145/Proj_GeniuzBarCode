@@ -4,9 +4,13 @@
 const fs = require("fs");
 const path = require("path");
 
+// When packaged as a single .exe (pkg), read/write .env next to the exe,
+// not inside the read-only snapshot. Otherwise use the project dir.
+const BASE_DIR = process.pkg ? path.dirname(process.execPath) : __dirname;
+
 // --- minimal .env loader (no dependency) ---
 (function loadEnv() {
-  const p = path.join(__dirname, ".env");
+  const p = path.join(BASE_DIR, ".env");
   if (!fs.existsSync(p)) return;
   for (const line of fs.readFileSync(p, "utf8").split(/\r?\n/)) {
     const m = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/.exec(line);
@@ -152,7 +156,7 @@ async function getPoLines(docNo) {
 
 // เขียน/อัปเดตค่าใน .env (เก็บ setting แบบถาวร) แล้วอัปเดต runtime ทันที
 function setEnvVar(key, value) {
-  const p = path.join(__dirname, ".env");
+  const p = path.join(BASE_DIR, ".env");
   const v = String(value);
   let lines = fs.existsSync(p) ? fs.readFileSync(p, "utf8").split(/\r?\n/) : [];
   const re = new RegExp("^\\s*" + key + "\\s*=");
