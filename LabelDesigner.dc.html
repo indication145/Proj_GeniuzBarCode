@@ -48,10 +48,10 @@
       <span style="font-weight:500;">{{ connLabel }}</span>
       <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9A938A;">{{ connSub }}</span>
     </button>
-    <button onClick="{{ save }}" style="height:34px;padding:0 14px;border-radius:8px;border:1px solid #E6E3DF;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:500;color:#44403B;transition:all .15s;" style-hover="border-color:#cfcbc4;background:#FAFAF9;">เธเธฑเธเธ—เธถเธ</button>
+    <button onClick="{{ save }}" style="height:34px;padding:0 14px;border-radius:8px;border:1px solid #E6E3DF;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:500;color:#44403B;transition:all .15s;" style-hover="border-color:#cfcbc4;background:#FAFAF9;">บันทึก</button>
     <button onClick="{{ openPrint }}" style="{{ printBtnStyle }}" style-hover="{{ printBtnHover }}">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-      เธเธดเธกเธเนเธเนเธฒเธข
+      พิมพ์ป้าย
     </button>
   </header>
 
@@ -59,19 +59,19 @@
 
     <aside style="width:252px;flex-shrink:0;background:#fff;border-right:1px solid #E6E3DF;overflow-y:auto;display:flex;flex-direction:column;">
       <div style="padding:16px 16px 8px;">
-        <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;margin-bottom:10px;">ELEMENTS ยท เน€เธเธดเนเธกเธญเธเธเนเธเธฃเธฐเธเธญเธ</div>
+        <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;margin-bottom:10px;">ELEMENTS · เพิ่มองค์ประกอบ</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
           <button onClick="{{ addText }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border:1px solid #EBE8E3;border-radius:10px;background:#FBFAF9;cursor:pointer;transition:all .15s;color:#44403B;" style-hover="{{ paletteHover }}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6V4h16v2"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="9" y1="20" x2="15" y2="20"/></svg>
-            <span style="font-size:10.5px;font-weight:500;">เธเนเธญเธเธงเธฒเธก</span>
+            <span style="font-size:10.5px;font-weight:500;">ข้อความ</span>
           </button>
           <button onClick="{{ addPrice }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border:1px solid #EBE8E3;border-radius:10px;background:#FBFAF9;cursor:pointer;transition:all .15s;color:#44403B;" style-hover="{{ paletteHover }}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-            <span style="font-size:10.5px;font-weight:500;">เธฃเธฒเธเธฒ</span>
+            <span style="font-size:10.5px;font-weight:500;">ราคา</span>
           </button>
           <button onClick="{{ addBarcode }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border:1px solid #EBE8E3;border-radius:10px;background:#FBFAF9;cursor:pointer;transition:all .15s;color:#44403B;" style-hover="{{ paletteHover }}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5v14M6 5v14M9.5 5v14M13 5v14M16 5v14M18.5 5v14M21 5v14" stroke-linecap="round"/></svg>
-            <span style="font-size:10.5px;font-weight:500;">เธเธฒเธฃเนเนเธเนเธ”</span>
+            <span style="font-size:10.5px;font-weight:500;">บาร์โค้ด</span>
           </button>
           <button onClick="{{ addQr }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border:1px solid #EBE8E3;border-radius:10px;background:#FBFAF9;cursor:pointer;transition:all .15s;color:#44403B;" style-hover="{{ paletteHover }}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="14" y2="14.01"/><line x1="21" y1="14" x2="21" y2="14.01"/><line x1="14" y1="21" x2="14" y2="21.01"/><line x1="21" y1="21" x2="21" y2="21.01"/><line x1="17.5" y1="17.5" x2="17.5" y2="17.51"/></svg>
@@ -79,11 +79,11 @@
           </button>
           <button onClick="{{ addImage }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border:1px solid #EBE8E3;border-radius:10px;background:#FBFAF9;cursor:pointer;transition:all .15s;color:#44403B;" style-hover="{{ paletteHover }}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <span style="font-size:10.5px;font-weight:500;">เธฃเธนเธ/เนเธฅเนเธเน</span>
+            <span style="font-size:10.5px;font-weight:500;">รูป/โลโก้</span>
           </button>
           <button onClick="{{ addFrame }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border:1px solid #EBE8E3;border-radius:10px;background:#FBFAF9;cursor:pointer;transition:all .15s;color:#44403B;" style-hover="{{ paletteHover }}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-            <span style="font-size:10.5px;font-weight:500;">เธเธฃเธญเธ</span>
+            <span style="font-size:10.5px;font-weight:500;">กรอบ</span>
           </button>
         </div>
       </div>
@@ -91,7 +91,7 @@
       <div style="height:1px;background:#EFEDEA;margin:8px 16px;"></div>
 
       <div style="padding:8px 16px;">
-        <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;margin-bottom:10px;">TEMPLATES ยท เนเธกเนเนเธเธเธชเธณเน€เธฃเนเธเธฃเธนเธ</div>
+        <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;margin-bottom:10px;">TEMPLATES · แม่แบบสำเร็จรูป</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
           <sc-for list="{{ templates }}" as="t" hint-placeholder-count="3">
             <button onClick="{{ t.apply }}" style="display:flex;align-items:center;gap:11px;padding:9px;border:1px solid #EBE8E3;border-radius:10px;background:#fff;cursor:pointer;text-align:left;transition:all .15s;" style-hover="border-color:#cfcbc4;background:#FBFAF9;transform:translateX(2px);">
@@ -108,7 +108,7 @@
       <div style="height:1px;background:#EFEDEA;margin:8px 16px;"></div>
 
       <div style="padding:8px 16px 20px;">
-        <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;margin-bottom:10px;">LABEL SIZE ยท เธเธเธฒเธ”เธเนเธฒเธข</div>
+        <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;margin-bottom:10px;">LABEL SIZE · ขนาดป้าย</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
           <sc-for list="{{ sizePresets }}" as="p" hint-placeholder-count="5">
             <button onClick="{{ p.apply }}" style="{{ p.style }}">
@@ -119,11 +119,11 @@
         </div>
         <div style="display:flex;gap:8px;margin-top:10px;">
           <label style="flex:1;display:flex;flex-direction:column;gap:4px;">
-            <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">เธเธงเนเธฒเธ W (เธกเธก.)</span>
+            <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">กว้าง W (มม.)</span>
             <input type="number" value="{{ labelW }}" onChange="{{ onLabelW }}" style="font-family:'IBM Plex Mono',monospace;font-size:13px;border:1px solid #E6E3DF;border-radius:7px;padding:7px 9px;background:#FBFAF9;width:100%;" style-focus="border-color:#E24F2C;background:#fff;" />
           </label>
           <label style="flex:1;display:flex;flex-direction:column;gap:4px;">
-            <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">เธชเธนเธ H (เธกเธก.)</span>
+            <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">สูง H (มม.)</span>
             <input type="number" value="{{ labelH }}" onChange="{{ onLabelH }}" style="font-family:'IBM Plex Mono',monospace;font-size:13px;border:1px solid #E6E3DF;border-radius:7px;padding:7px 9px;background:#FBFAF9;width:100%;" style-focus="border-color:#E24F2C;background:#fff;" />
           </label>
         </div>
@@ -158,7 +158,7 @@
           </sc-if>
         </div>
 
-        <div style="position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(27,26,24,0.82);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 12px;border-radius:20px;letter-spacing:0.03em;backdrop-filter:blur(4px);pointer-events:none;">{{ labelW }} ร— {{ labelH }} mm</div>
+        <div style="position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(27,26,24,0.82);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 12px;border-radius:20px;letter-spacing:0.03em;backdrop-filter:blur(4px);pointer-events:none;">{{ labelW }} × {{ labelH }} mm</div>
 
         <div style="position:absolute;right:14px;bottom:14px;display:flex;align-items:center;gap:2px;background:#fff;border:1px solid #E6E3DF;border-radius:10px;padding:3px;box-shadow:0 3px 12px rgba(0,0,0,0.08);">
           <button onClick="{{ zoomOut }}" style="width:30px;height:30px;border:none;background:transparent;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">
@@ -169,15 +169,15 @@
             <svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
-        <div style="position:absolute;left:14px;top:14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#7d766c;pointer-events:none;background:rgba(255,255,255,0.6);padding:4px 9px;border-radius:7px;backdrop-filter:blur(3px);">เธฅเธฒเธเธงเธฒเธเธญเธเธเนเธเธฃเธฐเธเธญเธ ยท scroll = pan ยท โ/Ctrl+scroll = zoom ยท Space+เธฅเธฒเธ = pan</div>
+        <div style="position:absolute;left:14px;top:14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#7d766c;pointer-events:none;background:rgba(255,255,255,0.6);padding:4px 9px;border-radius:7px;backdrop-filter:blur(3px);">ลากวางองค์ประกอบ · scroll = pan · ⌘/Ctrl+scroll = zoom · Space+ลาก = pan</div>
       </div>
 
       <div style="flex-shrink:0;height:120px;background:#fff;border-top:1px solid #E6E3DF;display:flex;flex-direction:column;">
         <div style="display:flex;align-items:center;gap:10px;padding:9px 16px 6px;">
-          <span style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;">DATA SOURCE ยท เธเนเธญเธกเธนเธฅ SKU</span>
-          <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;background:#F0F7F2;color:#1F8A5B;border:1px solid #cde9d8;padding:2px 8px;border-radius:20px;font-family:'IBM Plex Mono',monospace;">{{ skuRowCount }} SKU ยท mock</span>
+          <span style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;">DATA SOURCE · ข้อมูล SKU</span>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;background:#F0F7F2;color:#1F8A5B;border:1px solid #cde9d8;padding:2px 8px;border-radius:20px;font-family:'IBM Plex Mono',monospace;">{{ skuRowCount }} SKU · mock</span>
           <div style="flex:1;"></div>
-          <span style="font-size:11px;color:#9A938A;">เธเธฅเธดเธเน€เธเธทเนเธญเธ”เธน live preview เธเธเธเนเธฒเธข โ’</span>
+          <span style="font-size:11px;color:#9A938A;">คลิกเพื่อดู live preview บนป้าย →</span>
         </div>
         <div style="flex:1;display:flex;gap:8px;padding:2px 16px 12px;overflow-x:auto;align-items:stretch;">
           <sc-for list="{{ skuView }}" as="s" hint-placeholder-count="8">
@@ -185,7 +185,7 @@
               <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:{{ s.subColor }};">{{ s.sku }}</div>
               <div style="font-size:12px;font-weight:600;color:{{ s.nameColor }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;">{{ s.name }}</div>
               <div style="display:flex;align-items:baseline;gap:4px;">
-                <span style="font-size:14px;font-weight:700;color:{{ s.priceColor }};font-family:'IBM Plex Mono',monospace;">เธฟ{{ s.price }}</span>
+                <span style="font-size:14px;font-weight:700;color:{{ s.priceColor }};font-family:'IBM Plex Mono',monospace;">฿{{ s.price }}</span>
                 <span style="font-size:9.5px;color:{{ s.subColor }};">/ {{ s.unit }}</span>
               </div>
             </button>
@@ -203,16 +203,16 @@
               <div style="font-size:13px;font-weight:600;">{{ selTitle }}</div>
               <div style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">{{ selTypeLabel }}</div>
             </div>
-            <button onClick="{{ dupSel }}" title="เธ—เธณเธเนเธณ" style="width:30px;height:30px;border:1px solid #EBE8E3;border-radius:7px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="border-color:#cfcbc4;background:#FBFAF9;">
+            <button onClick="{{ dupSel }}" title="ทำซ้ำ" style="width:30px;height:30px;border:1px solid #EBE8E3;border-radius:7px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="border-color:#cfcbc4;background:#FBFAF9;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             </button>
-            <button onClick="{{ deleteSel }}" title="เธฅเธ" style="width:30px;height:30px;border:1px solid #EBE8E3;border-radius:7px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="border-color:#E24F2C;background:#FEF3F0;color:#E24F2C;">
+            <button onClick="{{ deleteSel }}" title="ลบ" style="width:30px;height:30px;border:1px solid #EBE8E3;border-radius:7px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="border-color:#E24F2C;background:#FEF3F0;color:#E24F2C;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             </button>
           </div>
 
           <div style="padding:14px 16px;border-bottom:1px solid #EFEDEA;">
-            <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">เธ•เธณเนเธซเธเนเธ & เธเธเธฒเธ” ยท TRANSFORM</div>
+            <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">ตำแหน่ง & ขนาด · TRANSFORM</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
               <div style="display:flex;align-items:center;gap:6px;background:#FBFAF9;border:1px solid #E6E3DF;border-radius:7px;padding:4px 8px;">
                 <span style="font-size:11px;color:#9A938A;font-family:'IBM Plex Mono',monospace;width:12px;">X</span>
@@ -235,8 +235,8 @@
 
           <sc-if value="{{ selIsTextual }}" hint-placeholder-val="{{ false }}">
             <div style="padding:14px 16px;border-bottom:1px solid #EFEDEA;">
-              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">เน€เธเธทเนเธญเธซเธฒ ยท CONTENT</div>
-              <input value="{{ selText }}" onChange="{{ onSelText }}" placeholder="เธเธดเธกเธเนเธเนเธญเธเธงเธฒเธก..." style="width:100%;font-family:'IBM Plex Sans Thai';font-size:13px;border:1px solid #E6E3DF;border-radius:7px;padding:8px 10px;background:#FBFAF9;margin-bottom:9px;" style-focus="border-color:#E24F2C;background:#fff;" />
+              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">เนื้อหา · CONTENT</div>
+              <input value="{{ selText }}" onChange="{{ onSelText }}" placeholder="พิมพ์ข้อความ..." style="width:100%;font-family:'IBM Plex Sans Thai';font-size:13px;border:1px solid #E6E3DF;border-radius:7px;padding:8px 10px;background:#FBFAF9;margin-bottom:9px;" style-focus="border-color:#E24F2C;background:#fff;" />
               <div style="display:flex;gap:8px;margin-bottom:9px;">
                 <div style="flex:1;display:flex;align-items:center;gap:6px;background:#FBFAF9;border:1px solid #E6E3DF;border-radius:7px;padding:4px 8px;">
                   <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">size</span>
@@ -253,7 +253,7 @@
                 <div style="flex:1;"></div>
               </div>
               <div style="display:flex;gap:7px;align-items:center;">
-                <span style="font-size:11px;color:#78716c;">เธชเธต:</span>
+                <span style="font-size:11px;color:#78716c;">สี:</span>
                 <sc-for list="{{ colorSwatches }}" as="c" hint-placeholder-count="6">
                   <button onClick="{{ c.apply }}" style="{{ c.style }}"></button>
                 </sc-for>
@@ -263,15 +263,15 @@
 
           <sc-if value="{{ selIsBarcode }}" hint-placeholder-val="{{ false }}">
             <div style="padding:14px 16px;border-bottom:1px solid #EFEDEA;">
-              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">เธเธฒเธฃเนเนเธเนเธ” ยท BARCODE</div>
+              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">บาร์โค้ด · BARCODE</div>
               <div style="display:flex;gap:6px;margin-bottom:9px;">
                 <sc-for list="{{ formatOptions }}" as="f" hint-placeholder-count="3">
                   <button onClick="{{ f.apply }}" style="{{ f.style }}">{{ f.label }}</button>
                 </sc-for>
               </div>
-              <input value="{{ selValue }}" onChange="{{ onSelValue }}" placeholder="เธเนเธฒเธเธฒเธฃเนเนเธเนเธ”" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:7px;padding:8px 10px;background:#FBFAF9;margin-bottom:9px;" style-focus="border-color:#E24F2C;background:#fff;" />
+              <input value="{{ selValue }}" onChange="{{ onSelValue }}" placeholder="ค่าบาร์โค้ด" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:7px;padding:8px 10px;background:#FBFAF9;margin-bottom:9px;" style-focus="border-color:#E24F2C;background:#fff;" />
               <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-size:12px;color:#44403B;">
-                <span>เนเธชเธ”เธเธ•เธฑเธงเน€เธฅเธเนเธ•เนเธเธฒเธฃเนเนเธเนเธ”</span>
+                <span>แสดงตัวเลขใต้บาร์โค้ด</span>
                 <button onClick="{{ toggleShowText }}" style="{{ showTextStyle }}"><span style="{{ showTextKnob }}"></span></button>
               </label>
             </div>
@@ -280,25 +280,25 @@
           <sc-if value="{{ selIsQr }}" hint-placeholder-val="{{ false }}">
             <div style="padding:14px 16px;border-bottom:1px solid #EFEDEA;">
               <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">QR CODE</div>
-              <input value="{{ selValue }}" onChange="{{ onSelValue }}" placeholder="URL เธซเธฃเธทเธญเธเนเธญเธเธงเธฒเธก" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:7px;padding:8px 10px;background:#FBFAF9;" style-focus="border-color:#E24F2C;background:#fff;" />
+              <input value="{{ selValue }}" onChange="{{ onSelValue }}" placeholder="URL หรือข้อความ" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:7px;padding:8px 10px;background:#FBFAF9;" style-focus="border-color:#E24F2C;background:#fff;" />
             </div>
           </sc-if>
 
           <sc-if value="{{ selIsFrame }}" hint-placeholder-val="{{ false }}">
             <div style="padding:14px 16px;border-bottom:1px solid #EFEDEA;">
-              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">เธเธฃเธญเธ ยท FRAME</div>
+              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">กรอบ · FRAME</div>
               <div style="display:flex;gap:8px;margin-bottom:10px;">
                 <div style="flex:1;display:flex;align-items:center;gap:6px;background:#FBFAF9;border:1px solid #E6E3DF;border-radius:7px;padding:4px 8px;">
-                  <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">เน€เธชเนเธ</span>
+                  <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">เส้น</span>
                   <input type="number" step="0.1" value="{{ selBorder }}" onChange="{{ onSelBorder }}" style="flex:1;width:100%;border:none;background:transparent;font-family:'IBM Plex Mono',monospace;font-size:12.5px;" />
                 </div>
                 <div style="flex:1;display:flex;align-items:center;gap:6px;background:#FBFAF9;border:1px solid #E6E3DF;border-radius:7px;padding:4px 8px;">
-                  <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">เธกเธ</span>
+                  <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">มน</span>
                   <input type="number" step="0.5" value="{{ selRadius }}" onChange="{{ onSelRadius }}" style="flex:1;width:100%;border:none;background:transparent;font-family:'IBM Plex Mono',monospace;font-size:12.5px;" />
                 </div>
               </div>
               <div style="display:flex;gap:7px;align-items:center;">
-                <span style="font-size:11px;color:#78716c;">เธชเธตเน€เธชเนเธ:</span>
+                <span style="font-size:11px;color:#78716c;">สีเส้น:</span>
                 <sc-for list="{{ colorSwatches }}" as="c" hint-placeholder-count="6">
                   <button onClick="{{ c.apply }}" style="{{ c.style }}"></button>
                 </sc-for>
@@ -308,20 +308,20 @@
 
           <sc-if value="{{ selCanBind }}" hint-placeholder-val="{{ false }}">
             <div style="padding:14px 16px;">
-              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:5px;">เน€เธเธทเนเธญเธกเธเนเธญเธกเธนเธฅ ยท DATA BINDING</div>
-              <div style="font-size:11px;color:#9A938A;margin-bottom:9px;">เธเธนเธเธเธฑเธเธเธดเธฅเธ”เน SKU เน€เธเธทเนเธญเธเธดเธกเธเนเธซเธฅเธฒเธขเธ”เธงเธเธญเธฑเธ•เนเธเธกเธฑเธ•เธด</div>
+              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:5px;">เชื่อมข้อมูล · DATA BINDING</div>
+              <div style="font-size:11px;color:#9A938A;margin-bottom:9px;">ผูกกับฟิลด์ SKU เพื่อพิมพ์หลายดวงอัตโนมัติ</div>
               <select value="{{ selBinding }}" onChange="{{ onSelBind }}" style="width:100%;font-family:'IBM Plex Sans Thai';font-size:12.5px;border:1px solid #E6E3DF;border-radius:7px;padding:8px 10px;background:#FBFAF9;cursor:pointer;" style-focus="border-color:#E24F2C;background:#fff;">
-                <option value="">โ€” เธเนเธฒเธเธเธ—เธตเน (เนเธกเนเธเธนเธเธเนเธญเธกเธนเธฅ) โ€”</option>
-                <option value="name">เธเธทเนเธญเธชเธดเธเธเนเธฒ (name)</option>
-                <option value="price">เธฃเธฒเธเธฒ (price)</option>
-                <option value="barcode">เธเธฒเธฃเนเนเธเนเธ” (barcode)</option>
-                <option value="sku">เธฃเธซเธฑเธช SKU (sku)</option>
-                <option value="unit">เธซเธเนเธงเธข (unit)</option>
+                <option value="">— ค่าคงที่ (ไม่ผูกข้อมูล) —</option>
+                <option value="name">ชื่อสินค้า (name)</option>
+                <option value="price">ราคา (price)</option>
+                <option value="barcode">บาร์โค้ด (barcode)</option>
+                <option value="sku">รหัส SKU (sku)</option>
+                <option value="unit">หน่วย (unit)</option>
               </select>
               <sc-if value="{{ selBound }}" hint-placeholder-val="{{ false }}">
                 <div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:11px;color:#1F8A5B;background:#F0F7F2;border:1px solid #cde9d8;border-radius:7px;padding:6px 9px;">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                  เธเธนเธเธเธฑเธ <b style="font-family:'IBM Plex Mono',monospace;">{{ selBinding }}</b> ยท เน€เธเธฅเธตเนเธขเธเธ•เธฒเธก SKU
+                  ผูกกับ <b style="font-family:'IBM Plex Mono',monospace;">{{ selBinding }}</b> · เปลี่ยนตาม SKU
                 </div>
               </sc-if>
             </div>
@@ -332,20 +332,20 @@
       <sc-if value="{{ noSel }}" hint-placeholder-val="{{ true }}">
         <div>
           <div style="padding:14px 16px;border-bottom:1px solid #EFEDEA;">
-            <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">เธเธฒเธฃเธ•เธฑเนเธเธเนเธฒเธเนเธฒเธข ยท LABEL</div>
+            <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">การตั้งค่าป้าย · LABEL</div>
             <label style="display:block;margin-bottom:9px;">
-              <span style="font-size:11px;color:#78716c;display:block;margin-bottom:4px;">เธเธทเนเธญเนเธกเนเนเธเธ</span>
+              <span style="font-size:11px;color:#78716c;display:block;margin-bottom:4px;">ชื่อแม่แบบ</span>
               <input value="{{ labelName }}" onChange="{{ onName }}" style="width:100%;font-family:'IBM Plex Sans Thai';font-size:13px;border:1px solid #E6E3DF;border-radius:7px;padding:8px 10px;background:#FBFAF9;" style-focus="border-color:#E24F2C;background:#fff;" />
             </label>
             <div style="display:flex;gap:7px;align-items:center;">
-              <span style="font-size:11px;color:#78716c;">เธเธทเนเธเธซเธฅเธฑเธ:</span>
+              <span style="font-size:11px;color:#78716c;">พื้นหลัง:</span>
               <sc-for list="{{ bgSwatches }}" as="c" hint-placeholder-count="5">
                 <button onClick="{{ c.apply }}" style="{{ c.style }}"></button>
               </sc-for>
             </div>
           </div>
           <div style="padding:14px 16px;border-bottom:1px solid #EFEDEA;">
-            <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">เธเธฒเธฃเน€เธเธทเนเธญเธกเธ•เนเธญ ยท CONNECTION</div>
+            <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">การเชื่อมต่อ · CONNECTION</div>
             <button onClick="{{ openConn }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:11px;border:1px solid #EBE8E3;border-radius:10px;background:#FBFAF9;cursor:pointer;text-align:left;transition:all .15s;" style-hover="border-color:#cfcbc4;background:#fff;">
               <span style="width:9px;height:9px;border-radius:50%;background:{{ connDot }};flex-shrink:0;animation:gePulse 2.2s infinite;"></span>
               <div style="flex:1;line-height:1.25;min-width:0;">
@@ -359,7 +359,7 @@
             <div style="width:48px;height:48px;border-radius:12px;background:#F4F3F1;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:#c4beb4;">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
             </div>
-            <div style="font-size:12.5px;color:#78716c;line-height:1.5;text-wrap:pretty;">เน€เธฅเธทเธญเธเธญเธเธเนเธเธฃเธฐเธเธญเธเธเธเธเนเธฒเธขเน€เธเธทเนเธญเนเธเนเนเธ<br>เธซเธฃเธทเธญเน€เธเธดเนเธกเธเธฒเธเนเธ–เธ <b style="color:#44403B;">ELEMENTS</b> เธ”เนเธฒเธเธเนเธฒเธข</div>
+            <div style="font-size:12.5px;color:#78716c;line-height:1.5;text-wrap:pretty;">เลือกองค์ประกอบบนป้ายเพื่อแก้ไข<br>หรือเพิ่มจากแถบ <b style="color:#44403B;">ELEMENTS</b> ด้านซ้าย</div>
           </div>
         </div>
       </sc-if>
@@ -370,24 +370,24 @@
     <div onClick="{{ closePrint }}" style="position:fixed;inset:0;background:rgba(27,26,24,0.45);backdrop-filter:blur(3px);z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;animation:geFade .18s ease;">
       <div onClick="{{ stop }}" style="width:920px;max-width:96vw;max-height:90vh;background:#F4F3F1;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,0.35);display:flex;overflow:hidden;animation:gePop .22s cubic-bezier(.2,.8,.3,1);">
         <div style="width:300px;flex-shrink:0;background:#fff;border-right:1px solid #E6E3DF;padding:20px;display:flex;flex-direction:column;overflow-y:auto;">
-          <div style="font-size:16px;font-weight:600;margin-bottom:2px;">เธเธดเธกเธเนเธเนเธฒเธข ยท Print</div>
-          <div style="font-size:11.5px;color:#9A938A;margin-bottom:18px;">เธเธดเธกเธเนเธ—เธตเธฅเธฐเธซเธฅเธฒเธขเธ”เธงเธเธเธฒเธเธเนเธญเธกเธนเธฅ SKU</div>
+          <div style="font-size:16px;font-weight:600;margin-bottom:2px;">พิมพ์ป้าย · Print</div>
+          <div style="font-size:11.5px;color:#9A938A;margin-bottom:18px;">พิมพ์ทีละหลายดวงจากข้อมูล SKU</div>
 
-          <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">เธฃเธนเธเนเธเธเธเธฃเธฐเธ”เธฒเธฉ ยท MEDIA</div>
+          <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">รูปแบบกระดาษ · MEDIA</div>
           <div style="display:flex;gap:8px;margin-bottom:18px;">
-            <button onClick="{{ setMediaA4 }}" style="{{ mediaA4Style }}">A4 เธซเธฅเธฒเธขเธ”เธงเธ/เนเธเนเธ</button>
-            <button onClick="{{ setMediaRoll }}" style="{{ mediaRollStyle }}">เธกเนเธงเธเธชเธ•เธดเธเน€เธเธญเธฃเน</button>
+            <button onClick="{{ setMediaA4 }}" style="{{ mediaA4Style }}">A4 หลายดวง/แผ่น</button>
+            <button onClick="{{ setMediaRoll }}" style="{{ mediaRollStyle }}">ม้วนสติกเกอร์</button>
           </div>
 
-          <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">เธเธณเธเธงเธเธ•เนเธญ SKU ยท COPIES</div>
+          <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">จำนวนต่อ SKU · COPIES</div>
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
-            <button onClick="{{ copiesMinus }}" style="width:34px;height:34px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;font-size:18px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">โ’</button>
+            <button onClick="{{ copiesMinus }}" style="width:34px;height:34px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;font-size:18px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">−</button>
             <div style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;">{{ printCopies }}</div>
             <button onClick="{{ copiesPlus }}" style="width:34px;height:34px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;font-size:18px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">+</button>
           </div>
 
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <span style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;">เน€เธฅเธทเธญเธ SKU</span>
+            <span style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;">เลือก SKU</span>
             <button onClick="{{ toggleAllSku }}" style="{{ selectAllStyle }}">{{ selectAllLabel }}</button>
           </div>
           <div style="flex:1;min-height:80px;display:flex;flex-direction:column;gap:5px;overflow-y:auto;margin-bottom:16px;">
@@ -395,31 +395,31 @@
               <button onClick="{{ s.toggle }}" style="{{ s.rowStyle }}">
                 <span style="{{ s.checkStyle }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
                 <span style="flex:1;text-align:left;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.name }}</span>
-                <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9A938A;">เธฟ{{ s.price }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9A938A;">฿{{ s.price }}</span>
               </button>
             </sc-for>
           </div>
 
           <div style="{{ countBoxStyle }}">
             <div style="display:flex;align-items:baseline;justify-content:space-between;">
-              <span style="{{ countLabelStyle }}">เธฃเธงเธกเธ—เธฑเนเธเธซเธกเธ”</span>
+              <span style="{{ countLabelStyle }}">รวมทั้งหมด</span>
               <span style="{{ countNumStyle }}">{{ printCount }}</span>
             </div>
-            <div style="{{ countSubStyle }}">เธ”เธงเธ ยท {{ printMediaLabel }}</div>
+            <div style="{{ countSubStyle }}">ดวง · {{ printMediaLabel }}</div>
           </div>
 
           <div style="display:flex;gap:8px;">
-            <button onClick="{{ closePrint }}" style="flex:1;height:40px;border:1px solid #E6E3DF;border-radius:9px;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:500;color:#44403B;transition:all .15s;" style-hover="background:#F4F3F1;">เธขเธเน€เธฅเธดเธ</button>
+            <button onClick="{{ closePrint }}" style="flex:1;height:40px;border:1px solid #E6E3DF;border-radius:9px;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:500;color:#44403B;transition:all .15s;" style-hover="background:#F4F3F1;">ยกเลิก</button>
             <button onClick="{{ doPrint }}" style="{{ printPrimaryStyle }}" style-hover="{{ printPrimaryHover }}">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-              เธเธดเธกเธเนเน€เธฅเธข
+              พิมพ์เลย
             </button>
           </div>
         </div>
 
         <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
           <div style="padding:14px 20px;border-bottom:1px solid #E6E3DF;display:flex;align-items:center;gap:10px;">
-            <span style="font-size:12px;font-weight:600;color:#44403B;">เธ•เธฑเธงเธญเธขเนเธฒเธเธเนเธญเธเธเธดเธกเธเน ยท Preview</span>
+            <span style="font-size:12px;font-weight:600;color:#44403B;">ตัวอย่างก่อนพิมพ์ · Preview</span>
             <span style="font-size:10.5px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">{{ printMediaLabel }}</span>
             <div style="flex:1;"></div>
             <button onClick="{{ closePrint }}" style="width:30px;height:30px;border:none;background:#fff;border:1px solid #E6E3DF;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="background:#F4F3F1;">
@@ -457,8 +457,8 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
           </div>
           <div style="flex:1;">
-            <div style="font-size:15px;font-weight:600;">เธเธฒเธฃเน€เธเธทเนเธญเธกเธ•เนเธญเธเนเธญเธกเธนเธฅ ยท Data Connection</div>
-            <div style="font-size:11px;color:#9A938A;">SQL Server เธซเธฃเธทเธญ REST API</div>
+            <div style="font-size:15px;font-weight:600;">การเชื่อมต่อข้อมูล · Data Connection</div>
+            <div style="font-size:11px;color:#9A938A;">SQL Server หรือ REST API</div>
           </div>
           <button onClick="{{ closeConn }}" style="width:30px;height:30px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="background:#F4F3F1;"><svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
@@ -499,7 +499,7 @@
 
           <button onClick="{{ doConnect }}" style="{{ connectBtnStyle }}" style-hover="{{ connectBtnHover }}">
             <span style="width:8px;height:8px;border-radius:50%;background:#fff;"></span>
-            เธ—เธ”เธชเธญเธ & เน€เธเธทเนเธญเธกเธ•เนเธญ
+            ทดสอบ & เชื่อมต่อ
           </button>
         </div>
       </div>
@@ -518,8 +518,8 @@
             <div style="display:flex;gap:1.5px;margin:5px 6px;justify-content:center;"><span style="width:1.5px;height:14px;background:#1B1A18;"></span><span style="width:2.5px;height:14px;background:#1B1A18;"></span><span style="width:1.5px;height:14px;background:#1B1A18;"></span><span style="width:3px;height:14px;background:#1B1A18;"></span><span style="width:1.5px;height:14px;background:#1B1A18;"></span><span style="width:2px;height:14px;background:#1B1A18;"></span><span style="width:1.5px;height:14px;background:#1B1A18;"></span></div>
           </div>
         </div>
-        <div style="font-size:15px;font-weight:600;color:#1B1A18;margin-bottom:3px;">เธเธณเธฅเธฑเธเธเธดเธกเธเน...</div>
-        <div style="font-size:12px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">เธชเนเธ {{ printCount }} เธ”เธงเธ เนเธเธขเธฑเธเน€เธเธฃเธทเนเธญเธเธเธดเธกเธเน</div>
+        <div style="font-size:15px;font-weight:600;color:#1B1A18;margin-bottom:3px;">กำลังพิมพ์...</div>
+        <div style="font-size:12px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">ส่ง {{ printCount }} ดวง ไปยังเครื่องพิมพ์</div>
       </div>
     </div>
   </sc-if>
@@ -539,7 +539,7 @@ class Component extends DCLogic {
     super(props);
     this.PX = 3.7795;
     this.state = {
-      labelName: 'เธเนเธฒเธขเธฃเธฒเธเธฒเธชเธดเธเธเนเธฒ',
+      labelName: 'ป้ายราคาสินค้า',
       labelW: 50, labelH: 30, bg: '#ffffff',
       elements: this.tplPriceTag(50, 30),
       selectedId: null,
@@ -559,22 +559,22 @@ class Component extends DCLogic {
 
   defaultSku(){
     return [
-      { sku:'SKU-1001', name:'เธเธกเธชเธ” UHT 200ml', price:15, barcode:'885000010014', unit:'เธเธฅเนเธญเธ' },
-      { sku:'SKU-1002', name:'เธเนเธณเธ”เธทเนเธก 600ml', price:7, barcode:'885000010021', unit:'เธเธงเธ”' },
-      { sku:'SKU-1003', name:'เธเธฐเธซเธกเธตเนเธเธถเนเธเธชเธณเน€เธฃเนเธเธฃเธนเธ', price:6, barcode:'885000010038', unit:'เธเธญเธ' },
-      { sku:'SKU-1004', name:'เธเธฒเนเธ 3in1 (20เธเธญเธ)', price:59, barcode:'885000010045', unit:'เนเธเนเธ' },
-      { sku:'SKU-1005', name:'เธเธเธกเธเธฑเธเนเธเธเธงเธดเธ', price:25, barcode:'885000010052', unit:'เธเธดเนเธ' },
-      { sku:'SKU-1006', name:'เธเนเธณเธญเธฑเธ”เธฅเธก 325ml', price:14, barcode:'885000010069', unit:'เธเธฃเธฐเธเนเธญเธ' },
-      { sku:'SKU-1007', name:'เธเธเธเธฑเธเธเธญเธ 800g', price:45, barcode:'885000010076', unit:'เธ–เธธเธ' },
-      { sku:'SKU-1008', name:'เนเธเธกเธเธน 340ml', price:89, barcode:'885000010083', unit:'เธเธงเธ”' },
+      { sku:'SKU-1001', name:'นมสด UHT 200ml', price:15, barcode:'885000010014', unit:'กล่อง' },
+      { sku:'SKU-1002', name:'น้ำดื่ม 600ml', price:7, barcode:'885000010021', unit:'ขวด' },
+      { sku:'SKU-1003', name:'บะหมี่กึ่งสำเร็จรูป', price:6, barcode:'885000010038', unit:'ซอง' },
+      { sku:'SKU-1004', name:'กาแฟ 3in1 (20ซอง)', price:59, barcode:'885000010045', unit:'แพ็ค' },
+      { sku:'SKU-1005', name:'ขนมปังแซนวิช', price:25, barcode:'885000010052', unit:'ชิ้น' },
+      { sku:'SKU-1006', name:'น้ำอัดลม 325ml', price:14, barcode:'885000010069', unit:'กระป๋อง' },
+      { sku:'SKU-1007', name:'ผงซักฟอก 800g', price:45, barcode:'885000010076', unit:'ถุง' },
+      { sku:'SKU-1008', name:'แชมพู 340ml', price:89, barcode:'885000010083', unit:'ขวด' },
     ];
   }
 
   genId(){ this._n = (this._n||0)+1; return 'el'+this._n+'_'+Math.random().toString(36).slice(2,6); }
 
   defaultsFor(type, lw, lh){
-    if(type==='text') return { w:Math.min(lw*0.8,lw-4), h:6, text:'เธเนเธญเธเธงเธฒเธก', fontSize:3.4, weight:600, italic:false, align:'center', color:'#1b1a18', binding:'' };
-    if(type==='price') return { w:Math.min(lw*0.7,lw-4), h:10, text:'0', fontSize:8, weight:700, italic:false, align:'center', color:'#1b1a18', prefix:'เธฟ', binding:'price' };
+    if(type==='text') return { w:Math.min(lw*0.8,lw-4), h:6, text:'ข้อความ', fontSize:3.4, weight:600, italic:false, align:'center', color:'#1b1a18', binding:'' };
+    if(type==='price') return { w:Math.min(lw*0.7,lw-4), h:10, text:'0', fontSize:8, weight:700, italic:false, align:'center', color:'#1b1a18', prefix:'฿', binding:'price' };
     if(type==='barcode') return { w:Math.min(lw*0.85,lw-4), h:12, value:'885000010014', format:'CODE128', showText:true, binding:'barcode' };
     if(type==='qr') return { w:16, h:16, value:'https://csith.com', binding:'' };
     if(type==='image') return { w:16, h:16, label:'LOGO' };
@@ -734,7 +734,7 @@ class Component extends DCLogic {
       backgroundColor:S.bg, backgroundImage:stockImg, boxShadow:M.shadow, borderRadius:'1px' };
 
     // size presets
-    const presets = [ {label:'50 ร— 30',sub:'เธเนเธฒเธขเธฃเธฒเธเธฒ',w:50,h:30}, {label:'40 ร— 30',sub:'เน€เธฅเนเธ',w:40,h:30}, {label:'100 ร— 50',sub:'เธชเธ•เธดเธเน€เธเธญเธฃเน',w:100,h:50}, {label:'A4',sub:'210 ร— 297',w:210,h:297}, {label:'80 ร— 40',sub:'เธเธฅเธฒเธ',w:80,h:40}, {label:'30 ร— 20',sub:'เธเธดเนเธง',w:30,h:20} ];
+    const presets = [ {label:'50 × 30',sub:'ป้ายราคา',w:50,h:30}, {label:'40 × 30',sub:'เล็ก',w:40,h:30}, {label:'100 × 50',sub:'สติกเกอร์',w:100,h:50}, {label:'A4',sub:'210 × 297',w:210,h:297}, {label:'80 × 40',sub:'กลาง',w:80,h:40}, {label:'30 × 20',sub:'จิ๋ว',w:30,h:20} ];
     const sizePresets = presets.map(p=>{
       const active = S.labelW===p.w && S.labelH===p.h;
       return { label:p.label, sub:p.sub, apply:()=>this.setSize(p.w,p.h),
@@ -743,7 +743,7 @@ class Component extends DCLogic {
     });
 
     // templates
-    const tdefs = [ {name:'เธเนเธฒเธขเธฃเธฒเธเธฒ', sub:'Price Tag ยท 50ร—30', glyph:'เธฟ', w:50,h:30, fn:'tplPriceTag'}, {name:'เธชเธ•เธดเธเน€เธเธญเธฃเนเธชเธดเธเธเนเธฒ', sub:'Product ยท 100ร—50', glyph:'โ–ฆ', w:100,h:50, fn:'tplSticker'}, {name:'เธเนเธฒเธข QR', sub:'QR Label ยท 40ร—30', glyph:'โ', w:40,h:30, fn:'tplQr'} ];
+    const tdefs = [ {name:'ป้ายราคา', sub:'Price Tag · 50×30', glyph:'฿', w:50,h:30, fn:'tplPriceTag'}, {name:'สติกเกอร์สินค้า', sub:'Product · 100×50', glyph:'▦', w:100,h:50, fn:'tplSticker'}, {name:'ป้าย QR', sub:'QR Label · 40×30', glyph:'⊞', w:40,h:30, fn:'tplQr'} ];
     const templates = tdefs.map(t=>({ name:t.name, sub:t.sub, thumbGlyph:t.glyph,
       thumbStyle:{ width:'40px', height:'40px', flexShrink:0, borderRadius:'8px', background:A.soft, color:A.base, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'20px', fontFamily:"'IBM Plex Mono',monospace" },
       apply:()=>this.applyTemplate(t.fn, t.w, t.h) }));
@@ -783,9 +783,9 @@ class Component extends DCLogic {
 
     let selIcon='', selTitle='', selTypeLabel='';
     if(sel){
-      const map = { text:['เธเนเธญเธเธงเธฒเธก','TEXT'], price:['เธฃเธฒเธเธฒ','PRICE'], barcode:['เธเธฒเธฃเนเนเธเนเธ”','BARCODE'], qr:['QR Code','QR'], image:['เธฃเธนเธ/เนเธฅเนเธเน','IMAGE'], frame:['เธเธฃเธญเธ','FRAME'] };
+      const map = { text:['ข้อความ','TEXT'], price:['ราคา','PRICE'], barcode:['บาร์โค้ด','BARCODE'], qr:['QR Code','QR'], image:['รูป/โลโก้','IMAGE'], frame:['กรอบ','FRAME'] };
       selTitle = (map[sel.type]||['',''])[0]; selTypeLabel = (map[sel.type]||['',''])[1];
-      selIcon = ({text:'T', price:'เธฟ', barcode:'|||', qr:'โ', image:'โ–ฃ', frame:'โ–ข'})[sel.type] || '';
+      selIcon = ({text:'T', price:'฿', barcode:'|||', qr:'⊞', image:'▣', frame:'▢'})[sel.type] || '';
     }
 
     // toggle switch styles (barcode show text)
@@ -826,8 +826,8 @@ class Component extends DCLogic {
       border:'1px solid '+(on?A.base:'#E6E3DF'), background:on?A.soft:'#fff', color:on?A.text:'#78716c' });
 
     const connInfo = S.connMode==='api'
-      ? { label:'REST API', sub:'cli.csith.com ยท connected' }
-      : { label:'SQL Server 17.0', sub:'GeniuzPOS ยท connected' };
+      ? { label:'REST API', sub:'cli.csith.com · connected' }
+      : { label:'SQL Server 17.0', sub:'GeniuzPOS · connected' };
 
     return {
       labelName:S.labelName, labelW:S.labelW, labelH:S.labelH,
@@ -880,8 +880,8 @@ class Component extends DCLogic {
       connMode:S.connMode, modeIsApi:S.connMode==='api', modeIsSql:S.connMode==='sql',
       setModeApi:()=>this.setState({connMode:'api'}), setModeSql:()=>this.setState({connMode:'sql'}),
       modeApiStyle:seg(S.connMode==='api'), modeSqlStyle:seg(S.connMode==='sql'),
-      doConnect:()=>{ this.setState({connStatus:'connected', connOpen:false}); this.toast('เน€เธเธทเนเธญเธกเธ•เนเธญ '+connInfo.label+' เธชเธณเน€เธฃเนเธ'); },
-      save:()=>this.toast('เธเธฑเธเธ—เธถเธเนเธกเนเนเธเธ "'+S.labelName+'" เนเธฅเนเธง'),
+      doConnect:()=>{ this.setState({connStatus:'connected', connOpen:false}); this.toast('เชื่อมต่อ '+connInfo.label+' สำเร็จ'); },
+      save:()=>this.toast('บันทึกแม่แบบ "'+S.labelName+'" แล้ว'),
       // print
       openPrint:()=>this.setState({printOpen:true}), closePrint:()=>this.setState({printOpen:false}),
       stop:(e)=>{ e.stopPropagation(); },
@@ -889,9 +889,9 @@ class Component extends DCLogic {
       printCopies:S.printCopies, copiesPlus:()=>this.setState({printCopies:Math.min(99,S.printCopies+1)}), copiesMinus:()=>this.setState({printCopies:Math.max(1,S.printCopies-1)}),
       printMedia:S.printMedia, setMediaA4:()=>this.setState({printMedia:'a4'}), setMediaRoll:()=>this.setState({printMedia:'roll'}),
       mediaA4Style:printSeg(S.printMedia==='a4'), mediaRollStyle:printSeg(S.printMedia==='roll'),
-      printMediaLabel: S.printMedia==='a4' ? ('A4 ยท '+Math.max(1,Math.floor(210/(S.labelW+2)))+' เธเธญเธฅเธฑเธกเธเน') : 'เธกเนเธงเธเธชเธ•เธดเธเน€เธเธญเธฃเน '+S.labelW+'mm',
+      printMediaLabel: S.printMedia==='a4' ? ('A4 · '+Math.max(1,Math.floor(210/(S.labelW+2)))+' คอลัมน์') : 'ม้วนสติกเกอร์ '+S.labelW+'mm',
       sheetStyle, printSkuList,
-      selectAllLabel: allOn?'เนเธกเนเน€เธฅเธทเธญเธเธ—เธฑเนเธเธซเธกเธ”':'เน€เธฅเธทเธญเธเธ—เธฑเนเธเธซเธกเธ”',
+      selectAllLabel: allOn?'ไม่เลือกทั้งหมด':'เลือกทั้งหมด',
       toggleAllSku:()=>{ const ns={}; if(allOn){ S.skuRows.forEach((r,i)=>ns[i]=false); } this.setState({skuSel:ns}); },
       doPrint:()=>this.doPrint(printCount),
       printing:S.printing,
@@ -921,7 +921,7 @@ class Component extends DCLogic {
   applyTemplate(fn, w, h){
     const els = this[fn](w,h);
     this.setState({labelW:w, labelH:h, elements:els, selectedId:null}, ()=>this.fitView());
-    this.toast('เนเธซเธฅเธ”เนเธกเนเนเธเธเนเธฅเนเธง');
+    this.toast('โหลดแม่แบบแล้ว');
   }
   addElement(type){
     const el = this.mkEl(type, this.state.labelW, this.state.labelH);
@@ -1025,7 +1025,7 @@ class Component extends DCLogic {
 
   doPrint(count){
     this.setState({ printOpen:false, printing:true });
-    setTimeout(()=>{ this.setState({printing:false}); this.toast('เธชเนเธ '+count+' เธ”เธงเธเนเธเธขเธฑเธเน€เธเธฃเธทเนเธญเธเธเธดเธกเธเนเนเธฅเนเธง'); }, 1900);
+    setTimeout(()=>{ this.setState({printing:false}); this.toast('ส่ง '+count+' ดวงไปยังเครื่องพิมพ์แล้ว'); }, 1900);
   }
   toast(msg){
     const t={msg, ts:Date.now()};
