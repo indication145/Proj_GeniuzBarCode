@@ -220,6 +220,7 @@
                 <span style="font-size:14px;font-weight:700;color:{{ s.priceColor }};font-family:'IBM Plex Mono',monospace;">฿{{ s.price }}</span>
                 <span style="font-size:9.5px;color:{{ s.subColor }};">/ {{ s.unit }}</span>
               </div>
+              <sc-if value="{{ s.qtyShow }}" hint-placeholder-val="{{ false }}"><div style="font-size:9.5px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:{{ s.priceColor }};">พิมพ์ {{ s.qty }} ดวง</div></sc-if>
             </button>
           </sc-for>
         </div>
@@ -436,12 +437,27 @@
             </div>
           </sc-if>
 
+          <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;margin-bottom:12px;padding:9px 11px;border:1px solid #E6E3DF;border-radius:9px;background:#FBFAF9;">
+            <span style="line-height:1.25;">
+              <span style="font-size:12.5px;font-weight:600;color:#44403B;">พิมพ์ตามจำนวนใน PO (qty)</span>
+              <span style="display:block;font-size:10.5px;color:#9A938A;">ดวง/SKU = qty ของแต่ละชิ้น</span>
+            </span>
+            <button onClick="{{ toggleUseQty }}" style="{{ useQtyStyle }}"><span style="{{ useQtyKnob }}"></span></button>
+          </label>
           <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">จำนวนต่อ SKU · COPIES</div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
-            <button onClick="{{ copiesMinus }}" style="width:34px;height:34px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;font-size:18px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">−</button>
-            <div style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;">{{ printCopies }}</div>
-            <button onClick="{{ copiesPlus }}" style="width:34px;height:34px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;font-size:18px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">+</button>
-          </div>
+          <sc-if value="{{ copiesActive }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+              <button onClick="{{ copiesMinus }}" style="width:34px;height:34px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;font-size:18px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">−</button>
+              <div style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;">{{ printCopies }}</div>
+              <button onClick="{{ copiesPlus }}" style="width:34px;height:34px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;font-size:18px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">+</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ useQty }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:#7b1fa2;background:#F4EAF8;border:1px solid #e7d6f0;border-radius:8px;padding:8px 11px;margin-bottom:18px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              ใช้จำนวน qty ของแต่ละ SKU เป็นจำนวนดวง
+            </div>
+          </sc-if>
 
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
             <span style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;">เลือก SKU</span>
@@ -664,7 +680,7 @@ class Component extends DCLogic {
       toast: null,
       printOpen: false, connOpen: false,
       connMode: 'api', connStatus: 'connected',
-      printMedia: 'a4', printCopies: 1, skuSel: {}, printing: false,
+      printMedia: 'a4', printCopies: 1, skuSel: {}, printing: false, useQty: false,
       rollCols: 2, rollRows: 3,
       bizList: [], bizId: '', bizBusy: false,
       shopList: [], shopId: '', shop: null, shopBusy: false,
@@ -875,6 +891,7 @@ class Component extends DCLogic {
     const skuView = S.skuRows.map((r,i)=>{
       const active = i===S.activeSku;
       return { sku:r.sku, name:r.name, price:Number(r.price).toLocaleString('th-TH'), unit:r.unit,
+        qty:r.qty, qtyShow: !!(S.useQty && r.qty>0),
         nameColor: active?'#fff':'#1B1A18', priceColor: active?'#fff':A.base, subColor: active?'rgba(255,255,255,0.7)':'#9A938A',
         cardStyle:{ flex:'0 0 auto', display:'flex', flexDirection:'column', gap:'2px', justifyContent:'center', minWidth:'150px', padding:'9px 13px', borderRadius:'10px', cursor:'pointer', textAlign:'left', transition:'all .18s',
           border:'1px solid '+(active?A.base:'#EBE8E3'), background:active?A.base:'#fff', boxShadow:active?('0 4px 14px '+A.shadow):'none', transform:active?'translateY(-2px)':'none' },
@@ -928,9 +945,8 @@ class Component extends DCLogic {
     let printView=[], printCount=0, sheetStyle={}, printSkuList=[], previewPageInfo='';
     if(S.printOpen){
       const ps = S.printMedia==='a4' ? 2.3 : 3.0;
-      const copies = Math.max(1,S.printCopies);
       const allItems=[];
-      selected.forEach(i=>{ for(let c=0;c<copies;c++) allItems.push(i); });
+      selected.forEach(i=>{ const n=this.copiesFor(i); for(let c=0;c<n;c++) allItems.push(i); });
       printCount = allItems.length;
       const totalPages = Math.max(1, Math.ceil((printCount||1)/perPage));
       previewPageInfo = 'หน้า 1 / '+totalPages;
@@ -1042,6 +1058,10 @@ class Component extends DCLogic {
       stop:(e)=>{ e.stopPropagation(); },
       printOpen:S.printOpen, printView, printCount,
       printCopies:S.printCopies, copiesPlus:()=>this.setState({printCopies:Math.min(99,S.printCopies+1)}), copiesMinus:()=>this.setState({printCopies:Math.max(1,S.printCopies-1)}),
+      useQty:S.useQty, toggleUseQty:()=>this.setState({useQty:!S.useQty}),
+      useQtyStyle:{ width:'38px', height:'22px', borderRadius:'12px', border:'none', cursor:'pointer', position:'relative', transition:'all .2s', background: S.useQty?A.base:'#d8d3cc', padding:0, flexShrink:0 },
+      useQtyKnob:{ position:'absolute', top:'2px', left: S.useQty?'18px':'2px', width:'18px', height:'18px', borderRadius:'50%', background:'#fff', transition:'all .2s', boxShadow:'0 1px 3px rgba(0,0,0,0.2)' },
+      copiesActive: !S.useQty,
       printMedia:S.printMedia, setMediaA4:()=>this.setState({printMedia:'a4'}), setMediaRoll:()=>this.setState({printMedia:'roll'}),
       mediaA4Style:printSeg(S.printMedia==='a4'), mediaRollStyle:printSeg(S.printMedia==='roll'),
       printMediaLabel: mediaLabel,
@@ -1182,13 +1202,20 @@ class Component extends DCLogic {
     this.setState({ zoom:z, panX:(w-lw*z)/2, panY:(h-lh*z)/2 });
   }
 
+  // จำนวนป้ายของ SKU แต่ละชิ้น — ถ้า useQty ใช้ qty (ตาม PO) ไม่งั้นใช้ค่าคงที่ printCopies
+  copiesFor(idx){
+    const S = this.state;
+    if(S.useQty){ const q = Math.round(Number(S.skuRows[idx] && S.skuRows[idx].qty) || 0); return Math.max(0, q); }
+    return Math.max(1, S.printCopies);
+  }
+
   doPrint(){
     const S = this.state;
     const selected = S.skuRows.map((r,i)=>i).filter(i=>S.skuSel[i]!==false);
     if(!selected.length){ this.toast('ยังไม่ได้เลือก SKU สำหรับพิมพ์'); return; }
-    const copies = Math.max(1, S.printCopies);
     const items = [];
-    selected.forEach(i=>{ for(let c=0;c<copies;c++) items.push(i); });
+    selected.forEach(i=>{ const n=this.copiesFor(i); for(let c=0;c<n;c++) items.push(i); });
+    if(!items.length){ this.toast('จำนวนพิมพ์เป็น 0 — ตรวจ qty หรือปิดโหมดพิมพ์ตาม PO'); return; }
     const w = window.open('', '_blank');
     if(!w){ this.toast('เบราว์เซอร์บล็อกหน้าต่างพิมพ์ — โปรดอนุญาต popup'); return; }
     w.document.open();
@@ -1353,7 +1380,7 @@ class Component extends DCLogic {
           this.toast(searching ? 'ไม่พบสินค้าที่ค้นหา' : 'ไม่พบข้อมูลสินค้า');
           return;
         }
-        this.setState({ skuRows:rows, activeSku:0, skuSel:{}, skuSource:source, connStatus:'connected', connOpen:false });
+        this.setState({ skuRows:rows, activeSku:0, skuSel:{}, skuSource:source, connStatus:'connected', connOpen:false, useQty:false });
         this.toast((searching?'พบ ':'โหลด ')+rows.length+' SKU'+(searching?' (ค้นหา)':' จาก '+(source==='sql'?'SQL Server':'REST API')));
       })
       .catch(e=>{
@@ -1394,8 +1421,8 @@ class Component extends DCLogic {
         if(!j.ok) throw new Error(j.error||'โหลดรายการ PO ไม่สำเร็จ');
         const rows = j.rows||[];
         if(!rows.length){ this.setState({poBusy:false}); this.toast('ใบสั่งซื้อนี้ไม่มีรายการสินค้า'); return; }
-        this.setState({ skuRows:rows, activeSku:0, skuSel:{}, skuSource:'po', poDoc:doc, poBusy:false, poOpen:false });
-        this.toast('โหลด '+rows.length+' รายการจากใบสั่งซื้อ '+doc);
+        this.setState({ skuRows:rows, activeSku:0, skuSel:{}, skuSource:'po', poDoc:doc, poBusy:false, poOpen:false, useQty:true });
+        this.toast('โหลด '+rows.length+' รายการจากใบสั่งซื้อ '+doc+' (พิมพ์ตามจำนวน qty)');
       })
       .catch(e=>{ this.setState({poBusy:false}); this.toast('โหลด PO ไม่สำเร็จ: '+((e&&e.message)||e)); });
   }
