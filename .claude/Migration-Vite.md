@@ -218,9 +218,11 @@ prod ยังเป็น exe เดียว (รัน server.js เสิร
 
 ---
 
-## Definition of Done
-- [ ] ทุกหน้า (design/print/settings) + ทุกฟีเจอร์เทียบเท่าแอปเดิม (snap/align/theme/PO/SQL/print/templates)
-- [ ] `.exe` ใหม่: เปิด-ออฟไลน์-ต่อ SQL-พิมพ์ ผ่านครบ
-- [ ] ไม่มี `vendor/` / `support.js` / `.dc.html` เหลือ
-- [ ] docs อัปเดต + ADR ใหม่
-- [ ] เวลาโดยรวมประเมิน ~**8–11 วันทำงาน** (logic 2-3 + shell 2 + 3 หน้า 4-5 + print 1 + cutover 1)
+## Definition of Done — ✅ ครบทุกข้อ
+- [x] ทุกหน้า (design/print/settings) + ทุกฟีเจอร์เทียบเท่าแอปเดิม (snap/align/theme/PO/SQL/print/templates) — verify จริงทุกหน้า
+- [x] `.exe` ใหม่: เปิด-ออฟไลน์-ต่อ SQL-พิมพ์ ผ่านครบ (`dist/Geniuz_Barcode.exe` 101MB; biz15/shop6/สินค้า100/PO100 จาก SQL จริง)
+- [x] ไม่มี `vendor/` / `support.js` / `.dc.html` เหลือ
+- [x] docs อัปเดต ([Architecture.md](Architecture.md)/[Gotchas.md](Gotchas.md)/[Roadmap.md](Roadmap.md)) + ADR ใหม่ ([Decisions.md](Decisions.md) D9)
+- [x] **merge เข้า `main` แล้ว** (fast-forward → `8b44d24`) · tag `pre-vite-cutover` กันย้อนกลับ
+
+> 🎉 **Migration เสร็จสมบูรณ์** — `main` = Vite + React app แล้ว
