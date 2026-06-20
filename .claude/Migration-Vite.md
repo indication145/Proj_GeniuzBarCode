@@ -3,7 +3,7 @@
 แผนย้าย **GeniuzBarCode Label Designer** จาก dc-runtime (`.dc.html` + `support.js`)
 ไปเป็น **Vite + React** แบบเป็นเฟส (scaffold → ย้ายทีละหน้า → cutover)
 
-> สถานะ: **Phase 0 — กำลังทำ** (branch `feat/vite-migration`; main = แอป dc เดิมใช้งานได้ปกติ)
+> สถานะ: **Phase 1 เสร็จ** (scaffold `web/` + proxy ใช้ได้); ถัดไป Phase 2 — branch `feat/vite-migration`; main = แอป dc เดิมใช้งานปกติ
 
 ---
 
@@ -87,16 +87,18 @@ web/
 
 **ถัดไป → [Phase 1 — Scaffold](#phase-1--scaffold-1-วัน)**
 
-### Phase 1 — Scaffold (1 วัน)
-- [ ] `npm create vite@latest web -- --template react-ts` (วางใน `web/`)
-- [ ] `vite.config.ts`: dev proxy
-  ```ts
-  server: { proxy: { '/api': 'http://localhost:8080' } }
-  ```
-- [ ] รัน 2 process ตอน dev: `node server.js` (API @8080) + `vite` (UI @5173)
-- [ ] render "hello" + ยิง `/api/health` ให้ผ่าน proxy ได้
-- [ ] ตั้ง path alias `@/` → `web/src`
-- **เช็ค:** เปิด :5173 เห็น React render + network เรียก `/api/health` 200
+### Phase 1 — Scaffold — ✅ เสร็จ
+- [x] `npm create vite@latest web -- --template react-ts` — ได้ **React 19 · Vite 8 · TS 6**
+      (ใหม่กว่าที่วางไว้ React 18 — โอเค); `npm install` ใน `web/` (152 pkg, 0 vuln)
+- [x] `web/vite.config.ts`: proxy `/api` → `http://localhost:8080` + alias `@` → `web/src` + port 5173
+- [x] path alias ใน `web/tsconfig.app.json` (`paths: {"@/*": ["./src/*"]}`; ไม่ใช้ `baseUrl` — TS6 deprecated)
+- [x] `web/src/App.tsx` = placeholder ยิง `/api/health` (แทน demo); shell จริงทำ Phase 3
+- [x] `npm run build` ผ่าน (tsc + vite) → `web/dist` (JS 191KB / gzip 60KB)
+- **เช็คแล้ว (Chrome headless):** `server.js`@8080 + `vite`@5173 → `/api/health` ผ่าน proxy = `{"ok":true}`,
+      React render `#root` มีลูก, `data-testid=health` = "API OK ✓", 0 console error
+- **dev workflow:** ต้องรัน 2 process — `node server.js` (term 1) + `cd web && npm run dev` (term 2)
+
+**ถัดไป → Phase 2 — ย้าย logic → `web/src/lib/`**
 
 ### Phase 2 — ย้าย logic ที่ไม่พึ่ง React → `src/lib/` (2–3 วัน)
 ย้าย "อัลกอริทึม" ก่อน (copy logic เดิมเกือบตรง ๆ, เพิ่ม type):

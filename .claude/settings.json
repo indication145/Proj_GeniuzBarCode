@@ -22,7 +22,12 @@
       "Bash(node --check support.js)",
       "Bash(node --check server.js)",
       "Bash(node --check scripts/fetch-vendor.js)",
-      "Bash(xxd)"
+      "Bash(xxd)",
+      "Bash(git checkout *)",
+      "Bash(npm -v)",
+      "Bash(npm_config_yes=true npm create vite@latest web -- --template react-ts)",
+      "Bash(npm install *)",
+      "Bash(npm run *)"
     ]
   }
 }
