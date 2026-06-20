@@ -13,19 +13,27 @@
   ```
 - ตรวจเร็ว ๆ: หา byte แปลก `C2 9x` = สัญญาณ mojibake; ไทยที่ถูกต้องคือ `E0 B8 xx` / `E0 B9 xx`
 
-## ⚠️ ทุกอย่างพึ่ง CDN — ต้องต่อเน็ต
-- React/ReactDOM/Babel (unpkg), JsBarcode (jsdelivr), qrcodejs (cloudflare), ฟอนต์ (Google Fonts)
-- ออฟไลน์ = แอปไม่ขึ้น/บาร์โค้ดไม่วาด → งาน self-host อยู่ใน [Roadmap.md](Roadmap.md) P2
+## ✅ ออฟไลน์ได้แล้ว — ไลบรารี/ฟอนต์ self-host ใน `vendor/`
+- React/ReactDOM, JsBarcode, qrcodejs และฟอนต์ IBM Plex (woff2) อยู่ใน `vendor/` ไม่พึ่ง CDN
+- รีเฟรช/อัปเวอร์ชัน: แก้เวอร์ชันใน `scripts/fetch-vendor.js` แล้ว `npm run fetch:vendor` (ดึง JS + ดึง CSS Google Fonts → download woff2 + rewrite `url()` เป็นเครื่อง)
+- ถ้าเปลี่ยน path/เวอร์ชัน ต้องแก้ให้ตรงกัน **3 จุด**: `support.js` (REACT_URL/REACT_DOM_URL), head `LabelDesigner.dc.html`, และ `buildPrintHTML` (หน้าต่างพิมพ์ ใช้ `window.location.origin + '/vendor/...'` เพราะเปิดเป็น about:blank — relative path ใช้ไม่ได้)
+- `vendor/**/*` ถูก commit ลง repo และอยู่ใน `pkg.assets` → `.exe` ออฟไลน์เต็มรูปแบบ
+- **Babel standalone ไม่ถูกโหลด** (ไม่ใช่ dependency ออฟไลน์): logic เป็น ES class รันผ่าน `new Function` ไม่ใช่ JSX; `BABEL_URL` ใน `support.js` ยิงเฉพาะ x-import jsx ซึ่งแอปไม่มี (มี comment กำกับไว้)
 
-## ⚠️ ส่วนที่เป็น mock (ยังไม่ทำงานจริง)
-- **พิมพ์** `doPrint()` = `setTimeout` + toast เฉย ๆ ไม่ได้พิมพ์/ไม่ได้สร้าง PDF จริง
-- **บันทึก** `save()` = toast เฉย ๆ ไม่มี persistence (รีเฟรชแล้วหาย)
-- **ข้อมูล SKU** = `defaultSku()` hardcode 8 แถว ไม่ได้ดึงจาก API/SQL
-- **การเชื่อมต่อ** (REST API / SQL Server) = mock toast ไม่ได้ต่อจริง
-- ไม่มี Undo/Redo
+## สถานะฟีเจอร์ (อัปเดต — เดิมเคยเป็น mock ตอนนี้ทำงานจริงแล้ว)
+- ✅ **พิมพ์** `doPrint()` → เปิดหน้าต่างพิมพ์จริง (`buildPrintHTML` + `window.print()`), รองรับ A4 หลายดวง/ม้วนสติกเกอร์, Save-as-PDF ผ่าน dialog เบราว์เซอร์
+- ✅ **บันทึกแม่แบบ** → `/api/templates` เก็บลง `templates.json` จริง (โหลด/ลบ/อัปเดต/บันทึกเป็นชื่อใหม่ + เตือนชื่อซ้ำ); เก็บรูปแบบกระดาษ (`printMedia/rollCols/rollRows`) ไปกับแม่แบบด้วย
+- ✅ **ข้อมูล SKU** → `/api/skus` ดึงจริงผ่าน `dataSource.js` (REST/SQL); `defaultSku()` เหลือเป็น fallback ตอนยังไม่เชื่อมต่อ
+- ✅ **เชื่อมต่อข้อมูล** → REST จริง (`/api/biz`, `/api/shops`, token cache); **PO** จริง (`/api/po`, `/api/po/lines`)
 
-## ⚠️ Babel standalone runtime
-- โค้ด logic ถูก compile ตอน runtime → first paint ช้ากว่าปกติเล็กน้อย, ไม่เหมาะ production scale
+### ⚠️ ยังเป็น mock / ยังไม่ทำ (gap ปัจจุบัน — ดู [Roadmap.md](Roadmap.md))
+- **ไม่มี Undo/Redo**
+- **SQL Server** ใช้ได้เต็มระบบ (biz/shop/สินค้า/PO ผ่านสวิตช์ `DATA_SOURCE=sql`) — ตั้งค่าที่หน้า "ตั้งค่าเชื่อมต่อ" แท็บ SQL; **ใช้ใน `.exe` ได้ด้วย** เพราะ mssql ใช้ `tedious` (pure JS ไม่มี native `.node`) แพ็กด้วย pkg ได้ (ทดสอบแล้ว) — แค่วาง `.env` ข้าง exe ให้มี `DATA_SOURCE=sql` + `SQL_*`
+- ยังต้องต่อเน็ต (CDN) — งาน self-host อยู่ใน Roadmap P2
+
+## Babel standalone — ไม่ได้ถูกใช้จริง
+- logic เป็น ES class รันตรงผ่าน `evalDcLogic`/`new Function` (ไม่มีการ transpile) → **Babel ไม่ถูกโหลด** first paint ไม่ติด Babel
+- `BABEL_URL` ใน `support.js` ยังอยู่แต่ dormant (ยิงเฉพาะ x-import kind jsx ซึ่งแอปนี้ไม่มี) — ดู comment กำกับในไฟล์
 - ดู [Decisions.md](Decisions.md) D1
 
 ## บาร์โค้ด / QR
@@ -43,8 +51,8 @@
 ## ⚠️ พิมพ์ผ่าน popup — อาจโดน popup blocker
 - `doPrint()` ใช้ `window.open()` เปิดหน้าต่างพิมพ์ — ต้องถูกเรียกจาก user click (ปุ่มพิมพ์) เท่านั้น
   ถ้าเรียกแบบ async/หน่วงเวลา เบราว์เซอร์จะบล็อก → มี toast เตือนให้อนุญาต popup
-- หน้าต่างพิมพ์โหลด JsBarcode/QR จาก CDN เอง แล้วรอ `document.fonts.ready` ก่อน `window.print()`
-- รูป/โลโก้ (`image`) ยังเป็น placeholder ในงานพิมพ์ — ดู [Roadmap.md](Roadmap.md)
+- หน้าต่างพิมพ์โหลด JsBarcode/QR + ฟอนต์จาก `vendor/` ในเครื่อง (origin-absolute `window.location.origin + '/vendor/...'` เพราะ about:blank ใช้ relative ไม่ได้) แล้วรอ `document.fonts.ready` ก่อน `window.print()`
+- รูป/โลโก้ (`image`) รองรับอัปโหลดจริงแล้ว — เก็บเป็น **data URL ใน `el.src`** จึงถูกฝังลง `templates.json` ด้วย (รูปใหญ่ทำให้ไฟล์ใหญ่ → จำกัด ≤ 3MB ตอนเลือก, render ด้วย `object-fit:contain`)
 
 ## ⚠️ Secret / .env — อย่า commit
 - token/API key/รหัสผ่าน SQL อยู่ใน **`.env` เท่านั้น** (gitignored) — มี `.env.example` เป็นแม่แบบ

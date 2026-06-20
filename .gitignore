@@ -6,6 +6,10 @@ dist/
 build/
 out/
 
+# Generated app-icon artifacts (สร้างจาก design/geniuz_barcode.png ตอน build:exe)
+design/geniuz_barcode.ico
+design/geniuz_barcode.square.png
+
 # Logs
 *.log
 

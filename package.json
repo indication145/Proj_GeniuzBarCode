@@ -6,13 +6,16 @@
   "bin": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build:exe": "pkg . --targets node22-win-x64 --output dist/LabelDesigner.exe"
+    "build:exe": "node scripts/build-exe.js",
+    "fetch:vendor": "node scripts/fetch-vendor.js"
   },
   "pkg": {
     "assets": [
       "LabelDesigner.dc.html",
       "support.js",
-      "index.html"
+      "index.html",
+      "design/geniuz_barcode.png",
+      "vendor/**/*"
     ],
     "outputPath": "dist"
   },
@@ -20,6 +23,8 @@
     "mssql": "^11.0.1"
   },
   "devDependencies": {
-    "@yao-pkg/pkg": "^6.3.0"
+    "@yao-pkg/pkg": "^6.3.0",
+    "png-to-ico": "^3.0.1",
+    "rcedit": "^5.0.2"
   }
 }

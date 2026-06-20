@@ -986,6 +986,10 @@
     }
     return cur;
   }
+  // DORMANT for this app: only fetched by ensureBabel() when an x-import module
+  // is kind "jsx". LabelDesigner.dc.html ships no x-import and its logic is a
+  // plain ES class run via evalDcLogic/new Function (no transpile), so Babel
+  // never loads — first paint isn't gated on it and offline use is unaffected.
   var BABEL_URL = "https://unpkg.com/@babel/standalone@7.26.4/babel.min.js";
   var GLOBAL_POLL_INTERVAL_MS = 50;
   var GLOBAL_POLL_TIMEOUT_MS = 3e4;
@@ -1421,10 +1425,12 @@
   }
 
   // src/index.ts
-  var REACT_URL = "https://unpkg.com/react@18.3.1/umd/react.production.min.js";
-  var REACT_SRI = "sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z";
-  var REACT_DOM_URL = "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js";
-  var REACT_DOM_SRI = "sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1";
+  // Vendored locally for offline use (run scripts/fetch-vendor.js to refresh).
+  // Same-origin first-party files, so no SRI needed.
+  var REACT_URL = "./vendor/react.production.min.js";
+  var REACT_SRI = "";
+  var REACT_DOM_URL = "./vendor/react-dom.production.min.js";
+  var REACT_DOM_SRI = "";
   function hideRawTemplate() {
     const s = document.createElement("style");
     s.textContent = "x-dc{display:none!important}";

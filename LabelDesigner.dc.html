@@ -8,8 +8,7 @@
 <body>
 <x-dc>
 <helmet>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="./vendor/fonts/fonts.css" rel="stylesheet">
 <style>
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -27,32 +26,30 @@
   @keyframes geFeed{0%{transform:translateY(-30px) rotate(-1deg);opacity:0;}25%{opacity:1;}100%{transform:translateY(62px) rotate(1deg);opacity:0;}}
   @keyframes geRise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="./vendor/JsBarcode.all.min.js"></script>
+<script src="./vendor/qrcode.min.js"></script>
 </helmet>
 <div ref="{{ setRootRef }}" data-screen-label="GeniuzBarCode Label Designer" style="height:100vh;display:flex;flex-direction:column;background:#F4F3F1;color:#1B1A18;overflow:hidden;font-size:13px;line-height:1.4;">
 
   <header style="height:54px;flex-shrink:0;display:flex;align-items:center;gap:14px;padding:0 16px;background:#ffffff;border-bottom:1px solid #E6E3DF;z-index:30;">
     <div style="display:flex;align-items:center;gap:10px;">
-      <div style="{{ logoStyle }}">G</div>
+      <img src="./design/geniuz_barcode.png" alt="GeniuzBarCode" style="height:34px;width:auto;max-width:120px;object-fit:contain;display:block;" />
       <div style="line-height:1.1;">
         <div style="font-weight:600;font-size:14px;letter-spacing:-0.01em;">GeniuzBarCode</div>
         <div style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;letter-spacing:0.04em;">LABEL DESIGNER</div>
       </div>
     </div>
-    <div style="width:1px;height:24px;background:#E6E3DF;"></div>
-    <input value="{{ labelName }}" onChange="{{ onName }}" style="font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:500;color:#1B1A18;border:1px solid transparent;background:transparent;border-radius:6px;padding:6px 8px;width:200px;transition:all .15s;" style-hover="background:#F4F3F1;" style-focus="background:#F4F3F1;border-color:#E6E3DF;" />
     <div style="flex:1;"></div>
     <label style="display:flex;align-items:center;gap:6px;height:34px;padding:0 10px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;" title="เลือกธุรกิจ (bizId)">
       <span style="font-size:9px;font-weight:600;color:#9A938A;font-family:'IBM Plex Mono',monospace;letter-spacing:0.05em;">ธุรกิจ</span>
-      <select value="{{ bizId }}" onChange="{{ onSelectBiz }}" style="border:none;background:transparent;font-family:'IBM Plex Sans Thai';font-size:12px;color:#1B1A18;max-width:130px;cursor:pointer;outline:none;">
+      <select value="{{ bizId }}" onChange="{{ onSelectBiz }}" style="border:none;background:transparent;font-family:'IBM Plex Sans Thai';font-size:12px;color:#1B1A18;min-width:180px;max-width:260px;cursor:pointer;outline:none;">
         <option value="">{{ bizPlaceholder }}</option>
         <sc-for list="{{ bizOptions }}" as="b" hint-placeholder-count="3"><option value="{{ b.value }}">{{ b.label }}</option></sc-for>
       </select>
     </label>
     <label style="display:flex;align-items:center;gap:6px;height:34px;padding:0 10px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;" title="เลือกร้าน/สาขา">
       <span style="font-size:9px;font-weight:600;color:#9A938A;font-family:'IBM Plex Mono',monospace;letter-spacing:0.05em;">ร้าน</span>
-      <select value="{{ shopId }}" onChange="{{ onSelectShop }}" style="border:none;background:transparent;font-family:'IBM Plex Sans Thai';font-size:12px;color:#1B1A18;max-width:150px;cursor:pointer;outline:none;">
+      <select value="{{ shopId }}" onChange="{{ onSelectShop }}" style="border:none;background:transparent;font-family:'IBM Plex Sans Thai';font-size:12px;color:#1B1A18;min-width:180px;max-width:260px;cursor:pointer;outline:none;">
         <option value="">{{ shopPlaceholder }}</option>
         <sc-for list="{{ shopOptions }}" as="s" hint-placeholder-count="3"><option value="{{ s.value }}">{{ s.label }}</option></sc-for>
       </select>
@@ -63,14 +60,34 @@
       <span style="font-weight:500;">{{ connLabel }}</span>
       <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9A938A;">{{ connSub }}</span>
     </button>
-    <button onClick="{{ save }}" style="height:34px;padding:0 14px;border-radius:8px;border:1px solid #E6E3DF;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:500;color:#44403B;transition:all .15s;" style-hover="border-color:#cfcbc4;background:#FAFAF9;">บันทึก</button>
+    <!-- <button onClick="{{ save }}" style="height:34px;padding:0 14px;border-radius:8px;border:1px solid #E6E3DF;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:500;color:#44403B;transition:all .15s;" style-hover="border-color:#cfcbc4;background:#FAFAF9;">บันทึก</button>
     <button onClick="{{ openPrint }}" style="{{ printBtnStyle }}" style-hover="{{ printBtnHover }}">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
       พิมพ์ป้าย
-    </button>
+    </button> -->
   </header>
 
   <div style="flex:1;display:flex;min-height:0;">
+
+    <nav style="width:74px;flex-shrink:0;background:#fff;border-right:1px solid #E6E3DF;display:flex;flex-direction:column;align-items:stretch;padding:10px 8px;gap:6px;z-index:25;">
+      <button onClick="{{ goDesign }}" style="{{ navDesignStyle }}" style-hover="{{ navHover }}" title="ออกแบบ/สร้างแม่แบบป้ายราคา">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+        <span style="font-size:9.5px;font-weight:600;line-height:1.15;text-align:center;">สร้าง<br>Template</span>
+      </button>
+      <button onClick="{{ goPrint }}" style="{{ navPrintStyle }}" style-hover="{{ navHover }}" title="พิมพ์ป้ายราคา">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        <span style="font-size:9.5px;font-weight:600;line-height:1.15;text-align:center;">พิมพ์<br>ป้ายราคา</span>
+      </button>
+      <button onClick="{{ goSettings }}" style="{{ navSettingsStyle }}" style-hover="{{ navHover }}" title="ตั้งค่าการเชื่อมต่อข้อมูล">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        <span style="font-size:9.5px;font-weight:600;line-height:1.15;text-align:center;">ตั้งค่า<br>เชื่อมต่อ</span>
+      </button>
+      <div style="flex:1;"></div>
+      <div style="font-size:8px;color:#c4beb4;font-family:'IBM Plex Mono',monospace;text-align:center;letter-spacing:0.04em;line-height:1.3;">GENIUZ<br>v1.0</div>
+    </nav>
+
+    <sc-if value="{{ viewDesign }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;display:flex;min-width:0;min-height:0;">
 
     <aside style="width:252px;flex-shrink:0;background:#fff;border-right:1px solid #E6E3DF;overflow-y:auto;display:flex;flex-direction:column;">
       <div style="padding:16px 16px 8px;">
@@ -123,10 +140,12 @@
       <div style="height:1px;background:#EFEDEA;margin:8px 16px;"></div>
 
       <div style="padding:8px 16px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <span style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;">SAVED · แม่แบบที่บันทึก</span>
-          <button onClick="{{ save }}" title="บันทึกแม่แบบปัจจุบัน" style="display:flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:7px;border:1px solid #7b1fa2;background:#7b1fa2;color:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:11px;font-weight:500;transition:all .15s;" style-hover="background:#6a1a8e;">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">SAVED · แม่แบบที่บันทึก</div>
+        <label style="display:block;margin-bottom:5px;font-size:11px;color:#78716c;">ชื่อแม่แบบ</label>
+        <div style="display:flex;gap:6px;margin-bottom:12px;">
+          <input value="{{ labelName }}" onChange="{{ onName }}" placeholder="ตั้งชื่อแม่แบบ…" title="ชื่อที่จะใช้บันทึกแม่แบบ" style="flex:1;min-width:0;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:500;color:#1B1A18;border:1px solid #E6E3DF;border-radius:7px;padding:7px 9px;background:#FBFAF9;transition:all .15s;" style-focus="border-color:#7b1fa2;background:#fff;" />
+          <button onClick="{{ save }}" title="บันทึกแม่แบบด้วยชื่อนี้" style="display:flex;align-items:center;gap:5px;flex-shrink:0;height:33px;padding:0 12px;border-radius:7px;border:1px solid #7b1fa2;background:#7b1fa2;color:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:12px;font-weight:500;transition:all .15s;" style-hover="background:#6a1a8e;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             บันทึก
           </button>
         </div>
@@ -183,7 +202,7 @@
               <sc-if value="{{ el.isTextual }}" hint-placeholder-val="{{ false }}"><div style="{{ el.textInner }}">{{ el.resolved }}</div></sc-if>
               <sc-if value="{{ el.isBarcode }}" hint-placeholder-val="{{ false }}"><canvas data-barcode-el="1" data-bc-format="{{ el.format }}" data-bc-text="{{ el.resolved }}" data-bc-show="{{ el.showAttr }}" style="{{ el.canvasStyle }}"></canvas></sc-if>
               <sc-if value="{{ el.isQr }}" hint-placeholder-val="{{ false }}"><div data-qr-el="1" data-qr-text="{{ el.resolved }}" style="{{ el.qrStyle }}"></div></sc-if>
-              <sc-if value="{{ el.isImage }}" hint-placeholder-val="{{ false }}"><div style="{{ el.imgStyle }}">{{ el.imgLabel }}</div></sc-if>
+              <sc-if value="{{ el.isImage }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ el.imgHasSrc }}" hint-placeholder-val="{{ false }}"><img src="{{ el.imgSrc }}" style="{{ el.imgImgStyle }}" /></sc-if><sc-if value="{{ !el.imgHasSrc }}" hint-placeholder-val="{{ true }}"><div style="{{ el.imgStyle }}">{{ el.imgLabel }}</div></sc-if></sc-if>
             </div>
           </sc-for>
           <sc-for list="{{ guides }}" as="g" hint-placeholder-count="0">
@@ -215,45 +234,6 @@
           </button>
         </div>
         <div style="position:absolute;left:14px;top:14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#7d766c;pointer-events:none;background:rgba(255,255,255,0.6);padding:4px 9px;border-radius:7px;backdrop-filter:blur(3px);">ลากวางองค์ประกอบ · scroll = pan · ⌘/Ctrl+scroll = zoom · Space+ลาก = pan</div>
-      </div>
-
-      <div style="flex-shrink:0;height:120px;background:#fff;border-top:1px solid #E6E3DF;display:flex;flex-direction:column;">
-        <div style="display:flex;align-items:center;gap:10px;padding:9px 16px 6px;">
-          <span style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.08em;font-family:'IBM Plex Mono',monospace;">DATA SOURCE · ข้อมูล SKU</span>
-          <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;background:#F0F7F2;color:#1F8A5B;border:1px solid #cde9d8;padding:2px 8px;border-radius:20px;font-family:'IBM Plex Mono',monospace;">{{ skuRowCount }} SKU · {{ skuSourceLabel }}</span>
-          <button onClick="{{ openPo }}" style="display:flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:7px;border:1px solid #E6E3DF;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:11.5px;font-weight:500;color:#44403B;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a2 2 0 0 1 2 2v1h1a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1V4a2 2 0 0 1 2-2z"/><path d="M9 12h6M9 16h4"/></svg>
-            พิมพ์จากใบสั่งซื้อ
-          </button>
-          <div style="flex:1;"></div>
-          <select value="{{ skuFg }}" onChange="{{ onSkuFg }}" style="font-family:'IBM Plex Sans Thai';font-size:11.5px;border:1px solid #E6E3DF;border-radius:7px;padding:5px 7px;background:#FBFAF9;cursor:pointer;" style-focus="border-color:#7b1fa2;background:#fff;">
-            <option value="1">รหัสสินค้า</option>
-            <option value="2">PLU</option>
-            <option value="3">ชื่อสินค้า</option>
-            <option value="4">ราคา</option>
-            <option value="5">หน่วย</option>
-            <option value="6">หมวด</option>
-            <option value="11">แบรนด์</option>
-          </select>
-          <input value="{{ skuSearch }}" onChange="{{ onSkuSearch }}" onKeyDown="{{ onSkuSearchKey }}" placeholder="ค้นหาสินค้า…" style="font-family:'IBM Plex Sans Thai';font-size:11.5px;border:1px solid #E6E3DF;border-radius:7px;padding:5px 9px;background:#FBFAF9;width:150px;" style-focus="border-color:#7b1fa2;background:#fff;" />
-          <button onClick="{{ doSkuSearch }}" style="display:flex;align-items:center;gap:5px;height:28px;padding:0 11px;border-radius:7px;border:1px solid #7b1fa2;background:#7b1fa2;color:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:11.5px;font-weight:500;transition:all .15s;" style-hover="background:#6a1a8e;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
-            ค้นหา
-          </button>
-        </div>
-        <div style="flex:1;display:flex;gap:8px;padding:2px 16px 12px;overflow-x:auto;align-items:stretch;">
-          <sc-for list="{{ skuView }}" as="s" hint-placeholder-count="8">
-            <button onClick="{{ s.apply }}" style="{{ s.cardStyle }}">
-              <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:{{ s.subColor }};">{{ s.sku }}</div>
-              <div style="font-size:12px;font-weight:600;color:{{ s.nameColor }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;">{{ s.name }}</div>
-              <div style="display:flex;align-items:baseline;gap:4px;">
-                <span style="font-size:14px;font-weight:700;color:{{ s.priceColor }};font-family:'IBM Plex Mono',monospace;">฿{{ s.price }}</span>
-                <span style="font-size:9.5px;color:{{ s.subColor }};">/ {{ s.unit }}</span>
-              </div>
-              <sc-if value="{{ s.qtyShow }}" hint-placeholder-val="{{ false }}"><div style="font-size:9.5px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:{{ s.priceColor }};">พิมพ์ {{ s.qty }} ดวง</div></sc-if>
-            </button>
-          </sc-for>
-        </div>
       </div>
     </main>
 
@@ -293,6 +273,31 @@
                 <span style="font-size:11px;color:#9A938A;font-family:'IBM Plex Mono',monospace;width:12px;">H</span>
                 <input type="number" value="{{ selH }}" onChange="{{ onSelH }}" style="flex:1;width:100%;border:none;background:transparent;font-family:'IBM Plex Mono',monospace;font-size:12.5px;" />
               </div>
+            </div>
+          </div>
+
+          <div style="padding:14px 16px;border-bottom:1px solid #EFEDEA;">
+            <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">จัดตำแหน่งบนป้าย · ALIGN</div>
+            <div style="display:flex;gap:6px;">
+              <button onClick="{{ alSelL }}" title="ชิดซ้าย" style="flex:1;height:30px;border:1px solid #EBE8E3;border-radius:7px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="3" x2="4" y2="21"/><rect x="7" y="7" width="10" height="4" rx="1" fill="currentColor" stroke="none"/><rect x="7" y="14" width="6" height="4" rx="1" fill="currentColor" stroke="none"/></svg>
+              </button>
+              <button onClick="{{ alSelH }}" title="กึ่งกลางแนวนอน" style="flex:1;height:30px;border:1px solid #EBE8E3;border-radius:7px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="3" x2="12" y2="21"/><rect x="7" y="7" width="10" height="4" rx="1" fill="currentColor" stroke="none"/><rect x="9" y="14" width="6" height="4" rx="1" fill="currentColor" stroke="none"/></svg>
+              </button>
+              <button onClick="{{ alSelR }}" title="ชิดขวา" style="flex:1;height:30px;border:1px solid #EBE8E3;border-radius:7px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="20" y1="3" x2="20" y2="21"/><rect x="7" y="7" width="10" height="4" rx="1" fill="currentColor" stroke="none"/><rect x="11" y="14" width="6" height="4" rx="1" fill="currentColor" stroke="none"/></svg>
+              </button>
+              <div style="width:1px;background:#EFEDEA;margin:2px 1px;"></div>
+              <button onClick="{{ alSelT }}" title="ชิดบน" style="flex:1;height:30px;border:1px solid #EBE8E3;border-radius:7px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="4" x2="21" y2="4"/><rect x="7" y="7" width="4" height="10" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="7" width="4" height="6" rx="1" fill="currentColor" stroke="none"/></svg>
+              </button>
+              <button onClick="{{ alSelM }}" title="กึ่งกลางแนวตั้ง" style="flex:1;height:30px;border:1px solid #EBE8E3;border-radius:7px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><rect x="7" y="7" width="4" height="10" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="9" width="4" height="6" rx="1" fill="currentColor" stroke="none"/></svg>
+              </button>
+              <button onClick="{{ alSelB }}" title="ชิดล่าง" style="flex:1;height:30px;border:1px solid #EBE8E3;border-radius:7px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="20" x2="21" y2="20"/><rect x="7" y="7" width="4" height="10" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="11" width="4" height="6" rx="1" fill="currentColor" stroke="none"/></svg>
+              </button>
             </div>
           </div>
 
@@ -369,6 +374,36 @@
             </div>
           </sc-if>
 
+          <sc-if value="{{ selIsImage }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:14px 16px;border-bottom:1px solid #EFEDEA;">
+              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:9px;">รูป/โลโก้ · IMAGE</div>
+              <sc-if value="{{ selHasImg }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-bottom:10px;border:1px solid #E6E3DF;border-radius:9px;padding:8px;background:#FBFAF9;display:flex;align-items:center;justify-content:center;height:96px;">
+                  <img src="{{ selImgSrc }}" style="max-width:100%;max-height:80px;object-fit:contain;display:block;" />
+                </div>
+                <div style="display:flex;gap:7px;">
+                  <label style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:34px;border-radius:8px;border:1px solid #E6E3DF;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:12px;font-weight:500;color:#44403B;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    เปลี่ยนรูป
+                    <input type="file" accept="image/*" onChange="{{ onPickImage }}" style="display:none;" />
+                  </label>
+                  <button onClick="{{ clearImage }}" title="ลบรูป" style="width:34px;height:34px;flex-shrink:0;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ selNoImg }}" hint-placeholder-val="{{ true }}">
+                <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;border:1.5px dashed #cfcbc4;border-radius:10px;background:#FBFAF9;cursor:pointer;transition:all .15s;color:#9A938A;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <span style="font-size:12px;font-weight:500;">คลิกเพื่อเลือกรูป / โลโก้</span>
+                  <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">PNG · JPG · SVG · ≤ 3MB</span>
+                  <input type="file" accept="image/*" onChange="{{ onPickImage }}" style="display:none;" />
+                </label>
+                <input value="{{ selImgLabel }}" onChange="{{ onSelImgLabel }}" placeholder="ข้อความแทนเมื่อยังไม่มีรูป" style="width:100%;margin-top:9px;font-family:'IBM Plex Sans Thai';font-size:12.5px;border:1px solid #E6E3DF;border-radius:7px;padding:7px 9px;background:#FBFAF9;" style-focus="border-color:#7b1fa2;background:#fff;" />
+              </sc-if>
+            </div>
+          </sc-if>
+
           <sc-if value="{{ selCanBind }}" hint-placeholder-val="{{ false }}">
             <div style="padding:14px 16px;">
               <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:5px;">เชื่อมข้อมูล · DATA BINDING</div>
@@ -432,112 +467,147 @@
         </div>
       </sc-if>
     </aside>
-  </div>
+    </div>
+    </sc-if>
 
-  <sc-if value="{{ printOpen }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ closePrint }}" style="position:fixed;inset:0;background:rgba(27,26,24,0.45);backdrop-filter:blur(3px);z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;animation:geFade .18s ease;">
-      <div onClick="{{ stop }}" style="width:920px;max-width:96vw;max-height:90vh;background:#F4F3F1;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,0.35);display:flex;overflow:hidden;animation:gePop .22s cubic-bezier(.2,.8,.3,1);">
-        <div style="width:300px;flex-shrink:0;background:#fff;border-right:1px solid #E6E3DF;padding:20px;display:flex;flex-direction:column;overflow-y:auto;">
-          <div style="font-size:16px;font-weight:600;margin-bottom:2px;">พิมพ์ป้าย · Print</div>
-          <div style="font-size:11.5px;color:#9A938A;margin-bottom:18px;">พิมพ์ทีละหลายดวงจากข้อมูล SKU</div>
+    <sc-if value="{{ viewPrint }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;display:flex;min-width:0;min-height:0;background:#F4F3F1;">
 
-          <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">รูปแบบกระดาษ · MEDIA</div>
-          <div style="display:flex;gap:8px;margin-bottom:18px;">
-            <button onClick="{{ setMediaA4 }}" style="{{ mediaA4Style }}">A4 หลายดวง/แผ่น</button>
+      <div style="flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;">
+
+        <div style="flex-shrink:0;background:#fff;border-bottom:1px solid #E6E3DF;padding:12px 16px;display:flex;align-items:center;gap:12px;">
+          <div style="width:36px;height:36px;flex-shrink:0;border-radius:9px;background:#F4EAF8;color:#7b1fa2;display:flex;align-items:center;justify-content:center;">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          </div>
+          <div style="line-height:1.25;">
+            <div style="font-size:15px;font-weight:600;">พิมพ์ป้ายราคา</div>
+            <div style="font-size:11px;color:#9A938A;">ใส่รหัสสินค้าเพื่อพิมพ์บาร์โค้ด</div>
+          </div>
+          <div style="flex:1;"></div>
+          <div style="display:flex;gap:6px;width:230px;flex-shrink:0;">
+            <button onClick="{{ setMediaA4 }}" style="{{ mediaA4Style }}">A4 หลายดวง</button>
             <button onClick="{{ setMediaRoll }}" style="{{ mediaRollStyle }}">ม้วนสติกเกอร์</button>
           </div>
-
           <sc-if value="{{ mediaIsRoll }}" hint-placeholder-val="{{ false }}">
-            <div style="margin-bottom:18px;">
-              <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">จัดเรียงต่อหน้า · GRID</div>
-              <div style="display:flex;gap:8px;">
-                <div style="flex:1;display:flex;align-items:center;gap:6px;background:#FBFAF9;border:1px solid #E6E3DF;border-radius:8px;padding:4px 6px;">
-                  <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;width:34px;">คอลัมน์</span>
-                  <button onClick="{{ rollColsMinus }}" style="width:28px;height:28px;border:1px solid #E6E3DF;border-radius:6px;background:#fff;cursor:pointer;font-size:15px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">−</button>
-                  <div style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;">{{ rollCols }}</div>
-                  <button onClick="{{ rollColsPlus }}" style="width:28px;height:28px;border:1px solid #E6E3DF;border-radius:6px;background:#fff;cursor:pointer;font-size:15px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">+</button>
-                </div>
-                <div style="flex:1;display:flex;align-items:center;gap:6px;background:#FBFAF9;border:1px solid #E6E3DF;border-radius:8px;padding:4px 6px;">
-                  <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;width:24px;">แถว</span>
-                  <button onClick="{{ rollRowsMinus }}" style="width:28px;height:28px;border:1px solid #E6E3DF;border-radius:6px;background:#fff;cursor:pointer;font-size:15px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">−</button>
-                  <div style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;">{{ rollRows }}</div>
-                  <button onClick="{{ rollRowsPlus }}" style="width:28px;height:28px;border:1px solid #E6E3DF;border-radius:6px;background:#fff;cursor:pointer;font-size:15px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">+</button>
-                </div>
-              </div>
+            <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;background:#FBFAF9;border:1px solid #E6E3DF;border-radius:8px;padding:3px 6px;">
+              <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">คอลัมน์</span>
+              <button onClick="{{ rollColsMinus }}" style="width:24px;height:24px;border:1px solid #E6E3DF;border-radius:5px;background:#fff;cursor:pointer;color:#44403B;">−</button>
+              <span style="width:18px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;">{{ rollCols }}</span>
+              <button onClick="{{ rollColsPlus }}" style="width:24px;height:24px;border:1px solid #E6E3DF;border-radius:5px;background:#fff;cursor:pointer;color:#44403B;">+</button>
+              <span style="font-size:10px;color:#9A938A;font-family:'IBM Plex Mono',monospace;margin-left:4px;">แถว</span>
+              <button onClick="{{ rollRowsMinus }}" style="width:24px;height:24px;border:1px solid #E6E3DF;border-radius:5px;background:#fff;cursor:pointer;color:#44403B;">−</button>
+              <span style="width:18px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;">{{ rollRows }}</span>
+              <button onClick="{{ rollRowsPlus }}" style="width:24px;height:24px;border:1px solid #E6E3DF;border-radius:5px;background:#fff;cursor:pointer;color:#44403B;">+</button>
             </div>
           </sc-if>
-
-          <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;margin-bottom:12px;padding:9px 11px;border:1px solid #E6E3DF;border-radius:9px;background:#FBFAF9;">
-            <span style="line-height:1.25;">
-              <span style="font-size:12.5px;font-weight:600;color:#44403B;">พิมพ์ตามจำนวนใน PO (qty)</span>
-              <span style="display:block;font-size:10.5px;color:#9A938A;">ดวง/SKU = qty ของแต่ละชิ้น</span>
-            </span>
-            <button onClick="{{ toggleUseQty }}" style="{{ useQtyStyle }}"><span style="{{ useQtyKnob }}"></span></button>
-          </label>
-          <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">จำนวนต่อ SKU · COPIES</div>
-          <sc-if value="{{ copiesActive }}" hint-placeholder-val="{{ true }}">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
-              <button onClick="{{ copiesMinus }}" style="width:34px;height:34px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;font-size:18px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">−</button>
-              <div style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;">{{ printCopies }}</div>
-              <button onClick="{{ copiesPlus }}" style="width:34px;height:34px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;font-size:18px;color:#44403B;transition:all .12s;" style-hover="background:#F4F3F1;">+</button>
-            </div>
-          </sc-if>
-          <sc-if value="{{ useQty }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:#7b1fa2;background:#F4EAF8;border:1px solid #e7d6f0;border-radius:8px;padding:8px 11px;margin-bottom:18px;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              ใช้จำนวน qty ของแต่ละ SKU เป็นจำนวนดวง
-            </div>
-          </sc-if>
-
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <span style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;">เลือก SKU</span>
-            <button onClick="{{ toggleAllSku }}" style="{{ selectAllStyle }}">{{ selectAllLabel }}</button>
-          </div>
-          <div style="flex:1;min-height:80px;display:flex;flex-direction:column;gap:5px;overflow-y:auto;margin-bottom:16px;">
-            <sc-for list="{{ printSkuList }}" as="s" hint-placeholder-count="8">
-              <div style="{{ s.rowStyle }}">
-                <button onClick="{{ s.toggle }}" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;border:none;background:transparent;cursor:pointer;padding:0;font-family:'IBM Plex Sans Thai';">
-                  <span style="{{ s.checkStyle }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-                  <span style="flex:1;text-align:left;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.name }}</span>
-                  <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9A938A;">฿{{ s.price }}</span>
-                </button>
-                <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
-                  <button onClick="{{ s.minus }}" title="ลดจำนวนดวง" style="{{ s.stepBtnStyle }}">−</button>
-                  <span style="{{ s.countStyle }}">{{ s.count }}</span>
-                  <button onClick="{{ s.plus }}" title="เพิ่มจำนวนดวง" style="{{ s.stepBtnStyle }}">+</button>
-                </div>
-              </div>
-            </sc-for>
-          </div>
-
-          <div style="{{ countBoxStyle }}">
-            <div style="display:flex;align-items:baseline;justify-content:space-between;">
-              <span style="{{ countLabelStyle }}">รวมทั้งหมด</span>
-              <span style="{{ countNumStyle }}">{{ printCount }}</span>
-            </div>
-            <div style="{{ countSubStyle }}">ดวง · {{ printMediaLabel }}</div>
-          </div>
-
-          <div style="display:flex;gap:8px;">
-            <button onClick="{{ closePrint }}" style="flex:1;height:40px;border:1px solid #E6E3DF;border-radius:9px;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:500;color:#44403B;transition:all .15s;" style-hover="background:#F4F3F1;">ยกเลิก</button>
-            <button onClick="{{ doPrint }}" style="{{ printPrimaryStyle }}" style-hover="{{ printPrimaryHover }}">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-              พิมพ์เลย
-            </button>
-          </div>
         </div>
 
-        <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
-          <div style="padding:14px 20px;border-bottom:1px solid #E6E3DF;display:flex;align-items:center;gap:10px;">
-            <span style="font-size:12px;font-weight:600;color:#44403B;">ตัวอย่างก่อนพิมพ์ · Preview</span>
-            <span style="font-size:10.5px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">{{ printMediaLabel }}</span>
-            <span style="font-size:10.5px;color:#7b1fa2;font-family:'IBM Plex Mono',monospace;background:#F4EAF8;border:1px solid #e7d6f0;padding:2px 8px;border-radius:20px;">{{ previewPageInfo }}</span>
-            <div style="flex:1;"></div>
-            <button onClick="{{ closePrint }}" style="width:30px;height:30px;border:none;background:#fff;border:1px solid #E6E3DF;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="background:#F4F3F1;">
-              <svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
+        <div style="flex-shrink:0;background:#fff;border-bottom:1px solid #EFEDEA;padding:10px 16px;display:flex;align-items:center;gap:8px;">
+          <select value="{{ skuFg }}" onChange="{{ onSkuFg }}" title="ค้นหาตามฟิลด์" style="flex-shrink:0;height:38px;border:1px solid #E6E3DF;border-radius:8px;background:#FBFAF9;padding:0 8px;font-family:'IBM Plex Sans Thai';font-size:12.5px;color:#1B1A18;cursor:pointer;outline:none;" style-focus="border-color:#7b1fa2;background:#fff;">   
+            <option value="1">รหัสสินค้า</option>
+            <option value="2">บาร์โค้ด</option>
+            <option value="3">ชื่อสินค้า</option>
+            <option value="4">ราคา</option>
+            <option value="5">หน่วย</option>
+            <option value="6">หมวด</option>
+            <option value="11">แบรนด์</option>
+          </select>
+          <div style="display:flex;align-items:center;gap:7px;flex:1;min-width:0;border:1px solid #E6E3DF;border-radius:8px;background:#FBFAF9;padding:0 10px;height:38px;" style-focus="border-color:#7b1fa2;background:#fff;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9A938A" stroke-width="1.8" stroke-linecap="round"><path d="M3 5v14M6 5v14M9.5 5v14M13 5v14M16 5v14M18.5 5v14M21 5v14"/></svg>
+            <input value="{{ scanCode }}" onChange="{{ onScanInput }}" onKeyDown="{{ onScanKey }}" placeholder="สแกน หรือพิมพ์คำค้น แล้วกด Enter…" style="flex:1;min-width:0;border:none;background:transparent;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#1B1A18;outline:none;" />
           </div>
-          <div style="flex:1;overflow:auto;padding:24px;display:flex;justify-content:center;align-items:flex-start;">
+
+          <button onClick="{{ doScan }}" style="display:flex;align-items:center;justify-content:center;gap:6px;height:38px;padding:0 16px;border-radius:8px;border:1px solid #7b1fa2;background:#7b1fa2;color:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:600;transition:all .15s;flex-shrink:0;" style-hover="background:#6a1a8e;">
+            <svg width="15" height="15" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            เพิ่ม
+          </button>
+          <button onClick="{{ clearGrid }}" style="height:38px;padding:0 14px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:500;color:#44403B;transition:all .15s;flex-shrink:0;" style-hover="border-color:#C2410C;color:#C2410C;background:#FEF3F0;">ล้างรายการ</button>
+          <button onClick="{{ doPrint }}" style="{{ printScanStyle }}" style-hover="{{ printPrimaryHover }}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            พิมพ์เลย
+          </button>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;background:#F0F7F2;color:#1F8A5B;border:1px solid #cde9d8;padding:5px 10px;border-radius:20px;font-family:'IBM Plex Mono',monospace;flex-shrink:0;">{{ skuRowCount }} รายการ</span>
+        </div>
+
+        <div style="flex:1;overflow:auto;padding:14px 16px;min-height:0;">
+          <table style="width:100%;border-collapse:collapse;background:#fff;border:1px solid #E6E3DF;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.04);table-layout:auto;">
+            <thead>
+              <tr style="background:#EFEDEA;font-size:10.5px;font-weight:600;color:#57534e;font-family:'IBM Plex Mono',monospace;text-align:left;">
+                <th style="padding:7px 6px;text-align:center;border-right:1px solid #E0DCD6;border-bottom:1px solid #E6E3DF;">#</th>
+                <th style="padding:7px 9px;border-right:1px solid #E0DCD6;border-bottom:1px solid #E6E3DF;">SkuCode</th>
+                <th style="padding:7px 9px;border-right:1px solid #E0DCD6;border-bottom:1px solid #E6E3DF;">PluCode</th>
+                <th style="padding:7px 9px;border-right:1px solid #E0DCD6;border-bottom:1px solid #E6E3DF;">CatCode</th>
+                <th style="padding:7px 9px;border-right:1px solid #E0DCD6;border-bottom:1px solid #E6E3DF;">CatName</th>
+                <th style="padding:7px 9px;border-right:1px solid #E0DCD6;border-bottom:1px solid #E6E3DF;">SkuDesc</th>
+                <th style="padding:7px 9px;border-right:1px solid #E0DCD6;border-bottom:1px solid #E6E3DF;">SupplierID</th>
+                <th style="padding:7px 9px;border-right:1px solid #E0DCD6;border-bottom:1px solid #E6E3DF;">SupplierName</th>
+                <th style="padding:7px 9px;text-align:right;border-right:1px solid #E0DCD6;border-bottom:1px solid #E6E3DF;">Price</th>
+                <th style="padding:7px 9px;text-align:center;border-right:1px solid #E0DCD6;border-bottom:1px solid #E6E3DF;">Qty</th>
+                <th style="padding:7px 4px;border-bottom:1px solid #E6E3DF;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ gridRows }}" as="g" hint-placeholder-count="3">
+                <tr>
+                  <td onClick="{{ g.pick }}" style="{{ g.tdNo }}">{{ g.no }}</td>
+                  <td style="{{ g.tdSku }}">{{ g.sku }}</td>
+                  <td style="{{ g.tdPlu }}">{{ g.plu }}</td>
+                  <td style="{{ g.tdCat }}">{{ g.catCode }}</td>
+                  <td style="{{ g.tdCatName }}">{{ g.catName }}</td>
+                  <td style="{{ g.tdDesc }}">{{ g.skuDesc }}</td>
+                  <td style="{{ g.tdSupId }}">{{ g.supplierId }}</td>
+                  <td style="{{ g.tdSupName }}">{{ g.supplierName }}</td>
+                  <td style="{{ g.tdPrice }}">{{ g.price }}</td>
+                  <td style="{{ g.tdQty }}">
+                    <span style="{{ g.qtyCell }}">
+                      <button onClick="{{ g.minus }}" style="{{ g.stepStyle }}" style-hover="background:#7b1fa2;border-color:#7b1fa2;color:#fff;">−</button>
+                      <input value="{{ g.count }}" onChange="{{ g.onQty }}" style="{{ g.qtyInput }}" style-focus="border-color:#7b1fa2;box-shadow:0 0 0 2px #F4EAF8;" />
+                      <button onClick="{{ g.plus }}" style="{{ g.stepStyle }}" style-hover="background:#7b1fa2;border-color:#7b1fa2;color:#fff;">+</button>
+                    </span>
+                  </td>
+                  <td style="{{ g.tdDel }}">
+                    <button onClick="{{ g.del }}" title="ลบแถว" style="{{ g.delStyle }}" style-hover="background:#ef4444;border-color:#ef4444;color:#fff;">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <sc-if value="{{ noGridRows }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:40px 16px;text-align:center;color:#9A938A;font-size:13px;line-height:1.6;">ยังไม่มีรายการสินค้า<br><span style="font-size:11.5px;">สแกนหรือพิมพ์รหัสสินค้าด้านบน หรือกด "ใบสั่งซื้อ" เพื่อดึงรายการมาทั้งใบ</span></div>
+          </sc-if>
+        </div>
+
+        <div style="flex-shrink:0;background:#fff;border-top:1px solid #E6E3DF;padding:12px 16px;display:flex;align-items:center;gap:14px;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <button onClick="{{ openPo }}" style="display:flex;align-items:center;justify-content:center;gap:6px;height:38px;padding:0 14px;border-radius:8px;border:1px solid #E6E3DF;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:600;color:#44403B;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a2 2 0 0 1 2 2v1h1a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1V4a2 2 0 0 1 2-2z"/><path d="M9 12h6M9 16h4"/></svg>
+            ใบสั่งซื้อ
+          </button>
+            <button onClick="{{ toggleUseQty }}" style="{{ useQtyStyle }}"><span style="{{ useQtyKnob }}"></span></button>
+            <span style="font-size:12px;color:#44403B;">พิมพ์ตามจำนวนใน PO (qty)</span>
+          </label>
+          <div style="flex:1;"></div>
+          <div style="text-align:right;line-height:1.2;">
+            <div style="font-size:11px;color:#9A938A;">รวมที่จะพิมพ์</div>
+            <div><span style="{{ countNumStyle }}">{{ printCount }}</span> <span style="font-size:12px;color:#9A938A;">ดวง · {{ printMediaLabel }}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:480px;flex-shrink:0;background:#fff;border-left:1px solid #E6E3DF;display:flex;flex-direction:column;min-height:0;">
+        <div style="flex-shrink:0;padding:13px 16px;border-bottom:1px solid #E6E3DF;display:flex;align-items:center;gap:9px;">
+          <span style="font-size:12px;font-weight:600;color:#44403B;">ตัวอย่าง</span>
+          <span style="font-size:10.5px;color:#7b1fa2;font-family:'IBM Plex Mono',monospace;background:#F4EAF8;border:1px solid #e7d6f0;padding:2px 8px;border-radius:20px;">{{ previewPageInfo }}</span>
+          <div style="flex:1;"></div>
+          <button onClick="{{ goDesign }}" style="display:flex;align-items:center;gap:6px;height:30px;padding:0 11px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:11.5px;font-weight:500;color:#44403B;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+            แก้ไขแม่แบบ
+          </button>
+        </div>
+        <div style="flex:1;overflow:auto;padding:18px;display:flex;justify-content:center;align-items:flex-start;min-height:0;">
+          <sc-if value="{{ printHasItems }}" hint-placeholder-val="{{ true }}">
             <div style="{{ sheetStyle }}">
               <sc-for list="{{ printView }}" as="lab" hint-placeholder-count="6">
                 <div style="{{ lab.cellStyle }}">
@@ -547,33 +617,45 @@
                         <sc-if value="{{ el.isTextual }}" hint-placeholder-val="{{ false }}"><div style="{{ el.textInner }}">{{ el.resolved }}</div></sc-if>
                         <sc-if value="{{ el.isBarcode }}" hint-placeholder-val="{{ false }}"><canvas data-barcode-el="1" data-bc-format="{{ el.format }}" data-bc-text="{{ el.resolved }}" data-bc-show="{{ el.showAttr }}" style="{{ el.canvasStyle }}"></canvas></sc-if>
                         <sc-if value="{{ el.isQr }}" hint-placeholder-val="{{ false }}"><div data-qr-el="1" data-qr-text="{{ el.resolved }}" style="{{ el.qrStyle }}"></div></sc-if>
-                        <sc-if value="{{ el.isImage }}" hint-placeholder-val="{{ false }}"><div style="{{ el.imgStyle }}">{{ el.imgLabel }}</div></sc-if>
+                        <sc-if value="{{ el.isImage }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ el.imgHasSrc }}" hint-placeholder-val="{{ false }}"><img src="{{ el.imgSrc }}" style="{{ el.imgImgStyle }}" /></sc-if><sc-if value="{{ !el.imgHasSrc }}" hint-placeholder-val="{{ true }}"><div style="{{ el.imgStyle }}">{{ el.imgLabel }}</div></sc-if></sc-if>
                       </div>
                     </sc-for>
                   </div>
                 </div>
               </sc-for>
             </div>
-          </div>
+          </sc-if>
+          <sc-if value="{{ printEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="margin:auto;text-align:center;color:#9A938A;max-width:240px;">
+              <div style="width:54px;height:54px;border-radius:14px;background:#F4F3F1;border:1px solid #E6E3DF;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:#c4beb4;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              </div>
+              <div style="font-size:12.5px;line-height:1.5;">ยังไม่มีรายการที่จะพิมพ์<br>เพิ่มสินค้าทางซ้ายก่อน</div>
+            </div>
+          </sc-if>
         </div>
       </div>
     </div>
-  </sc-if>
+    </sc-if>
 
-  <sc-if value="{{ connOpen }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ closeConn }}" style="position:fixed;inset:0;background:rgba(27,26,24,0.45);backdrop-filter:blur(3px);z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;animation:geFade .18s ease;">
-      <div onClick="{{ stop }}" style="width:480px;max-width:94vw;background:#fff;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,0.35);overflow:hidden;animation:gePop .22s cubic-bezier(.2,.8,.3,1);">
-        <div style="padding:20px;border-bottom:1px solid #EFEDEA;display:flex;align-items:center;gap:10px;">
-          <div style="width:34px;height:34px;border-radius:9px;background:#F4EAF8;display:flex;align-items:center;justify-content:center;color:#7b1fa2;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+    <sc-if value="{{ viewSettings }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;overflow-y:auto;min-width:0;background:#F4F3F1;padding:28px 24px;">
+      <div style="max-width:560px;margin:0 auto;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+          <div style="width:40px;height:40px;border-radius:10px;background:#F4EAF8;display:flex;align-items:center;justify-content:center;color:#7b1fa2;flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
           </div>
-          <div style="flex:1;">
-            <div style="font-size:15px;font-weight:600;">การเชื่อมต่อข้อมูล · Data Connection</div>
-            <div style="font-size:11px;color:#9A938A;">SQL Server หรือ REST API</div>
+          <div>
+            <div style="font-size:18px;font-weight:600;letter-spacing:-0.01em;">ตั้งค่าการเชื่อมต่อข้อมูล</div>
+            <div style="font-size:12px;color:#9A938A;">Data Connection · SQL Server หรือ REST API</div>
           </div>
-          <button onClick="{{ closeConn }}" style="width:30px;height:30px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="background:#F4F3F1;"><svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          <div style="flex:1;"></div>
+          <div style="display:flex;align-items:center;gap:7px;height:30px;padding:0 12px;border-radius:20px;border:1px solid #cde9d8;background:#F0F7F2;color:#1F8A5B;font-size:11.5px;font-weight:500;">
+            <span style="width:8px;height:8px;border-radius:50%;background:{{ connDot }};animation:gePulse 2.2s infinite;"></span>{{ connLabel }}
+          </div>
         </div>
-        <div style="padding:20px;">
+
+        <div style="background:#fff;border:1px solid #E6E3DF;border-radius:14px;padding:20px;margin-bottom:16px;">
           <div style="display:flex;gap:8px;margin-bottom:18px;background:#F4F3F1;padding:4px;border-radius:10px;">
             <button onClick="{{ setModeApi }}" style="{{ modeApiStyle }}">REST API</button>
             <button onClick="{{ setModeSql }}" style="{{ modeSqlStyle }}">SQL Server</button>
@@ -581,16 +663,17 @@
 
           <sc-if value="{{ modeIsApi }}" hint-placeholder-val="{{ true }}">
             <div>
-              <label style="display:block;margin-bottom:12px;">
-                <span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">Endpoint</span>
-                <input value="http://cli.csith.com" readonly style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;color:#44403B;" />
+              <label style="display:block;margin-bottom:11px;">
+                <span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">Endpoint <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#b8b2a8;">CSITH_BASE_URL</span></span>
+                <input value="{{ cfgBaseUrl }}" onChange="{{ onCfgBaseUrl }}" placeholder="http://cli.csith.com" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;color:#1B1A18;" style-focus="border-color:#7b1fa2;background:#fff;" />
               </label>
-              <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:#7b1fa2;background:#F4EAF8;border:1px solid #e7d6f0;border-radius:8px;padding:8px 11px;margin-bottom:14px;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
-                เลือก <b>ธุรกิจ</b> และ <b>ร้าน/สาขา</b> ได้ที่มุมบนขวาของจอ
-              </div>
+              <label style="display:block;margin-bottom:12px;">
+                <span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">API Key <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#b8b2a8;">CSITH_API_KEY</span></span>
+                <input value="{{ cfgApiKey }}" onChange="{{ onCfgApiKey }}" type="password" placeholder="{{ cfgApiKeyPlaceholder }}" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;color:#1B1A18;" style-focus="border-color:#7b1fa2;background:#fff;" />
+                <span style="display:block;margin-top:5px;font-size:10px;color:#9A938A;">เว้นว่างไว้ = ใช้คีย์เดิม · ปัจจุบัน <span style="font-family:'IBM Plex Mono',monospace;">{{ cfgApiKeyMask }}</span></span>
+              </label>
               <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">ENDPOINTS</div>
-              <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;">
+              <div style="display:flex;flex-direction:column;gap:6px;">
                 <div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:#FBFAF9;border:1px solid #EBE8E3;border-radius:8px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:600;color:#fff;background:#7b1fa2;padding:2px 6px;border-radius:5px;">POST</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#44403B;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">/api/system/token</span><span style="font-size:9.5px;color:#9A938A;">Bearer</span></div>
                 <div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:#FBFAF9;border:1px solid #EBE8E3;border-radius:8px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:600;color:#fff;background:#1F8A5B;padding:2px 6px;border-radius:5px;">GET</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#44403B;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">/Services/Administration/CsPara/GetList</span><span style="font-size:9.5px;color:#9A938A;">BizId</span></div>
                 <div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:#FBFAF9;border:1px solid #EBE8E3;border-radius:8px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:600;color:#fff;background:#7b1fa2;padding:2px 6px;border-radius:5px;">POST</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#44403B;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">/Services/Geniuz/Shop/GetShopList</span><span style="font-size:9.5px;color:#9A938A;">ShopId</span></div>
@@ -600,26 +683,54 @@
           </sc-if>
           <sc-if value="{{ modeIsSql }}" hint-placeholder-val="{{ false }}">
             <div>
-              <label style="display:block;margin-bottom:10px;"><span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">Server</span><input value="192.168.1.10\\GENIUZ" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;" style-focus="border-color:#7b1fa2;background:#fff;" /></label>
+              <sc-if value="{{ cfgSqlDriverMissing }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:#B7791F;background:#FCEFD8;border:1px solid #f0d9a8;border-radius:8px;padding:8px 11px;margin-bottom:12px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  ยังไม่ได้ติดตั้ง driver — รัน <b style="font-family:'IBM Plex Mono',monospace;">npm install mssql</b> (ใช้ใน .exe ไม่ได้ ต้องรันด้วย node)
+                </div>
+              </sc-if>
+              <label style="display:block;margin-bottom:10px;"><span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">Server / Host</span><input value="{{ cfgSqlHost }}" onChange="{{ onCfgSqlHost }}" placeholder="192.168.1.10\\GENIUZ" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;color:#1B1A18;" style-focus="border-color:#7b1fa2;background:#fff;" /></label>
               <div style="display:flex;gap:10px;margin-bottom:10px;">
-                <label style="flex:1;"><span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">Database</span><input value="GeniuzPOS" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;" style-focus="border-color:#7b1fa2;background:#fff;" /></label>
-                <label style="flex:1;"><span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">Driver</span><input value="SQL Server 17.0" readonly style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;color:#9A938A;" /></label>
+                <label style="flex:2;"><span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">Database</span><input value="{{ cfgSqlDatabase }}" onChange="{{ onCfgSqlDatabase }}" placeholder="GeniuzPOS" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;color:#1B1A18;" style-focus="border-color:#7b1fa2;background:#fff;" /></label>
+                <label style="flex:1;"><span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">Port</span><input value="{{ cfgSqlPort }}" onChange="{{ onCfgSqlPort }}" placeholder="1433" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;color:#1B1A18;" style-focus="border-color:#7b1fa2;background:#fff;" /></label>
               </div>
               <div style="display:flex;gap:10px;">
-                <label style="flex:1;"><span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">User</span><input value="sa" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;" style-focus="border-color:#7b1fa2;background:#fff;" /></label>
-                <label style="flex:1;"><span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">Password</span><input type="password" value="geniuz123" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;" style-focus="border-color:#7b1fa2;background:#fff;" /></label>
+                <label style="flex:1;"><span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">User</span><input value="{{ cfgSqlUser }}" onChange="{{ onCfgSqlUser }}" placeholder="sa" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;color:#1B1A18;" style-focus="border-color:#7b1fa2;background:#fff;" /></label>
+                <label style="flex:1;"><span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">Password</span><input type="password" value="{{ cfgSqlPassword }}" onChange="{{ onCfgSqlPassword }}" placeholder="{{ cfgSqlPasswordPlaceholder }}" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;color:#1B1A18;" style-focus="border-color:#7b1fa2;background:#fff;" /></label>
               </div>
+              <div style="margin-top:9px;font-size:10px;color:#9A938A;line-height:1.5;">คอลัมน์ที่ query คืนควรชื่อ <span style="font-family:'IBM Plex Mono',monospace;">skuCode, skuDesc, sellUnitPrice1, pluCode, catCode, catName, supplierId, supplierName</span> (ปรับ <span style="font-family:'IBM Plex Mono',monospace;">SQL_QUERY</span> / <span style="font-family:'IBM Plex Mono',monospace;">MAP_*</span> ใน .env ได้)</div>
             </div>
           </sc-if>
 
           <button onClick="{{ doConnect }}" style="{{ connectBtnStyle }}" style-hover="{{ connectBtnHover }}">
-            <span style="width:8px;height:8px;border-radius:50%;background:#fff;"></span>
-            ทดสอบ & เชื่อมต่อ
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            บันทึก & ทดสอบเชื่อมต่อ
           </button>
+        </div>
+
+        <div style="background:#fff;border:1px solid #E6E3DF;border-radius:14px;padding:20px;">
+          <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:12px;">ขอบเขตข้อมูล · SCOPE</div>
+          <div style="display:flex;gap:12px;">
+            <label style="flex:1;">
+              <span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">ธุรกิจ · Business</span>
+              <select value="{{ bizId }}" onChange="{{ onSelectBiz }}" style="width:100%;font-family:'IBM Plex Sans Thai';font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;cursor:pointer;" style-focus="border-color:#7b1fa2;background:#fff;">
+                <option value="">{{ bizPlaceholder }}</option>
+                <sc-for list="{{ bizOptions }}" as="b" hint-placeholder-count="3"><option value="{{ b.value }}">{{ b.label }}</option></sc-for>
+              </select>
+            </label>
+            <label style="flex:1;">
+              <span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">ร้าน/สาขา · Shop</span>
+              <select value="{{ shopId }}" onChange="{{ onSelectShop }}" style="width:100%;font-family:'IBM Plex Sans Thai';font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;cursor:pointer;" style-focus="border-color:#7b1fa2;background:#fff;">
+                <option value="">{{ shopPlaceholder }}</option>
+                <sc-for list="{{ shopOptions }}" as="s" hint-placeholder-count="3"><option value="{{ s.value }}">{{ s.label }}</option></sc-for>
+              </select>
+            </label>
+          </div>
         </div>
       </div>
     </div>
-  </sc-if>
+    </sc-if>
+  </div>
 
   <sc-if value="{{ poOpen }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ closePo }}" style="position:fixed;inset:0;background:rgba(27,26,24,0.45);backdrop-filter:blur(3px);z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;animation:geFade .18s ease;">
@@ -671,6 +782,44 @@
     </div>
   </sc-if>
 
+  <sc-if value="{{ scanResultsOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeScanResults }}" style="position:fixed;inset:0;background:rgba(27,26,24,0.45);backdrop-filter:blur(3px);z-index:65;display:flex;align-items:center;justify-content:center;padding:24px;animation:geFade .18s ease;">
+      <div onClick="{{ stop }}" style="width:560px;max-width:94vw;max-height:80vh;background:#fff;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,0.35);overflow:hidden;display:flex;flex-direction:column;animation:gePop .22s cubic-bezier(.2,.8,.3,1);">
+        <div style="padding:16px 20px;border-bottom:1px solid #EFEDEA;display:flex;align-items:center;gap:11px;">
+          <div style="width:34px;height:34px;flex-shrink:0;border-radius:9px;background:#F4EAF8;color:#7b1fa2;display:flex;align-items:center;justify-content:center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+          </div>
+          <div style="flex:1;line-height:1.25;">
+            <div style="font-size:15px;font-weight:600;">พบ {{ scanResultsCount }} รายการ</div>
+            <div style="font-size:11px;color:#9A938A;">เลือกเพิ่มทีละรายการ หรือเพิ่มทั้งหมด</div>
+          </div>
+          <button onClick="{{ addAllResults }}" style="display:flex;align-items:center;gap:6px;height:34px;padding:0 13px;border-radius:8px;border:1px solid #7b1fa2;background:#7b1fa2;color:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:12.5px;font-weight:600;transition:all .15s;" style-hover="background:#6a1a8e;">
+            <svg width="14" height="14" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            เพิ่มทั้งหมด
+          </button>
+          <button onClick="{{ closeScanResults }}" style="width:32px;height:32px;border:1px solid #E6E3DF;border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#78716c;transition:all .15s;" style-hover="background:#F4F3F1;"><svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:10px 16px 16px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <sc-for list="{{ scanResultsView }}" as="s" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:12px;padding:9px 11px;border:1px solid #EBE8E3;border-radius:9px;background:#fff;transition:all .15s;" style-hover="border-color:#cfcbc4;background:#FBFAF9;">
+                <div style="flex:1;min-width:0;line-height:1.35;">
+                  <div style="font-size:13px;font-weight:600;color:#1B1A18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.name }}</div>
+                  <div style="font-size:10.5px;color:#9A938A;font-family:'IBM Plex Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.sku }} · {{ s.cat }} · {{ s.supplier }}</div>
+                </div>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#7b1fa2;flex-shrink:0;">฿{{ s.price }}</span>
+                <button onClick="{{ s.add }}" title="เพิ่มลงตาราง" style="display:flex;align-items:center;gap:5px;height:32px;padding:0 13px;flex-shrink:0;border-radius:8px;border:1px solid #E6E3DF;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:12px;font-weight:600;color:#44403B;transition:all .15s;" style-hover="border-color:#7b1fa2;background:#F4EAF8;color:#7b1fa2;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  เพิ่ม
+                </button>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ printing }}" hint-placeholder-val="{{ false }}">
     <div style="position:fixed;inset:0;background:rgba(27,26,24,0.55);backdrop-filter:blur(4px);z-index:80;display:flex;align-items:center;justify-content:center;animation:geFade .2s ease;">
       <div style="background:#fff;border-radius:18px;padding:34px 44px;box-shadow:0 24px 80px rgba(0,0,0,0.4);display:flex;flex-direction:column;align-items:center;animation:gePop .25s cubic-bezier(.2,.8,.3,1);">
@@ -685,6 +834,26 @@
         </div>
         <div style="font-size:15px;font-weight:600;color:#1B1A18;margin-bottom:3px;">กำลังพิมพ์...</div>
         <div style="font-size:12px;color:#9A938A;font-family:'IBM Plex Mono',monospace;">ส่ง {{ printCount }} ดวง ไปยังเครื่องพิมพ์</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ confirmDupOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ confirmCancel }}" style="position:fixed;inset:0;background:rgba(27,26,24,0.45);backdrop-filter:blur(3px);z-index:70;display:flex;align-items:center;justify-content:center;padding:24px;animation:geFade .18s ease;">
+      <div onClick="{{ stop }}" style="width:400px;max-width:94vw;background:#fff;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,0.35);overflow:hidden;animation:gePop .22s cubic-bezier(.2,.8,.3,1);">
+        <div style="padding:22px 22px 16px;display:flex;gap:13px;align-items:flex-start;">
+          <div style="width:38px;height:38px;flex-shrink:0;border-radius:10px;background:#FCEFD8;display:flex;align-items:center;justify-content:center;color:#B7791F;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div style="flex:1;line-height:1.4;">
+            <div style="font-size:15px;font-weight:600;margin-bottom:4px;">มีแม่แบบชื่อนี้อยู่แล้ว</div>
+            <div style="font-size:12.5px;color:#78716c;">มีแม่แบบชื่อ <b style="color:#1B1A18;">"{{ confirmDupName }}"</b> อยู่แล้ว — ถ้าเขียนทับ ดีไซน์เดิมของแม่แบบนั้นจะถูกแทนที่ทั้งหมด</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;padding:6px 22px 22px;">
+          <button onClick="{{ confirmCancel }}" style="flex:1;height:40px;border:1px solid #E6E3DF;border-radius:9px;background:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:500;color:#44403B;transition:all .15s;" style-hover="background:#F4F3F1;">ยกเลิก (เปลี่ยนชื่อ)</button>
+          <button onClick="{{ confirmOverwrite }}" style="flex:1;height:40px;border:none;border-radius:9px;background:#C2410C;color:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:600;transition:all .15s;" style-hover="background:#9A3412;">เขียนทับ</button>
+        </div>
       </div>
     </div>
   </sc-if>
@@ -716,28 +885,70 @@ class Component extends DCLogic {
       toast: null,
       printOpen: false, connOpen: false,
       connMode: 'api', connStatus: 'connected',
+      cfgBaseUrl: '', cfgApiKey: '', cfgApiKeyMask: '', cfgHasApiKey: false,
+      cfgSqlHost: '', cfgSqlPort: '1433', cfgSqlDatabase: '', cfgSqlUser: '', cfgSqlPassword: '', cfgSqlHasPassword: false, cfgSqlDriverReady: true,
       printMedia: 'a4', printCopies: 1, skuSel: {}, printing: false, useQty: false, copiesMap: {},
-      rollCols: 2, rollRows: 3,
+      rollCols: 3, rollRows: 1,
       bizList: [], bizId: '', bizBusy: false,
       shopList: [], shopId: '', shop: null, shopBusy: false,
-      skuSource: 'mock', skuSearch: '', skuFg: '3',
+      skuSource: 'mock', skuSearch: '', skuFg: '2', scanCode: '',
+      scanResults: [], scanResultsOpen: false,
       poOpen: false, poList: [], poBusy: false, poSearch: '', poFg: '1', poDoc: '',
-      savedTemplates: [], templateId: '',
+      savedTemplates: [], templateId: '', templateName: '', confirmDup: null,
       spaceHeld: false,
+      view: 'design',
     };
     this._drag = null;
   }
 
+  // ---- โหลดดีไซน์เข้าแคนวาส (เอกสารเดียว แสดงทีละ 1) ----
+  _blankDesign(){
+    return { labelName:'แม่แบบใหม่', labelW:50, labelH:30, bg:'#ffffff', elements:this.tplPriceTag(50,30),
+      selectedId:null, templateId:'', templateName:'', printMedia:'a4', rollCols:3, rollRows:1, zoom:null };
+  }
+  _loadDesign(d){
+    const patch = { labelName:d.labelName, labelW:d.labelW, labelH:d.labelH, bg:d.bg,
+      elements:d.elements, selectedId:d.selectedId||null, templateId:d.templateId||'', templateName:d.templateName||'',
+      printMedia:d.printMedia||'a4', rollCols:d.rollCols||3, rollRows:d.rollRows||1 };
+    if(d.zoom!=null){ patch.zoom=d.zoom; patch.panX=d.panX; patch.panY=d.panY; }
+    this.setState(patch, ()=>{ if(d.zoom==null) this.fitView(); });
+  }
+  // แปลง template (จาก /api/templates?id=) เป็น design object
+  _designFromTemplate(t){
+    const d = (t && t.design) || {};
+    return { labelName:d.labelName||(t&&t.name)||'แม่แบบ', labelW:d.labelW||50, labelH:d.labelH||30, bg:d.bg||'#ffffff',
+      elements:Array.isArray(d.elements)?d.elements:[], selectedId:null, templateId:t&&t.id, templateName:(t&&t.name)||'',
+      printMedia:d.printMedia||'a4', rollCols:d.rollCols||3, rollRows:d.rollRows||1, zoom:null };
+  }
+  _fetchDesign(id, cb){
+    fetch('/api/templates?id='+encodeURIComponent(id))
+      .then(r=>r.json())
+      .then(j=>{ cb((j.ok && j.template) ? this._designFromTemplate(j.template) : this._blankDesign()); })
+      .catch(()=>cb(this._blankDesign()));
+  }
+  // ตอนเปิดโปรแกรม: ถ้ามีแม่แบบใน templates.json → โหลดอันแรกมาแสดงแทนดีไซน์ default
+  bootTemplates(){
+    fetch('/api/templates')
+      .then(r=>r.json())
+      .then(j=>{
+        const rows = (j && j.ok && j.rows) ? j.rows : [];
+        this.setState({ savedTemplates:rows });
+        if(!rows.length) return;                       // ไม่มีข้อมูล → คงดีไซน์ default ไว้
+        this._fetchDesign(rows[0].id, d=>this._loadDesign(d));   // โหลดแม่แบบแรกมาแสดง
+      })
+      .catch(()=>{});
+  }
+
   defaultSku(){
     return [
-      { sku:'SKU-1001', name:'นมสด UHT 200ml', price:15, barcode:'885000010014', unit:'กล่อง' },
-      { sku:'SKU-1002', name:'น้ำดื่ม 600ml', price:7, barcode:'885000010021', unit:'ขวด' },
-      { sku:'SKU-1003', name:'บะหมี่กึ่งสำเร็จรูป', price:6, barcode:'885000010038', unit:'ซอง' },
-      { sku:'SKU-1004', name:'กาแฟ 3in1 (20ซอง)', price:59, barcode:'885000010045', unit:'แพ็ค' },
-      { sku:'SKU-1005', name:'ขนมปังแซนวิช', price:25, barcode:'885000010052', unit:'ชิ้น' },
-      { sku:'SKU-1006', name:'น้ำอัดลม 325ml', price:14, barcode:'885000010069', unit:'กระป๋อง' },
-      { sku:'SKU-1007', name:'ผงซักฟอก 800g', price:45, barcode:'885000010076', unit:'ถุง' },
-      { sku:'SKU-1008', name:'แชมพู 340ml', price:89, barcode:'885000010083', unit:'ขวด' },
+      { sku:'SKU-1001', name:'นมสด UHT 200ml', price:15, barcode:'885000010014', unit:'กล่อง', pluCode:'0885000010014', catCode:'10100', catName:'นม & ผลิตภัณฑ์นม', supplierId:'S001', supplierName:'บจก. เดลี่ แดรี่' },
+      { sku:'SKU-1002', name:'น้ำดื่ม 600ml', price:7, barcode:'885000010021', unit:'ขวด', pluCode:'0885000010021', catCode:'10200', catName:'เครื่องดื่ม', supplierId:'S002', supplierName:'บจก. น้ำใส' },
+      { sku:'SKU-1003', name:'บะหมี่กึ่งสำเร็จรูป', price:6, barcode:'885000010038', unit:'ซอง', pluCode:'0885000010038', catCode:'10300', catName:'อาหารแห้ง', supplierId:'S003', supplierName:'บจก. มาม่า ฟู้ด' },
+      { sku:'SKU-1004', name:'กาแฟ 3in1 (20ซอง)', price:59, barcode:'885000010045', unit:'แพ็ค', pluCode:'0885000010045', catCode:'10200', catName:'เครื่องดื่ม', supplierId:'S004', supplierName:'บจก. คอฟฟี่ โปร' },
+      { sku:'SKU-1005', name:'ขนมปังแซนวิช', price:25, barcode:'885000010052', unit:'ชิ้น', pluCode:'0885000010052', catCode:'10400', catName:'เบเกอรี่', supplierId:'S005', supplierName:'บจก. เบเกอรี่ เฮาส์' },
+      { sku:'SKU-1006', name:'น้ำอัดลม 325ml', price:14, barcode:'885000010069', unit:'กระป๋อง', pluCode:'0885000010069', catCode:'10200', catName:'เครื่องดื่ม', supplierId:'S002', supplierName:'บจก. น้ำใส' },
+      { sku:'SKU-1007', name:'ผงซักฟอก 800g', price:45, barcode:'885000010076', unit:'ถุง', pluCode:'0885000010076', catCode:'20100', catName:'ของใช้ในบ้าน', supplierId:'S006', supplierName:'บจก. คลีน แคร์' },
+      { sku:'SKU-1008', name:'แชมพู 340ml', price:89, barcode:'885000010083', unit:'ขวด', pluCode:'0885000010083', catCode:'20200', catName:'ของใช้ส่วนตัว', supplierId:'S007', supplierName:'บจก. บิวตี้ พลัส' },
     ];
   }
 
@@ -745,10 +956,10 @@ class Component extends DCLogic {
 
   defaultsFor(type, lw, lh){
     if(type==='text') return { w:Math.min(lw*0.8,lw-4), h:6, text:'ข้อความ', fontSize:3.4, weight:600, italic:false, align:'center', color:'#1b1a18', binding:'' };
-    if(type==='price') return { w:Math.min(lw*0.7,lw-4), h:10, text:'0', fontSize:8, weight:700, italic:false, align:'center', color:'#1b1a18', prefix:'฿', binding:'price' };
+    if(type==='price') return { w:Math.min(lw*0.7,lw-4), h:10, text:'0', fontSize:8, weight:700, italic:false, align:'center', color:'#1b1a18', prefix:'', binding:'price' };
     if(type==='barcode') return { w:Math.min(lw*0.85,lw-4), h:12, value:'885000010014', format:'CODE128', showText:true, binding:'barcode' };
     if(type==='qr') return { w:16, h:16, value:'https://csith.com', binding:'' };
-    if(type==='image') return { w:16, h:16, label:'LOGO' };
+    if(type==='image') return { w:16, h:16, label:'LOGO', src:'' };
     if(type==='frame') return { w:lw-3, h:lh-3, border:0.5, radius:1.5, color:'#1b1a18' };
     return {};
   }
@@ -791,11 +1002,17 @@ class Component extends DCLogic {
 
   // ---- helpers
   selEl(){ return this.state.elements.find(e=>e.id===this.state.selectedId) || null; }
+  // จัดรูปแบบราคาให้มีทศนิยม 2 ตำแหน่งเสมอ (เช่น 15 → 15.00, 1234.5 → 1,234.50)
+  _fmtPrice(x){
+    const n = Number(x);
+    if(isNaN(n)) return String(x==null?'':x);
+    return n.toLocaleString('th-TH', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  }
   skuVal(field, idx){
     const r = this.state.skuRows[idx] || this.state.skuRows[0] || {};
     let x = r[field];
     if(x==null) return '';
-    if(field==='price') return Number(x).toLocaleString('th-TH');
+    if(field==='price') return this._fmtPrice(x);
     return String(x);
   }
   shopVal(field){ const s=this.state.shop; if(!s) return ''; const v=s[field]; return v==null?'':String(v); }
@@ -805,7 +1022,10 @@ class Component extends DCLogic {
   }
   resolve(el, idx){
     if(el.type==='text' || el.type==='price'){
-      let raw = el.binding ? this.bindVal(el.binding, idx) : (el.text!=null?String(el.text):'');
+      let raw;
+      if(el.binding) raw = this.bindVal(el.binding, idx);
+      else if(el.type==='price') raw = (el.text!=null && el.text!=='') ? this._fmtPrice(el.text) : '';
+      else raw = (el.text!=null?String(el.text):'');
       if(el.type==='price') raw = (el.prefix||'') + raw + (el.suffix||'');
       return raw;
     }
@@ -832,7 +1052,11 @@ class Component extends DCLogic {
     }
     if(v.isBarcode){ v.resolved = this.resolve(el, idx); v.format = el.format||'CODE128'; v.showAttr = el.showText?'1':'0'; v.canvasStyle = { width:'100%', height:'100%', display:'block' }; }
     if(v.isQr){ v.resolved = this.resolve(el, idx); v.qrStyle = { width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center' }; }
-    if(v.isImage){ v.imgLabel = el.label||'LOGO'; v.imgStyle = { width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center', border:'1px dashed #b9b3a9', borderRadius:'2px', background:'repeating-linear-gradient(45deg,#f4f3f1,#f4f3f1 4px,#eceae6 4px,#eceae6 8px)', color:'#9a938a', fontFamily:"'IBM Plex Mono',monospace", fontSize:Math.max(6,el.w*0.9)+'px', letterSpacing:'0.05em' }; }
+    if(v.isImage){
+      v.imgHasSrc = !!el.src; v.imgSrc = el.src||''; v.imgLabel = el.label||'LOGO';
+      v.imgImgStyle = { width:'100%', height:'100%', objectFit:'contain', display:'block' };
+      v.imgStyle = { width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center', border:'1px dashed #b9b3a9', borderRadius:'2px', background:'repeating-linear-gradient(45deg,#f4f3f1,#f4f3f1 4px,#eceae6 4px,#eceae6 8px)', color:'#9a938a', fontFamily:"'IBM Plex Mono',monospace", fontSize:Math.max(6,el.w*0.9)+'px', letterSpacing:'0.05em' };
+    }
     if(v.isFrame){ Object.assign(w, { border:(el.border*PX)+'px solid '+(el.color||'#1b1a18'), borderRadius:(el.radius*PX)+'px', background:'transparent' }); }
     v.wrapStyle = w;
     return v;
@@ -927,7 +1151,7 @@ class Component extends DCLogic {
     // SKU strip
     const skuView = S.skuRows.map((r,i)=>{
       const active = i===S.activeSku;
-      return { sku:r.sku, name:r.name, price:Number(r.price).toLocaleString('th-TH'), unit:r.unit,
+      return { sku:r.sku, name:r.name, price:this._fmtPrice(r.price), unit:r.unit,
         qty:r.qty, qtyShow: !!(S.useQty && r.qty>0),
         nameColor: active?'#fff':'#1B1A18', priceColor: active?'#fff':A.base, subColor: active?'rgba(255,255,255,0.7)':'#9A938A',
         cardStyle:{ flex:'0 0 auto', display:'flex', flexDirection:'column', gap:'2px', justifyContent:'center', minWidth:'150px', padding:'9px 13px', borderRadius:'10px', cursor:'pointer', textAlign:'left', transition:'all .18s',
@@ -973,15 +1197,20 @@ class Component extends DCLogic {
     // print
     const selected = S.skuRows.map((r,i)=>i).filter(i=>S.skuSel[i]!==false);
     let pcols, prows;
-    if(S.printMedia==='a4'){ pcols=Math.max(1,Math.floor(210/(S.labelW+2))); prows=Math.max(1,Math.floor(297/(S.labelH+2))); }
+    if(S.printMedia==='a4'){ const M=8, G=2; pcols=Math.max(1,Math.floor((210-2*M+G)/(S.labelW+G))); prows=Math.max(1,Math.floor((297-2*M+G)/(S.labelH+G))); }
     else { pcols=Math.max(1,S.rollCols); prows=Math.max(1,S.rollRows); }
     const perPage = Math.max(1, pcols*prows);
     const mediaLabel = S.printMedia==='a4'
       ? ('A4 · '+pcols+'×'+prows+' ดวง/แผ่น')
       : ('ม้วน '+pcols+'×'+prows+' ดวง/หน้า · '+S.labelW+'mm');
-    let printView=[], printCount=0, sheetStyle={}, printSkuList=[], previewPageInfo='';
-    if(S.printOpen){
-      const ps = S.printMedia==='a4' ? 2.3 : 3.0;
+    let printView=[], printCount=0, sheetStyle={}, printSkuList=[], previewPageInfo='', gridRows=[];
+    if(S.view==='print'){
+      // px ต่อ mm ของ preview — ม้วนสติกเกอร์ปรับสเกลให้ชีตกว้างราว 560px
+      // ป้ายเล็กจะถูกขยายให้เห็นชัด (ไม่เล็กกว่าเดิม) ป้ายใหญ่คงสเกลอ่านง่าย
+      const isA4 = S.printMedia==='a4';
+      let ps;
+      if(isA4){ ps = 432/210; }   // ย่อ A4 (กว้าง 210mm) ให้เต็มแผง preview พอดี (~432px)
+      else { const denom = pcols*S.labelW + 2*(pcols+1); ps = Math.max(3.0, Math.min(9, 440/denom)); }
       const allItems=[];
       selected.forEach(i=>{ const n=this.copiesFor(i); for(let c=0;c<n;c++) allItems.push(i); });
       printCount = allItems.length;
@@ -994,19 +1223,54 @@ class Component extends DCLogic {
         cellStyle:{ position:'relative', overflow:'hidden', flex:'0 0 auto', width:(S.labelW*ps)+'px', height:(S.labelH*ps)+'px', background:S.bg, border:'1px solid #E6E3DF', borderRadius:'2px' },
         innerStyle:{ position:'absolute', left:'0', top:'0', width:(S.labelW*PX)+'px', height:(S.labelH*PX)+'px', transform:`scale(${scale})`, transformOrigin:'0 0' },
         elements: S.elements.map(el=>this.elView(el, idx)) }));
-      sheetStyle = { display:'flex', flexWrap:'wrap', gap:gapPx+'px', alignContent:'flex-start',
-        width: (pcols*(S.labelW*ps) + (pcols-1)*gapPx + 2*gapPx)+'px',
-        padding:gapPx+'px', background:'#fff', borderRadius:'4px', boxShadow:'0 4px 24px rgba(0,0,0,0.1)', justifyContent:'flex-start' };
+      if(isA4){
+        // หน้า A4 เต็มแผ่น (210×297mm) + ขอบ 8mm (ตรงกับ @page margin ตอนพิมพ์)
+        sheetStyle = { boxSizing:'border-box', width:(210*ps)+'px', height:(297*ps)+'px', padding:(8*ps)+'px',
+          display:'flex', flexWrap:'wrap', alignContent:'flex-start', gap:gapPx+'px',
+          background:'#fff', borderRadius:'2px', boxShadow:'0 4px 24px rgba(0,0,0,0.12)' };
+      } else {
+        sheetStyle = { display:'flex', flexWrap:'wrap', gap:gapPx+'px', alignContent:'flex-start',
+          width: (pcols*(S.labelW*ps) + (pcols-1)*gapPx + 2*gapPx)+'px',
+          padding:gapPx+'px', background:'#fff', borderRadius:'4px', boxShadow:'0 4px 24px rgba(0,0,0,0.1)', justifyContent:'flex-start' };
+      }
       printSkuList = S.skuRows.map((r,i)=>{
         const on = S.skuSel[i]!==false;
         const count = this.copiesFor(i);
-        return { name:r.name, price:Number(r.price).toLocaleString('th-TH'), on, count,
+        return { name:r.name, price:this._fmtPrice(r.price), on, count,
           toggle:()=>{ const ns=Object.assign({}, S.skuSel); ns[i]=!on; this.setState({skuSel:ns}); },
           minus:()=>this.setCopiesFor(i, count-1), plus:()=>this.setCopiesFor(i, count+1),
           rowStyle:{ display:'flex', alignItems:'center', gap:'8px', padding:'5px 7px 5px 9px', borderRadius:'8px', border:'1px solid '+(on?A.softBorder:'#EBE8E3'), background:on?A.soft:'#fff', transition:'all .12s', width:'100%' },
           checkStyle:{ width:'18px', height:'18px', borderRadius:'5px', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', background:on?A.base:'#fff', border:'1px solid '+(on?A.base:'#cfcbc4'), transition:'all .12s' },
           stepBtnStyle:{ width:'24px', height:'24px', border:'1px solid #E6E3DF', borderRadius:'6px', background:'#fff', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', color:'#44403B', fontSize:'14px', lineHeight:1, flexShrink:0 },
           countStyle:{ minWidth:'24px', textAlign:'center', fontFamily:"'IBM Plex Mono',monospace", fontSize:'12.5px', fontWeight:600, color: on?'#1B1A18':'#9A938A' } };
+      });
+      // grid แถวสินค้า (แบบ <table> auto-layout — คอลัมน์กว้างตามเนื้อหา)
+      gridRows = S.skuRows.map((r,i)=>{
+        const active = i===S.activeSku;
+        const count = this.copiesFor(i);
+        const bg = active ? A.soft : (i%2? '#FBFAF9':'#fff');
+        const td = (extra)=>Object.assign({ padding:'6px 9px', borderRight:'1px solid #EDEAE5', borderBottom:'1px solid #EDEAE5',
+          fontSize:'12px', color:'#1B1A18', whiteSpace:'nowrap', background:bg, verticalAlign:'middle' }, extra||{});
+        const mono = { fontFamily:"'IBM Plex Mono',monospace" };
+        return { no:i+1, sku:r.sku||'', plu:r.pluCode||r.barcode||'', catCode:r.catCode||'', catName:r.catName||'',
+          skuDesc:r.skuDesc||r.name||'', supplierId:r.supplierId||'', supplierName:r.supplierName||'',
+          price:this._fmtPrice(r.price), count,
+          pick:()=>this.setState({activeSku:i}),
+          onQty:(e)=>this.setCopiesFor(i, Math.max(0, parseInt(e.target.value,10)||0)),
+          minus:()=>this.setCopiesFor(i, count-1), plus:()=>this.setCopiesFor(i, count+1),
+          del:()=>this.removeRow(i),
+          tdNo: td({ textAlign:'center', fontFamily:"'IBM Plex Mono',monospace", fontSize:'11px', color: active?'#fff':'#9A938A', background: active?A.base:'#F4F3F1', borderRight:'1px solid #E6E3DF', cursor:'pointer' }),
+          tdSku: td(mono), tdPlu: td(Object.assign({color:'#78716c'},mono)),
+          tdCat: td(), tdCatName: td({ color:'#78716c', whiteSpace:'normal' }),
+          tdDesc: td({ whiteSpace:'normal', minWidth:'150px' }),
+          tdSupId: td(Object.assign({color:'#78716c'},mono)), tdSupName: td({ color:'#78716c', whiteSpace:'normal' }),
+          tdPrice: td(Object.assign({ textAlign:'right', fontWeight:600 },mono)),
+          tdQty: td({ textAlign:'center', padding:'4px 6px' }),
+          tdDel: td({ textAlign:'center', padding:'4px 6px', borderRight:'none' }),
+          qtyCell:{ display:'inline-flex', alignItems:'center', gap:'3px' },
+          qtyInput:{ width:'42px', height:'26px', textAlign:'center', border:'1px solid #E6E3DF', borderRadius:'7px', padding:'0 2px', fontFamily:"'IBM Plex Mono',monospace", fontSize:'12.5px', fontWeight:600, color:'#1B1A18', background:'#fff', outline:'none' },
+          stepStyle:{ width:'26px', height:'26px', border:'1px solid '+A.softBorder, borderRadius:'7px', background:A.soft, cursor:'pointer', color:A.base, fontSize:'15px', fontWeight:700, lineHeight:1, display:'inline-flex', alignItems:'center', justifyContent:'center', transition:'all .12s' },
+          delStyle:{ width:'28px', height:'26px', border:'1px solid #f3c2c2', borderRadius:'7px', background:'#FEF2F2', cursor:'pointer', color:'#ef4444', display:'inline-flex', alignItems:'center', justifyContent:'center', transition:'all .12s' } };
       });
     }
 
@@ -1015,12 +1279,29 @@ class Component extends DCLogic {
       border:'none', background: on?'#fff':'transparent', color: on?'#1B1A18':'#9A938A', boxShadow: on?'0 1px 4px rgba(0,0,0,0.08)':'none' });
     const printSeg = (on)=>({ flex:1, padding:'9px 6px', borderRadius:'8px', cursor:'pointer', fontSize:'12px', fontWeight:600, fontFamily:"'IBM Plex Sans Thai'", transition:'all .15s',
       border:'1px solid '+(on?A.base:'#E6E3DF'), background:on?A.soft:'#fff', color:on?A.text:'#78716c' });
+    // media เป็นการ์ดมีไอคอน
+    const mediaCard = (on)=>({ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:'6px', padding:'13px 8px', borderRadius:'11px', cursor:'pointer', fontFamily:"'IBM Plex Sans Thai'", transition:'all .15s',
+      border:'1.5px solid '+(on?A.base:'#E6E3DF'), background:on?A.soft:'#fff', color:on?A.text:'#78716c' });
+    const printGoStyle = { width:'100%', height:'46px', border:'none', borderRadius:'11px', background:A.base, color:'#fff', cursor:'pointer', fontFamily:"'IBM Plex Sans Thai'", fontSize:'14px', fontWeight:600, display:'flex', alignItems:'center', justifyContent:'center', gap:'8px', boxShadow:'0 3px 12px '+A.shadow, transition:'all .15s' };
+    const printScanStyle = { display:'flex', alignItems:'center', justifyContent:'center', gap:'6px', height:'38px', padding:'0 18px', border:'none', borderRadius:'8px', background:A.base, color:'#fff', cursor:'pointer', fontFamily:"'IBM Plex Sans Thai'", fontSize:'13px', fontWeight:600, boxShadow:'0 2px 8px '+A.shadow, transition:'all .15s', flexShrink:0 };
+    // ป้ายเลขขั้นตอน (1-2-3-4)
+    const stepNum = { width:'19px', height:'19px', flexShrink:0, borderRadius:'50%', background:A.base, color:'#fff', fontSize:'11px', fontWeight:700, fontFamily:"'IBM Plex Mono',monospace", display:'inline-flex', alignItems:'center', justifyContent:'center' };
 
     const connInfo = S.connMode==='api'
       ? { label:'REST API', sub:'cli.csith.com · connected' }
       : { label:'SQL Server 17.0', sub:'GeniuzPOS · connected' };
 
+    // left nav rail
+    const navBtn = (on)=>({ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'5px', padding:'11px 4px', borderRadius:'12px', cursor:'pointer', fontFamily:"'IBM Plex Sans Thai'", transition:'all .15s',
+      border:'1px solid '+(on?A.softBorder:'transparent'), background:on?A.soft:'transparent', color:on?A.base:'#9A938A' });
+    const navHover = { background:'#F4F3F1', color:'#44403B' };
+
     return {
+      view:S.view, viewDesign:S.view==='design', viewPrint:S.view==='print', viewSettings:S.view==='settings',
+      goDesign:()=>this.setState({view:'design'}),
+      goPrint:()=>this.setState({view:'print'}),
+      goSettings:()=>{ this.setState({view:'settings'}); this.loadConfig(); this.loadBizList(true); this.loadShopList(true); },
+      navDesignStyle:navBtn(S.view==='design'), navPrintStyle:navBtn(S.view==='print'), navSettingsStyle:navBtn(S.view==='settings'), navHover,
       labelName:S.labelName, labelW:S.labelW, labelH:S.labelH,
       onName:(e)=>this.setState({labelName:e.target.value}),
       onLabelW:(e)=>this.setSize(this.num(e.target.value,S.labelW), S.labelH),
@@ -1033,7 +1314,7 @@ class Component extends DCLogic {
       hasSel, noSel:!sel, selStyle,
       hnw:handles.nw, hn:handles.n, hne:handles.ne, he:handles.e, hse:handles.se, hs:handles.s, hsw:handles.sw, hw:handles.w,
       vpCursor: S.spaceHeld ? 'grab' : 'default',
-      setRootRef:(n)=>{ this._root=n; }, setViewportRef:(n)=>{ this._vp=n; },
+      setRootRef:(n)=>{ this._root=n; }, setViewportRef: this._vpRef || (this._vpRef=(n)=>this.setViewport(n)),
       onViewportDown:(e)=>this.onDown(e),
       zoomIn:()=>this.zoomBy(1.25), zoomOut:()=>this.zoomBy(0.8), zoomFit:()=>this.fitView(),
       zoomPct: Math.round(S.zoom*100),
@@ -1041,6 +1322,10 @@ class Component extends DCLogic {
       selIcon, selTitle, selTypeLabel,
       selIsTextual: sel&&(sel.type==='text'||sel.type==='price'),
       selIsBarcode: sel&&sel.type==='barcode', selIsQr: sel&&sel.type==='qr', selIsFrame: sel&&sel.type==='frame',
+      selIsImage: sel&&sel.type==='image', selHasImg: sel&&sel.type==='image'&&!!sel.src, selNoImg: sel&&sel.type==='image'&&!sel.src,
+      selImgSrc: sel?(sel.src||''):'', selImgLabel: sel?(sel.label||''):'',
+      onPickImage:(e)=>this.pickImage(e), clearImage:()=>this.updateSel({src:''}),
+      onSelImgLabel:(e)=>this.updateSel({label:e.target.value}),
       selCanBind: sel&&(sel.type==='text'||sel.type==='price'||sel.type==='barcode'||sel.type==='qr'),
       selX: sel?r1(sel.x):0, selY: sel?r1(sel.y):0, selW: sel?r1(sel.w):0, selH: sel?r1(sel.h):0,
       selText: sel?(sel.text!=null?sel.text:''):'', selValue: sel?(sel.value!=null?sel.value:''):'',
@@ -1064,8 +1349,10 @@ class Component extends DCLogic {
       alLStyle: alBtn(sel&&sel.align==='left'), alCStyle: alBtn(sel&&(!sel.align||sel.align==='center')), alRStyle: alBtn(sel&&sel.align==='right'),
       showTextStyle, showTextKnob,
       dupSel:()=>this.dupSel(), deleteSel:()=>this.deleteSel(),
+      alSelL:()=>this.alignSel('left'), alSelH:()=>this.alignSel('hcenter'), alSelR:()=>this.alignSel('right'),
+      alSelT:()=>this.alignSel('top'), alSelM:()=>this.alignSel('vmiddle'), alSelB:()=>this.alignSel('bottom'),
       // connection
-      openConn:()=>{ this.setState({connOpen:true}); this.loadBizList(true); this.loadShopList(true); }, closeConn:()=>this.setState({connOpen:false}),
+      openConn:()=>{ this.setState({view:'settings'}); this.loadBizList(true); this.loadShopList(true); }, closeConn:()=>this.setState({connOpen:false}),
       bizId:S.bizId, bizBusy:S.bizBusy, hasBiz:(S.bizList||[]).length>0,
       bizPlaceholder: S.bizBusy ? 'กำลังโหลดรายการธุรกิจ…' : '— เลือกธุรกิจ —',
       bizOptions:(S.bizList||[]).map(b=>({ value:String(b.bizId), label:(b.bizCode?(b.bizCode+' · '):'')+b.bizName })),
@@ -1092,13 +1379,27 @@ class Component extends DCLogic {
       connMode:S.connMode, modeIsApi:S.connMode==='api', modeIsSql:S.connMode==='sql',
       setModeApi:()=>this.setState({connMode:'api'}), setModeSql:()=>this.setState({connMode:'sql'}),
       modeApiStyle:seg(S.connMode==='api'), modeSqlStyle:seg(S.connMode==='sql'),
-      doConnect:()=>this.loadData(S.connMode),
+      cfgBaseUrl:S.cfgBaseUrl, onCfgBaseUrl:(e)=>this.setState({cfgBaseUrl:e.target.value}),
+      cfgApiKey:S.cfgApiKey, onCfgApiKey:(e)=>this.setState({cfgApiKey:e.target.value}),
+      cfgApiKeyMask: S.cfgHasApiKey ? S.cfgApiKeyMask : '— ยังไม่ได้ตั้งค่า —',
+      cfgApiKeyPlaceholder: S.cfgHasApiKey ? 'เว้นว่างไว้ถ้าไม่เปลี่ยน' : 'วาง API Key ที่นี่',
+      cfgSqlHost:S.cfgSqlHost, onCfgSqlHost:(e)=>this.setState({cfgSqlHost:e.target.value}),
+      cfgSqlPort:S.cfgSqlPort, onCfgSqlPort:(e)=>this.setState({cfgSqlPort:e.target.value}),
+      cfgSqlDatabase:S.cfgSqlDatabase, onCfgSqlDatabase:(e)=>this.setState({cfgSqlDatabase:e.target.value}),
+      cfgSqlUser:S.cfgSqlUser, onCfgSqlUser:(e)=>this.setState({cfgSqlUser:e.target.value}),
+      cfgSqlPassword:S.cfgSqlPassword, onCfgSqlPassword:(e)=>this.setState({cfgSqlPassword:e.target.value}),
+      cfgSqlPasswordPlaceholder: S.cfgSqlHasPassword ? 'เว้นว่างไว้ถ้าไม่เปลี่ยน' : 'รหัสผ่าน',
+      cfgSqlDriverReady:S.cfgSqlDriverReady, cfgSqlDriverMissing:!S.cfgSqlDriverReady,
+      doConnect:()=>this.saveAndConnect(),
       save:()=>this.saveTemplate(),
+      confirmDupOpen: !!S.confirmDup, confirmDupName: S.confirmDup ? S.confirmDup.name : '',
+      confirmOverwrite:()=>{ const c=S.confirmDup; if(c) this._doSave(c.id, 'overwrite'); },
+      confirmCancel:()=>this.setState({ confirmDup:null }),
       hasSaved:(S.savedTemplates||[]).length>0, noSaved:(S.savedTemplates||[]).length===0,
       savedView:(S.savedTemplates||[]).map(t=>({ name:t.name, sub:(t.labelW||'?')+'×'+(t.labelH||'?')+' มม. · '+t.count+' ชิ้น',
         open:()=>this.openTemplate(t.id), del:()=>this.deleteTemplate(t.id) })),
       // print
-      openPrint:()=>this.setState({printOpen:true}), closePrint:()=>this.setState({printOpen:false}),
+      openPrint:()=>this.setState({view:'print'}), closePrint:()=>this.setState({printOpen:false}),
       stop:(e)=>{ e.stopPropagation(); },
       printOpen:S.printOpen, printView, printCount,
       printCopies:S.printCopies, copiesPlus:()=>this.setState({printCopies:Math.min(99,S.printCopies+1)}), copiesMinus:()=>this.setState({printCopies:Math.max(1,S.printCopies-1)}),
@@ -1108,12 +1409,23 @@ class Component extends DCLogic {
       copiesActive: !S.useQty,
       printMedia:S.printMedia, setMediaA4:()=>this.setState({printMedia:'a4'}), setMediaRoll:()=>this.setState({printMedia:'roll'}),
       mediaA4Style:printSeg(S.printMedia==='a4'), mediaRollStyle:printSeg(S.printMedia==='roll'),
+      mediaCardA4:mediaCard(S.printMedia==='a4'), mediaCardRoll:mediaCard(S.printMedia==='roll'),
+      printGoStyle, printScanStyle, stepNum, printHasItems: printCount>0, printEmpty: printCount===0,
       printMediaLabel: mediaLabel,
       mediaIsRoll: S.printMedia==='roll', previewPageInfo,
       rollCols:S.rollCols, rollRows:S.rollRows,
       rollColsPlus:()=>this.setState({rollCols:Math.min(10,S.rollCols+1)}), rollColsMinus:()=>this.setState({rollCols:Math.max(1,S.rollCols-1)}),
       rollRowsPlus:()=>this.setState({rollRows:Math.min(50,S.rollRows+1)}), rollRowsMinus:()=>this.setState({rollRows:Math.max(1,S.rollRows-1)}),
-      sheetStyle, printSkuList,
+      sheetStyle, printSkuList, gridRows,
+      scanCode:S.scanCode, onScanInput:(e)=>this.setState({scanCode:e.target.value}),
+      onScanKey:(e)=>{ if(e.key==='Enter') this.addByCode(); }, doScan:()=>this.addByCode(),
+      clearGrid:()=>this.clearGrid(),
+      scanResultsOpen:S.scanResultsOpen, scanResultsCount:(S.scanResults||[]).length,
+      scanResultsView:(S.scanResults||[]).map(p=>({ sku:p.sku||'', name:p.skuDesc||p.name||'', price:this._fmtPrice(p.price),
+        cat:(p.catName||p.catCode||''), supplier:(p.supplierName||''), add:()=>{ this._appendSku(p); this.toast('เพิ่ม '+(p.sku||p.name)); } })),
+      addAllResults:()=>this.addAllResults(),
+      closeScanResults:()=>this.setState({ scanResultsOpen:false, scanResults:[] }),
+      hasGridRows: S.skuRows.length>0, noGridRows: S.skuRows.length===0,
       selectAllLabel: allOn?'ไม่เลือกทั้งหมด':'เลือกทั้งหมด',
       toggleAllSku:()=>{ const ns={}; if(allOn){ S.skuRows.forEach((r,i)=>ns[i]=false); } this.setState({skuSel:ns}); },
       doPrint:()=>this.doPrint(),
@@ -1163,6 +1475,18 @@ class Component extends DCLogic {
     if(!this.state.selectedId) return;
     this.setState({ elements:this.state.elements.filter(e=>e.id!==this.state.selectedId), selectedId:null });
   }
+  // อ่านไฟล์รูปที่ผู้ใช้เลือก → เก็บเป็น data URL ลงใน element image ที่เลือกอยู่
+  pickImage(e){
+    const f = e.target && e.target.files && e.target.files[0];
+    e.target.value = '';          // เคลียร์เพื่อเลือกไฟล์เดิมซ้ำได้
+    if(!f) return;
+    if(!/^image\//.test(f.type)){ this.toast('ไฟล์ที่เลือกไม่ใช่รูปภาพ'); return; }
+    if(f.size > 3*1024*1024){ this.toast('ไฟล์ใหญ่เกิน 3MB — เลือกรูปเล็กลง'); return; }
+    const rd = new FileReader();
+    rd.onload = ()=>{ this.updateSel({ src:String(rd.result), label:(f.name||'IMAGE').replace(/\.[^.]+$/,'') }); this.toast('ใส่รูปแล้ว'); };
+    rd.onerror = ()=>this.toast('อ่านไฟล์รูปไม่สำเร็จ');
+    rd.readAsDataURL(f);
+  }
 
   // ---- pointer / drag
   onDown(e){
@@ -1199,19 +1523,11 @@ class Component extends DCLogic {
     const dymm = (e.clientY-d.my)/(PX*z);
     const snap = v=>Math.round(v*2)/2;
     if(d.mode==='move'){
-      let x=snap(d.sx+dxmm), y=snap(d.sy+dymm);
       const el=this.state.elements.find(o=>o.id===d.id); if(!el) return;
-      const guides=[];
-      const cx=S.labelW/2, cy=S.labelH/2;
-      // center snap
-      if(Math.abs((x+el.w/2)-cx) < 1.0){ x = cx - el.w/2; guides.push({axis:'v',pos:cx}); }
-      if(Math.abs((y+el.h/2)-cy) < 1.0){ y = cy - el.h/2; guides.push({axis:'h',pos:cy}); }
-      // edge snap to label
-      if(Math.abs(x) < 0.8){ x=0; guides.push({axis:'v',pos:0}); }
-      if(Math.abs(y) < 0.8){ y=0; guides.push({axis:'h',pos:0}); }
-      if(Math.abs((x+el.w)-S.labelW) < 0.8){ x=S.labelW-el.w; guides.push({axis:'v',pos:S.labelW}); }
-      if(Math.abs((y+el.h)-S.labelH) < 0.8){ y=S.labelH-el.h; guides.push({axis:'h',pos:S.labelH}); }
-      this.setState({ elements:this.state.elements.map(o=>o.id===d.id?Object.assign({},o,{x,y}):o), guides });
+      // hold Alt to bypass snapping (free move)
+      const r = e.altKey ? { x:snap(d.sx+dxmm), y:snap(d.sy+dymm), guides:[] }
+                         : this._snapMove(el, d.sx+dxmm, d.sy+dymm);
+      this.setState({ elements:this.state.elements.map(o=>o.id===d.id?Object.assign({},o,{x:r.x,y:r.y}):o), guides:r.guides });
     } else if(d.mode==='resize'){
       const dir=d.dir; let x=d.sx,y=d.sy,w=d.sw,h=d.sh;
       if(dir.includes('e')) w=d.sw+dxmm;
@@ -1225,6 +1541,42 @@ class Component extends DCLogic {
   }
   onUp(){ if(this._drag){ this._drag=null; if(this.state.guides.length) this.setState({guides:[]}); } }
 
+  // Snap a dragged element's raw (rawX,rawY) to label edges/center AND to other
+  // elements' left/center/right & top/middle/bottom. Returns {x,y,guides}; axes
+  // without a snap fall back to the 0.5mm grid. Hold Alt while dragging to skip.
+  _snapMove(el, rawX, rawY){
+    const S=this.state, T=0.8, guides=[];
+    const sibs=S.elements.filter(o=>o.id!==el.id);
+    const vlines=[0, S.labelW/2, S.labelW];   // candidate vertical snap lines (x, mm)
+    const hlines=[0, S.labelH/2, S.labelH];   // candidate horizontal snap lines (y, mm)
+    sibs.forEach(s=>{ vlines.push(s.x, s.x+s.w/2, s.x+s.w); hlines.push(s.y, s.y+s.h/2, s.y+s.h); });
+    const pick=(raw, size, lines)=>{
+      const anchors=[0, size/2, size];        // element left/center/right (or top/mid/bottom)
+      let best=null;
+      for(const line of lines){ for(const a of anchors){ const dist=Math.abs((raw+a)-line);
+        if(dist<T && (!best||dist<best.dist)) best={ coord:line-a, line, dist }; } }
+      return best;
+    };
+    const bv=pick(rawX, el.w, vlines), bh=pick(rawY, el.h, hlines);
+    if(bv) guides.push({axis:'v',pos:bv.line});
+    if(bh) guides.push({axis:'h',pos:bh.line});
+    const round=v=>Math.round(v*2)/2;
+    return { x: bv?bv.coord:round(rawX), y: bh?bh.coord:round(rawY), guides };
+  }
+
+  // Align the selected element's box within the label bounds.
+  // dir: left|hcenter|right|top|vmiddle|bottom
+  alignSel(dir){
+    const el=this.selEl(); if(!el) return; const S=this.state; const p={};
+    if(dir==='left')    p.x=0;
+    if(dir==='hcenter') p.x=Math.round((S.labelW-el.w)/2*2)/2;
+    if(dir==='right')   p.x=Math.round((S.labelW-el.w)*2)/2;
+    if(dir==='top')     p.y=0;
+    if(dir==='vmiddle') p.y=Math.round((S.labelH-el.h)/2*2)/2;
+    if(dir==='bottom')  p.y=Math.round((S.labelH-el.h)*2)/2;
+    this.updateSel(p);
+  }
+
   zoomBy(f){ this.zoomAt(this.state.zoom*f, null, null); }
   zoomAt(nz, cx, cy){
     nz=Math.max(0.4, Math.min(20, nz));
@@ -1236,6 +1588,13 @@ class Component extends DCLogic {
     const nx = px - (px-S.panX)*(nz/S.zoom);
     const ny = py - (py-S.panY)*(nz/S.zoom);
     this.setState({ zoom:nz, panX:nx, panY:ny });
+  }
+  // viewport ref — re-attaches wheel/fit when the canvas re-mounts after a view switch
+  setViewport(n){
+    if(this._vp===n) return;
+    if(this._vp && this._wheel) this._vp.removeEventListener('wheel', this._wheel);
+    this._vp=n;
+    if(n && this._wheel){ n.addEventListener('wheel', this._wheel, { passive:false }); setTimeout(()=>this.fitView(), 30); }
   }
   fitView(){
     const vp=this._vp; if(!vp){ return; }
@@ -1298,6 +1657,9 @@ class Component extends DCLogic {
       return '<div style="'+pos+'"><div class="qr" data-text="'+val+'" style="width:100%;height:100%;"></div></div>';
     }
     if(el.type==='image'){
+      if(el.src){
+        return '<div style="'+pos+'"><img src="'+this._esc(el.src)+'" style="width:100%;height:100%;object-fit:contain;display:block;"/></div>';
+      }
       const fs = Math.max(2, el.w*0.22);
       const st = pos+'display:flex;align-items:center;justify-content:center;border:0.3mm dashed #b9b3a9;border-radius:0.5mm;color:#9a938a;'+
         "font-family:'IBM Plex Mono',monospace;font-size:"+fs+'mm;background:repeating-linear-gradient(45deg,#f4f3f1,#f4f3f1 1mm,#eceae6 1mm,#eceae6 2mm);';
@@ -1351,13 +1713,15 @@ class Component extends DCLogic {
       "var done=function(){setTimeout(function(){window.focus();window.print();},250);};"+
       "if(document.fonts&&document.fonts.ready){document.fonts.ready.then(done);}else{done();}"+
       "}run();})();";
+    // print window is opened as about:blank then document.write()'d — relative
+    // URLs won't resolve, so reference vendored assets via the server origin
+    const O = window.location.origin;
     return '<!DOCTYPE html><html lang="th"><head><meta charset="utf-8">'+
       '<title>'+this._esc(S.labelName)+' — พิมพ์</title>'+
-      '<link rel="preconnect" href="https://fonts.googleapis.com">'+
-      '<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">'+
+      '<link href="'+O+'/vendor/fonts/fonts.css" rel="stylesheet">'+
       '<style>*{box-sizing:border-box;}html,body{margin:0;padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}'+pageCss+layoutCss+'</style>'+
-      '<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script>'+
-      '<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>'+
+      '<script src="'+O+'/vendor/JsBarcode.all.min.js"><\/script>'+
+      '<script src="'+O+'/vendor/qrcode.min.js"><\/script>'+
       '</head><body>'+body+'<script>'+draw+'<\/script></body></html>';
   }
   // โหลด list ธุรกิจ (bizId) จาก backend (/api/biz)
@@ -1409,6 +1773,48 @@ class Component extends DCLogic {
   }
 
   // โหลดข้อมูล SKU จริงจาก backend proxy (/api/skus) แทน mock — opts:{fg,code} = ค้นหาตาม Fg
+  // โหลด config ปัจจุบัน (Endpoint + API key แบบปิดบัง) มาแสดงในหน้าตั้งค่า
+  loadConfig(){
+    fetch('/api/config')
+      .then(r=>r.json())
+      .then(j=>{
+        if(!j.ok || !j.config) return;
+        const c = j.config; const q = c.sql||{};
+        this.setState({ cfgBaseUrl:c.baseUrl||'', cfgApiKey:'', cfgApiKeyMask:c.apiKeyMask||'', cfgHasApiKey:!!c.hasApiKey,
+          connMode: c.dataSource==='sql' ? 'sql' : 'api',   // sync โหมดตาม DATA_SOURCE ที่บันทึกไว้
+          cfgSqlHost:q.host||'', cfgSqlPort:q.port||'1433', cfgSqlDatabase:q.database||'', cfgSqlUser:q.user||'',
+          cfgSqlPassword:'', cfgSqlHasPassword:!!q.hasPassword, cfgSqlDriverReady:!!q.driverReady });
+      })
+      .catch(()=>{});
+  }
+  _applyConfigResult(j){
+    const c = j.config||{}; const q = c.sql||{};
+    this.setState({ cfgApiKey:'', cfgBaseUrl:c.baseUrl||this.state.cfgBaseUrl, cfgApiKeyMask:c.apiKeyMask||'', cfgHasApiKey:!!c.hasApiKey,
+      cfgSqlPassword:'', cfgSqlHasPassword:!!q.hasPassword, cfgSqlDriverReady:!!q.driverReady });
+    if(j.changed && j.changed.length) this.toast('บันทึก '+j.changed.join(', ')+' แล้ว');
+  }
+  // บันทึก config (REST หรือ SQL ตามแท็บ) ลง .env แล้วทดสอบด้วยการดึงข้อมูลจริง
+  saveAndConnect(){
+    const S = this.state;
+    let body = { mode:S.connMode };
+    if(S.connMode==='sql'){
+      body.sql = { host:(S.cfgSqlHost||'').trim(), port:(S.cfgSqlPort||'1433'), database:(S.cfgSqlDatabase||'').trim(), user:(S.cfgSqlUser||'').trim() };
+      if((S.cfgSqlPassword||'')!=='') body.sql.password = S.cfgSqlPassword;
+    } else {
+      body.baseUrl = (S.cfgBaseUrl||'').trim();
+      if((S.cfgApiKey||'').trim()) body.apiKey = S.cfgApiKey.trim();
+    }
+    this.setState({ connStatus:'connecting' });
+    fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) })
+      .then(r=>r.json())
+      .then(j=>{
+        if(!j.ok) throw new Error(j.error||'บันทึกตั้งค่าไม่สำเร็จ');
+        this._applyConfigResult(j);
+        this.loadBizList(true); this.loadShopList(true);   // โหลดธุรกิจ/ร้านใหม่ตามโหมด
+        this.loadData(S.connMode);   // ทดสอบด้วยการดึง SKU จริง
+      })
+      .catch(e=>{ this.setState({ connStatus:'error' }); this.toast('บันทึกไม่สำเร็จ: '+((e&&e.message)||e)); });
+  }
   loadData(source, opts){
     opts = opts || {};
     const searching = !!(opts.code && String(opts.code).length);
@@ -1439,8 +1845,60 @@ class Component extends DCLogic {
   // ค้นหาสินค้าจาก master ตามฟิลด์ Fg (server-side)
   searchProducts(){
     const code = (this.state.skuSearch||'').trim();
-    this.loadData('api', { fg: code ? (this.state.skuFg||'3') : '0', code });
+    this.loadData(this.state.connMode, { fg: code ? (this.state.skuFg||'3') : '0', code });
   }
+
+  // ---- grid: สแกน/พิมพ์รหัสสินค้า แล้วเพิ่มเป็นแถวในตาราง (ทีละชิ้น) ----
+  addByCode(){
+    const code = (this.state.scanCode||'').trim();
+    if(!code) return;
+    const fg = this.state.skuFg || '1';
+    this.setState({ scanCode:'' });
+    fetch('/api/skus?source='+encodeURIComponent(this.state.connMode)+'&fg='+encodeURIComponent(fg)+'&code='+encodeURIComponent(code))
+      .then(r=>r.json())
+      .then(j=>{
+        const rows = (j && j.ok && j.rows) ? j.rows : [];
+        if(!rows.length){ this.toast('ไม่พบสินค้า "'+code+'"'); return; }
+        if(rows.length===1){ const p=rows[0]; this._appendSku(p); this.toast('เพิ่ม '+(p.sku||p.name)); return; }
+        // เจอหลายรายการ → เปิดให้เลือก
+        this.setState({ scanResults:rows, scanResultsOpen:true });
+      })
+      .catch(e=>this.toast('ค้นหาไม่สำเร็จ: '+((e&&e.message)||e)));
+  }
+  // เพิ่มสินค้า 1 ตัวลงตาราง (ถ้ามีแล้ว +จำนวน) — คืน index
+  _appendSku(p){
+    const S = this.state;
+    const exist = S.skuRows.findIndex(r=> r.sku===p.sku && r.barcode===p.barcode);
+    if(exist>=0){ this.setCopiesFor(exist, this.copiesFor(exist)+1); this.setState({activeSku:exist}); return exist; }
+    const skuRows = [...S.skuRows, p];
+    const idx = skuRows.length-1;
+    const cm = Object.assign({}, S.copiesMap); cm[idx]=1;
+    this.setState({ skuRows, copiesMap:cm, activeSku:idx, skuSource:'scan' });
+    return idx;
+  }
+  // เพิ่มผลค้นหาทั้งหมดในครั้งเดียว
+  addAllResults(){
+    const S = this.state;
+    const skuRows = [...S.skuRows];
+    const cm = Object.assign({}, S.copiesMap);
+    (S.scanResults||[]).forEach(p=>{
+      const exist = skuRows.findIndex(r=> r.sku===p.sku && r.barcode===p.barcode);
+      if(exist>=0){ cm[exist] = (cm[exist]!=null?cm[exist]:1) + 1; }
+      else { skuRows.push(p); cm[skuRows.length-1] = 1; }
+    });
+    const n = (S.scanResults||[]).length;
+    this.setState({ skuRows, copiesMap:cm, scanResults:[], scanResultsOpen:false, skuSource:'scan', activeSku:skuRows.length-1 });
+    this.toast('เพิ่ม '+n+' รายการ');
+  }
+  // ลบ 1 แถวออกจากตาราง (re-index copiesMap)
+  removeRow(i){
+    const S = this.state;
+    const skuRows = S.skuRows.filter((r,k)=>k!==i);
+    const cm = {}; let k=0;
+    S.skuRows.forEach((r,old)=>{ if(old===i) return; if(S.copiesMap[old]!=null) cm[k]=S.copiesMap[old]; k++; });
+    this.setState({ skuRows, copiesMap:cm, activeSku:Math.max(0,Math.min(skuRows.length-1, S.activeSku)) });
+  }
+  clearGrid(){ this.setState({ skuRows:[], copiesMap:{}, skuSel:{}, activeSku:0 }); this.toast('ล้างรายการแล้ว'); }
 
   // ---- พิมพ์จากใบสั่งซื้อ (PO) ----
   openPo(){ this.setState({ poOpen:true }); this.loadPoList(true); }
@@ -1483,13 +1941,29 @@ class Component extends DCLogic {
   }
   saveTemplate(){
     const S = this.state;
-    const design = { labelName:S.labelName, labelW:S.labelW, labelH:S.labelH, bg:S.bg, elements:S.elements };
-    fetch('/api/templates', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id:S.templateId||undefined, name:S.labelName, design }) })
+    const name = (S.labelName||'').trim();
+    if(!name){ this.toast('กรุณาตั้งชื่อแม่แบบก่อนบันทึก'); return; }
+    // ส่ง id เฉพาะตอนชื่อ "ไม่เปลี่ยน" จากที่โหลด/เซฟไว้ → อัปเดตอันเดิม
+    const keepId = !!(S.templateId && name===S.templateName);
+    if(keepId){ this._doSave(S.templateId, 'update'); return; }
+    // ชื่อใหม่ — ถ้าชนกับแม่แบบอื่นที่มีอยู่ → เด้งเตือนก่อนเขียนทับ
+    const dup = (S.savedTemplates||[]).find(t=> t.name===name && t.id!==S.templateId);
+    if(dup){ this.setState({ confirmDup:{ name, id:dup.id } }); return; }
+    this._doSave(undefined, 'new');
+  }
+  _doSave(id, mode){
+    const S = this.state;
+    const name = (S.labelName||'').trim();
+    const design = { labelName:name, labelW:S.labelW, labelH:S.labelH, bg:S.bg, elements:S.elements,
+      printMedia:S.printMedia, rollCols:S.rollCols, rollRows:S.rollRows };
+    fetch('/api/templates', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id, name, design }) })
       .then(r=>r.json())
       .then(j=>{
         if(!j.ok) throw new Error(j.error||'บันทึกไม่สำเร็จ');
-        this.setState({ templateId:j.id });
-        this.toast('บันทึกแม่แบบ "'+j.name+'" แล้ว');
+        this.setState({ templateId:j.id, templateName:j.name, confirmDup:null });
+        const msg = mode==='update' ? 'อัปเดตแม่แบบ "'+j.name+'" แล้ว'
+          : (mode==='overwrite' ? 'เขียนทับแม่แบบ "'+j.name+'" แล้ว' : 'บันทึกแม่แบบใหม่ "'+j.name+'" แล้ว');
+        this.toast(msg);
         this.loadTemplates(true);
       })
       .catch(e=>this.toast('บันทึกไม่สำเร็จ: '+((e&&e.message)||e)));
@@ -1499,10 +1973,8 @@ class Component extends DCLogic {
       .then(r=>r.json())
       .then(j=>{
         if(!j.ok || !j.template) throw new Error('ไม่พบแม่แบบ');
-        const d = j.template.design||{};
-        this.setState({ labelName:d.labelName||j.template.name, labelW:d.labelW||50, labelH:d.labelH||30, bg:d.bg||'#ffffff',
-          elements:Array.isArray(d.elements)?d.elements:[], selectedId:null, templateId:j.template.id });
-        setTimeout(()=>this.fitView(), 30);
+        this._loadDesign(this._designFromTemplate(j.template));   // โหลดมาแสดงแทนอันปัจจุบัน
+        this.setState({ view:'design' });
         this.toast('เปิดแม่แบบ "'+j.template.name+'"');
       })
       .catch(e=>this.toast('เปิดแม่แบบไม่สำเร็จ: '+((e&&e.message)||e)));
@@ -1575,6 +2047,7 @@ class Component extends DCLogic {
       if(e.code==='Space' && !typing){ if(!this.state.spaceHeld) this.setState({spaceHeld:true}); e.preventDefault(); return; }
       if(typing) return;
       if((e.key==='Delete'||e.key==='Backspace') && this.state.selectedId){ this.deleteSel(); e.preventDefault(); return; }
+      if(e.key==='Escape' && this.state.selectedId){ this.setState({selectedId:null}); e.preventDefault(); return; }
       const sel=this.selEl();
       if(sel && e.key.startsWith('Arrow')){
         const step=e.shiftKey?2:0.5; let p={};
@@ -1597,7 +2070,7 @@ class Component extends DCLogic {
     if(this._vp) this._vp.addEventListener('wheel', this._wheel, { passive:false });
     setTimeout(()=>this.fitView(), 60);
     this.ensureLibs();
-    this.loadBizList(true); this.loadShopList(true); this.loadTemplates(true);
+    this.loadConfig(); this.loadBizList(true); this.loadShopList(true); this.bootTemplates();
   }
   componentDidUpdate(){ this.renderBarcodes(); }
   componentWillUnmount(){

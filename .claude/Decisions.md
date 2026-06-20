@@ -32,7 +32,14 @@
 **ตัดสินใจ:** rename `Label Designer.dc.html` → `LabelDesigner.dc.html`, ใช้ `index.html` redirect
 **เหตุผล:** ชื่อมีเว้นวรรคยุ่งยากตอน serve/พิมพ์คำสั่ง; `index.html` เปิดที่ root ได้ทันที
 
-## D7 — ส่วนพิมพ์/บันทึก/เชื่อมต่อยังเป็น mock (ตั้งใจ)
-**ตัดสินใจ:** prototype phase — `doPrint`/`save`/connection เป็น mock (toast เฉยๆ)
-**เหตุผล:** โฟกัส UX การออกแบบป้ายก่อน; backend/printer integration เป็นงานเฟสถัดไป
-**ผลตามมา:** ดูงานจริงที่ต้องทำใน [Roadmap.md](Roadmap.md)
+## D8 — self-host ไลบรารี/ฟอนต์ใน `vendor/` (ออฟไลน์) แทน CDN
+**ตัดสินใจ:** ดึง React/ReactDOM/JsBarcode/qrcodejs + ฟอนต์ IBM Plex มาเก็บใน `vendor/` แล้ว commit ลง repo + ใส่ใน `pkg.assets`
+**เหตุผล:** แอปแพ็กเป็น `.exe` แจกเครื่องหน้าร้านที่อาจไม่มีเน็ต — พึ่ง CDN = เปิดไม่ขึ้น/บาร์โค้ดไม่วาด/ฟอนต์ไทยเพี้ยน
+**วิธีทำ:** `scripts/fetch-vendor.js` (`npm run fetch:vendor`) ทำซ้ำได้ — ดึง JS, ดึง CSS Google Fonts ด้วย Chrome UA แล้ว download woff2 + rewrite `url()` เป็น path ในเครื่อง (`vendor/fonts/fonts.css`)
+**ผลตามมา:** ถ้าจะอัปเวอร์ชันต้องแก้ให้ตรงกัน 3 จุด (support.js / head html / buildPrintHTML) แล้วรัน fetch ใหม่; ทิ้ง SRI ของ React (same-origin first-party แล้ว); หน้าต่างพิมพ์ต้องใช้ origin-absolute เพราะเปิดเป็น about:blank — ดู [Gotchas.md](Gotchas.md)
+**Babel:** ไม่ vendored เพราะไม่ถูกโหลด (logic เป็น ES class ไม่ใช่ JSX)
+
+## D7 — เริ่มจาก mock แล้วค่อยต่อ backend จริง (ตอนนี้ต่อจริงแล้ว)
+**ตัดสินใจ:** prototype phase เริ่มด้วย `doPrint`/`save`/connection เป็น mock เพื่อโฟกัส UX ออกแบบป้ายก่อน
+**สถานะปัจจุบัน:** ต่อ backend จริงครบแล้ว — พิมพ์ผ่าน `window.print()` (`buildPrintHTML`), บันทึกลง `templates.json`, ดึง SKU/ธุรกิจ/ร้าน/PO จริงผ่าน `server.js` + `dataSource.js`
+**เหลือ:** อัปโหลดรูปจริง, Undo/Redo, SQL Server, self-host (ออฟไลน์) — ดู [Roadmap.md](Roadmap.md)

@@ -14,7 +14,14 @@
       "Bash(node _harness.js)",
       "PowerShell(git -C $repo status --short)",
       "Bash(node _h.js)",
-      "Bash(rm -f _h.js _c.js)"
+      "Bash(rm -f _h.js _c.js)",
+      "Bash(node -e 'const f=require\\(\"@yao-pkg/pkg-fetch\"\\);console.log\\(\"keys:\",Object.keys\\(f\\)\\);console.log\\(\"need:\",typeof f.need\\);')",
+      "Read(//c/Users/yuth1/.pkg-cache/**)",
+      "Bash(node -e 'const fs=require\\(\"fs\"\\);const s=fs.readFileSync\\(\"LabelDesigner.dc.html\",\"utf8\"\\);const m=s.match\\(/<script type=\"text\\\\/x-dc\"[^>]*>\\([\\\\s\\\\S]*?\\)<\\\\/script>/\\);try{new Function\\(\"DCLogic\",\"StreamableLogic\",\"React\",m[1]+\"\\\\n;return 0;\"\\);console.log\\(\"JS syntax: OK\"\\);}catch\\(e\\){console.log\\(\"ERR\",e.message\\);}')",
+      "Bash(node scripts/fetch-vendor.js)",
+      "Bash(node --check support.js)",
+      "Bash(node --check server.js)",
+      "Bash(node --check scripts/fetch-vendor.js)"
     ]
   }
 }

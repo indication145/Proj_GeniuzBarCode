@@ -42,6 +42,37 @@ function readJsonBody(req) {
 async function handleApi(req, res) {
   const u = new URL(req.url, "http://localhost");
   if (u.pathname === "/api/health") { sendJson(res, 200, { ok: true }); return; }
+  if (u.pathname === "/api/config") {
+    try {
+      if (req.method === "POST") {
+        const body = await readJsonBody(req);
+        const changed = [];
+        if (typeof body.baseUrl === "string" && body.baseUrl.trim()) { dataSource.setEnvVar("CSITH_BASE_URL", body.baseUrl.trim()); changed.push("Endpoint"); }
+        // อัปเดต API key เฉพาะเมื่อส่งค่าใหม่จริง (ค่าว่าง = ไม่เปลี่ยน คงของเดิม)
+        if (typeof body.apiKey === "string" && body.apiKey.trim()) { dataSource.setEnvVar("CSITH_API_KEY", body.apiKey.trim()); changed.push("API Key"); }
+        if (typeof body.tokenPath === "string" && body.tokenPath.trim()) { dataSource.setEnvVar("CSITH_TOKEN_PATH", body.tokenPath.trim()); changed.push("Token Path"); }
+        // ---- SQL Server config ----
+        const sql = body.sql || {};
+        if (typeof sql.host === "string") { dataSource.setEnvVar("SQL_HOST", sql.host.trim()); changed.push("SQL Server"); }
+        if (typeof sql.port === "string" || typeof sql.port === "number") dataSource.setEnvVar("SQL_PORT", String(sql.port).trim() || "1433");
+        if (typeof sql.database === "string") dataSource.setEnvVar("SQL_DATABASE", sql.database.trim());
+        if (typeof sql.user === "string") dataSource.setEnvVar("SQL_USER", sql.user.trim());
+        // รหัสผ่าน: เปลี่ยนเฉพาะเมื่อส่งค่าใหม่ (ว่าง = คงเดิม)
+        if (typeof sql.password === "string" && sql.password) { dataSource.setEnvVar("SQL_PASSWORD", sql.password); changed.push("SQL Password"); }
+        if (typeof sql.query === "string" && sql.query.trim()) dataSource.setEnvVar("SQL_QUERY", sql.query.trim());
+        // สลับโหมดแหล่งข้อมูลตามแท็บที่บันทึก (มี sql = โหมด SQL, มี baseUrl = โหมด REST)
+        if (typeof body.mode === "string") dataSource.setEnvVar("DATA_SOURCE", body.mode === "sql" ? "sql" : "api");
+        else if (body.sql) dataSource.setEnvVar("DATA_SOURCE", "sql");
+        else if (typeof body.baseUrl === "string") dataSource.setEnvVar("DATA_SOURCE", "api");
+        sendJson(res, 200, { ok: true, changed, config: dataSource.getConfig() });
+      } else {
+        sendJson(res, 200, { ok: true, config: dataSource.getConfig() });
+      }
+    } catch (e) {
+      sendJson(res, 500, { ok: false, error: String((e && e.message) || e) });
+    }
+    return;
+  }
   if (u.pathname === "/api/biz") {
     try {
       if (req.method === "POST") {
@@ -106,7 +137,9 @@ async function handleApi(req, res) {
     return;
   }
   if (u.pathname === "/api/skus") {
-    const source = u.searchParams.get("source") === "sql" ? "sql" : "api";
+    // ไม่ส่ง source มา → ใช้โหมดที่ตั้งไว้ (DATA_SOURCE); ส่งมาก็ตามนั้น
+    const sParam = u.searchParams.get("source");
+    const source = sParam ? (sParam === "sql" ? "sql" : "api") : (dataSource.CFG.dataSource === "sql" ? "sql" : "api");
     const opts = { fg: u.searchParams.get("fg"), code: u.searchParams.get("code") || "" };
     try {
       const rows = await dataSource.getSkus(source, opts);
