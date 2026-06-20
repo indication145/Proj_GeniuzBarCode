@@ -30,6 +30,26 @@ select:focus {
   outline: none;
 }
 
+/* shared form field — focus ring follows the theme accent */
+.ge-field {
+  width: 100%;
+  font-size: 12.5px;
+  border: 1px solid #e6e3df;
+  border-radius: 8px;
+  padding: 9px 11px;
+  background: #fbfaf9;
+  color: #1b1a18;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.ge-field:focus {
+  border-color: var(--accent);
+  background: #fff;
+}
+select.ge-field {
+  font-family: 'IBM Plex Sans Thai', sans-serif;
+  cursor: pointer;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;

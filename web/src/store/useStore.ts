@@ -29,6 +29,7 @@ interface ThemeSlice {
 
 interface HeaderSlice {
   connMode: 'api' | 'sql'
+  setConnMode: (m: 'api' | 'sql') => void
   connStatus: ConnStatus
   bizList: Row[]
   bizId: string
@@ -93,6 +94,7 @@ export const useStore = create<Store>((set, get) => ({
 
   // ---- header ----
   connMode: 'api',
+  setConnMode: (m) => set({ connMode: m }),
   connStatus: 'checking',
   bizList: [],
   bizId: '',

@@ -34,6 +34,8 @@ export interface SqlConfig {
   port?: string
   database?: string
   user?: string
+  hasPassword?: boolean
+  driverReady?: boolean
 }
 export interface AppConfig {
   baseUrl?: string
