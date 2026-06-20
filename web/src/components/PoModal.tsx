@@ -33,7 +33,8 @@ export function PoModal() {
           {poBusy && <div style={{ textAlign: 'center', color: '#9A938A', padding: 24 }}>กำลังโหลด…</div>}
           {!poBusy && poList.length === 0 && <div style={{ textAlign: 'center', color: '#9A938A', padding: 24, fontSize: 13 }}>ไม่พบใบสั่งซื้อ</div>}
           {poList.map((r, i) => {
-            const docNo = pick(r, 'docNo', 'doc', 'no', 'docId')
+            const docNo = pick(r, 'sysDocNo', 'docNo', 'doc', 'no', 'docId')
+            const sub = [pick(r, 'supplierName', 'vendorName', 'supplierId'), pick(r, 'docDate', 'date'), pick(r, 'purIvNo')].filter(Boolean).join(' · ')
             return (
               <button
                 key={i}
@@ -42,9 +43,7 @@ export function PoModal() {
               >
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, fontFamily: "'IBM Plex Mono'" }}>{docNo || '(no doc)'}</div>
-                  <div style={{ fontSize: 11.5, color: '#78716c', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {pick(r, 'vendorName', 'supplierName', 'partyName', 'vendor')} {pick(r, 'docDate', 'date') && '· ' + pick(r, 'docDate', 'date')}
-                  </div>
+                  <div style={{ fontSize: 11.5, color: '#78716c', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sub || '—'}</div>
                 </div>
                 <span style={{ fontSize: 11, color: 'var(--accent)' }}>เลือก →</span>
               </button>
