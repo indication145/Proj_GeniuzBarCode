@@ -5,7 +5,8 @@ import * as api from '@/lib/api'
 import type { Row } from '@/lib/api'
 import { loadTheme, saveAccent, saveMood, saveStock, type Mood, type Stock } from '@/lib/theme'
 import { tplPriceTag } from '@/lib/elements'
-import type { El, LabelDoc, PrintMedia, Sku, Shop } from '@/lib/types'
+import { mkEl } from '@/lib/elements'
+import type { El, Guide, LabelDoc, PrintMedia, Sku, Shop } from '@/lib/types'
 
 export type View = 'design' | 'print' | 'settings'
 export type ConnStatus = 'connected' | 'offline' | 'checking'
@@ -53,11 +54,39 @@ interface EditorSlice {
   rollCols: number
   rollRows: number
   templateId: string
+  templateName: string
+  selectedId: string | null
+  zoom: number
+  panX: number
+  panY: number
+  guides: Guide[]
+  savedTemplates: Row[]
+  confirmDup: { name: string; id: string } | null
   setPrintMedia: (m: PrintMedia) => void
   bumpRoll: (which: 'cols' | 'rows', delta: number) => void
   bootTemplates: () => Promise<void>
-  /** the slice the pure print/preview builders consume */
   doc: () => LabelDoc
+  // editing
+  selEl: () => El | null
+  setSelected: (id: string | null) => void
+  addElement: (type: El['type']) => void
+  patchEl: (id: string, patch: Partial<El>) => void
+  updateSel: (patch: Partial<El>) => void
+  dupSel: () => void
+  deleteSel: () => void
+  setBg: (hex: string) => void
+  setLabelName: (n: string) => void
+  setLabelSize: (w: number, h: number) => void
+  applyPreset: (elements: El[], w: number, h: number) => void
+  setGuides: (g: Guide[]) => void
+  setView3: (v: { zoom?: number; panX?: number; panY?: number }) => void
+  // templates
+  loadTemplates: () => Promise<void>
+  saveTemplate: () => void
+  doSave: (id: string | undefined, mode: string) => Promise<void>
+  openTemplate: (id: string) => Promise<void>
+  removeTemplate: (id: string) => Promise<void>
+  cancelDup: () => void
 }
 
 interface DataSlice {
@@ -217,6 +246,7 @@ export const useStore = create<Store>((set, get) => ({
   bootTemplates: async () => {
     try {
       const list = await api.listTemplates()
+      set({ savedTemplates: list.rows || [] })
       const first = (list.rows || [])[0]
       if (!first) return
       const r = await api.getTemplate(String(first.id))
@@ -241,6 +271,124 @@ export const useStore = create<Store>((set, get) => ({
     const s = get()
     return { labelName: s.labelName, labelW: s.labelW, labelH: s.labelH, bg: s.bg, elements: s.elements, printMedia: s.printMedia, rollCols: s.rollCols, rollRows: s.rollRows }
   },
+  templateName: '',
+  selectedId: null,
+  zoom: 4.2,
+  panX: 60,
+  panY: 60,
+  guides: [],
+  savedTemplates: [],
+  confirmDup: null,
+  selEl: () => get().elements.find((e) => e.id === get().selectedId) || null,
+  setSelected: (id) => set({ selectedId: id }),
+  addElement: (type) => {
+    const s = get()
+    const el = mkEl(type, s.labelW, s.labelH)
+    set({ elements: [...s.elements, el], selectedId: el.id })
+  },
+  patchEl: (id, patch) => set((s) => ({ elements: s.elements.map((e) => (e.id === id ? { ...e, ...patch } : e)) })),
+  updateSel: (patch) => {
+    const id = get().selectedId
+    if (id) get().patchEl(id, patch)
+  },
+  dupSel: () => {
+    const s = get()
+    const el = s.selEl()
+    if (!el) return
+    const { id: _drop, ...rest } = el
+    void _drop
+    const copy = mkEl(el.type, s.labelW, s.labelH, { ...rest, x: el.x + 2, y: el.y + 2 })
+    set({ elements: [...s.elements, copy], selectedId: copy.id })
+  },
+  deleteSel: () => {
+    const id = get().selectedId
+    if (!id) return
+    set((s) => ({ elements: s.elements.filter((e) => e.id !== id), selectedId: null }))
+  },
+  setBg: (hex) => set({ bg: hex }),
+  setLabelName: (n) => set({ labelName: n }),
+  setLabelSize: (w, h) => set({ labelW: Math.max(5, Math.min(1000, w || 5)), labelH: Math.max(5, Math.min(1000, h || 5)) }),
+  applyPreset: (elements, w, h) => {
+    set({ elements, labelW: w, labelH: h, selectedId: null })
+    get().toast('โหลดแม่แบบแล้ว')
+  },
+  setGuides: (g) => set({ guides: g }),
+  setView3: (v) => set(v),
+  loadTemplates: async () => {
+    try {
+      const j = await api.listTemplates()
+      set({ savedTemplates: j.rows || [] })
+    } catch {
+      /* ignore */
+    }
+  },
+  saveTemplate: () => {
+    const s = get()
+    const name = s.labelName.trim()
+    if (!name) {
+      s.toast('กรุณาตั้งชื่อแม่แบบก่อนบันทึก')
+      return
+    }
+    if (s.templateId && name === s.templateName) {
+      void s.doSave(s.templateId, 'update')
+      return
+    }
+    const dup = s.savedTemplates.find((t) => t.name === name && t.id !== s.templateId)
+    if (dup) {
+      set({ confirmDup: { name, id: String(dup.id) } })
+      return
+    }
+    void s.doSave(undefined, 'new')
+  },
+  doSave: async (id, mode) => {
+    const s = get()
+    const name = s.labelName.trim()
+    const design = { labelName: name, labelW: s.labelW, labelH: s.labelH, bg: s.bg, elements: s.elements, printMedia: s.printMedia, rollCols: s.rollCols, rollRows: s.rollRows }
+    try {
+      const j = await api.saveTemplate({ id, name, design })
+      if (!j.ok) throw new Error('บันทึกไม่สำเร็จ')
+      set({ templateId: j.id, templateName: j.name, confirmDup: null })
+      s.toast(mode === 'update' ? `อัปเดตแม่แบบ "${j.name}" แล้ว` : mode === 'overwrite' ? `เขียนทับแม่แบบ "${j.name}" แล้ว` : `บันทึกแม่แบบใหม่ "${j.name}" แล้ว`)
+      void get().loadTemplates()
+    } catch (e) {
+      s.toast('บันทึกไม่สำเร็จ: ' + ((e as Error)?.message || e))
+    }
+  },
+  openTemplate: async (id) => {
+    try {
+      const j = await api.getTemplate(id)
+      const t = j.template as { id?: string; name?: string; design?: Record<string, unknown> }
+      const d = t.design || {}
+      set({
+        templateId: String(t.id || ''),
+        templateName: String(t.name || ''),
+        labelName: String(t.name || d.labelName || 'แม่แบบ'),
+        labelW: Number(d.labelW) || 50,
+        labelH: Number(d.labelH) || 30,
+        bg: String(d.bg || '#ffffff'),
+        elements: Array.isArray(d.elements) ? (d.elements as El[]) : get().elements,
+        printMedia: d.printMedia === 'roll' ? 'roll' : 'a4',
+        rollCols: Number(d.rollCols) || 3,
+        rollRows: Number(d.rollRows) || 1,
+        selectedId: null,
+        view: 'design',
+      })
+      get().toast(`เปิดแม่แบบ "${t.name}"`)
+    } catch (e) {
+      get().toast('เปิดแม่แบบไม่สำเร็จ: ' + ((e as Error)?.message || e))
+    }
+  },
+  removeTemplate: async (id) => {
+    try {
+      await api.deleteTemplate(id)
+      if (get().templateId === id) set({ templateId: '' })
+      void get().loadTemplates()
+      get().toast('ลบแม่แบบแล้ว')
+    } catch {
+      get().toast('ลบไม่สำเร็จ')
+    }
+  },
+  cancelDup: () => set({ confirmDup: null }),
 
   // ---- data / grid ----
   skuRows: [],

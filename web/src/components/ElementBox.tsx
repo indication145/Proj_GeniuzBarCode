@@ -5,7 +5,8 @@ import { BarcodeCanvas } from './BarcodeCanvas'
 import { QrBox } from './QrBox'
 
 // On-screen render of one element (mm coords → px). Mirrors the dc app's elView.
-export function ElementBox({ el, ctx, idx }: { el: El; ctx: ResolveCtx; idx: number }) {
+// `interactive` adds data-id + move cursor for the editor canvas (Design).
+export function ElementBox({ el, ctx, idx, interactive }: { el: El; ctx: ResolveCtx; idx: number; interactive?: boolean }) {
   const wrap: React.CSSProperties = {
     position: 'absolute',
     left: el.x * PX,
@@ -14,7 +15,9 @@ export function ElementBox({ el, ctx, idx }: { el: El; ctx: ResolveCtx; idx: num
     height: el.h * PX,
     boxSizing: 'border-box',
     userSelect: 'none',
+    ...(interactive ? { cursor: 'move' } : null),
   }
+  const idAttr = interactive ? { 'data-id': el.id } : {}
 
   if (el.type === 'text' || el.type === 'price') {
     const inner: React.CSSProperties = {
@@ -34,19 +37,19 @@ export function ElementBox({ el, ctx, idx }: { el: El; ctx: ResolveCtx; idx: num
       whiteSpace: el.type === 'price' ? 'nowrap' : 'normal',
     }
     return (
-      <div style={wrap}>
+      <div {...idAttr} style={wrap}>
         <div style={inner}>{resolveValue(el, ctx, idx)}</div>
       </div>
     )
   }
 
   if (el.type === 'frame') {
-    return <div style={{ ...wrap, border: `${(el.border ?? 0.5) * PX}px solid ${el.color || '#1b1a18'}`, borderRadius: (el.radius ?? 0) * PX, background: 'transparent' }} />
+    return <div {...idAttr} style={{ ...wrap, border: `${(el.border ?? 0.5) * PX}px solid ${el.color || '#1b1a18'}`, borderRadius: (el.radius ?? 0) * PX, background: 'transparent' }} />
   }
 
   if (el.type === 'barcode') {
     return (
-      <div style={wrap}>
+      <div {...idAttr} style={wrap}>
         <BarcodeCanvas text={resolveValue(el, ctx, idx)} format={el.format} showText={el.showText} />
       </div>
     )
@@ -54,7 +57,7 @@ export function ElementBox({ el, ctx, idx }: { el: El; ctx: ResolveCtx; idx: num
 
   if (el.type === 'qr') {
     return (
-      <div style={wrap}>
+      <div {...idAttr} style={wrap}>
         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <QrBox text={resolveValue(el, ctx, idx)} />
         </div>
@@ -71,7 +74,7 @@ export function ElementBox({ el, ctx, idx }: { el: El; ctx: ResolveCtx; idx: num
       )
     }
     return (
-      <div style={wrap}>
+      <div {...idAttr} style={wrap}>
         <div
           style={{
             width: '100%',
