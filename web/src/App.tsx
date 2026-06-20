@@ -16,6 +16,7 @@ export default function App() {
   const bootTemplates = useStore((s) => s.bootTemplates)
 
   useEffect(() => {
+    document.title = `Geniuz Barcode V.${__APP_VERSION__}`
     initTheme()
     void loadHeader()
     void bootTemplates()
