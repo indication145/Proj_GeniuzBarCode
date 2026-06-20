@@ -13,11 +13,13 @@ export default function App() {
   const view = useStore((s) => s.view)
   const initTheme = useStore((s) => s.initTheme)
   const loadHeader = useStore((s) => s.loadHeader)
+  const bootTemplates = useStore((s) => s.bootTemplates)
 
   useEffect(() => {
     initTheme()
     void loadHeader()
-  }, [initTheme, loadHeader])
+    void bootTemplates()
+  }, [initTheme, loadHeader, bootTemplates])
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
