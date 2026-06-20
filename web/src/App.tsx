@@ -1,24 +1,34 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import { Header } from '@/components/Header'
+import { NavRail } from '@/components/NavRail'
+import { Toast } from '@/components/Toast'
+import { DesignView } from '@/views/DesignView'
+import { PrintView } from '@/views/PrintView'
+import { SettingsView } from '@/views/SettingsView'
+import { useStore } from '@/store/useStore'
+import { useApplyAccent } from '@/theme/useApplyAccent'
 
-// Phase 1 scaffold placeholder — proves React renders and the /api proxy reaches
-// server.js. Replaced by the real shell (Header + NavRail + views) in Phase 3.
 export default function App() {
-  const [health, setHealth] = useState('checking…')
+  useApplyAccent()
+  const view = useStore((s) => s.view)
+  const initTheme = useStore((s) => s.initTheme)
+  const loadHeader = useStore((s) => s.loadHeader)
 
   useEffect(() => {
-    fetch('/api/health')
-      .then((r) => r.json())
-      .then((j) => setHealth(j.ok ? 'API OK ✓ (proxied to server.js)' : 'API responded, not ok'))
-      .catch((e) => setHealth('API error: ' + e.message))
-  }, [])
+    initTheme()
+    void loadHeader()
+  }, [initTheme, loadHeader])
 
   return (
-    <div style={{ fontFamily: "'IBM Plex Sans Thai', system-ui, sans-serif", padding: 32, color: '#1B1A18' }}>
-      <h1 style={{ marginBottom: 4 }}>GeniuzBarCode — Vite shell</h1>
-      <p style={{ color: '#78716c' }}>Phase 1 scaffold · React {/* version shown below */}</p>
-      <p>
-        Backend health: <b data-testid="health">{health}</b>
-      </p>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <Header />
+      <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
+        <NavRail />
+        {view === 'design' && <DesignView />}
+        {view === 'print' && <PrintView />}
+        {view === 'settings' && <SettingsView />}
+      </div>
+      <Toast />
     </div>
   )
 }
