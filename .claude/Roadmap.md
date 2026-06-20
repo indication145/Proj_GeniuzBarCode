@@ -2,7 +2,7 @@
 
 แผนพัฒนา **GeniuzBarCode Label Designer** (ออกแบบ & พิมพ์ป้าย)
 สถานะปัจจุบัน: **ใช้งานได้จริงครบวงจร + ออฟไลน์** — ออกแบบ → บันทึกแม่แบบ → ดึง SKU/PO จริง (REST หรือ SQL Server) → พิมพ์ → แพ็กเป็น `.exe` แจกได้ (ไลบรารี/ฟอนต์ self-host ใน `vendor/` ไม่ต้องต่อเน็ต)
-(เหลือเฉพาะ feature เสริม เช่น Undo-Redo / UI สลับ theme ใน standalone / code signing ดูด้านล่าง)
+(เหลือเฉพาะ feature เสริม เช่น Undo-Redo / code signing ดูด้านล่าง)
 
 ## ตอนนี้ทำได้ (Done)
 - ✅ ออกแบบป้าย: เพิ่ม/ย้าย/ปรับขนาด element (text, price, barcode, QR, image, frame)
@@ -75,6 +75,7 @@
   - snap ตอนลากเพิ่มให้จับขอบ/กึ่งกลางของ **element อื่น** ด้วย (เดิมจับเฉพาะขอบ/กึ่งกลางป้าย) ผ่าน `_snapMove()`; กด **Alt ค้าง** = ลากอิสระไม่ snap
   - ปุ่ม **ALIGN 6 ทิศ** (ซ้าย/กลาง/ขวา · บน/กลาง/ล่าง) ใน inspector → `alignSel(dir)` จัดกล่อง element ในขอบป้าย
   - shortcut: **Esc = ยกเลิกการเลือก** (เพิ่มจากเดิม Space/Delete/Arrows(±0.5, Shift ±2)/Ctrl+D)
-- [ ] UI สลับ theme/accent ใน standalone (ตอนนี้ตั้งได้ผ่าน props เท่านั้น) — *ยังไม่ทำ (ผู้ใช้เลือกข้ามรอบนี้)*
+- [x] **UI สลับ theme/accent ใน standalone** — แถบ "ธีม · THEME" ในหน้าตั้งค่าเชื่อมต่อ: จานสี accent 5 สี + dropdown canvas mood (studio/blueprint/spotlight/paper) + label stock (plain/cream/kraft/thermal)
+  - state `themeAccent/themeMood/themeStock` (null = ใช้ props/default, คงพฤติกรรม dc-editor); `renderVals` อ่าน `S.themeX || props.X || default`; เก็บ `localStorage` (`ge_accent/ge_mood/ge_stock`) จำตอนเปิดใหม่ผ่าน `loadTheme()` ใน componentDidMount
 
 > รายละเอียดสิ่งที่เป็น mock ดู [Gotchas.md](Gotchas.md) · เหตุผลการตัดสินใจ ดู [Decisions.md](Decisions.md)

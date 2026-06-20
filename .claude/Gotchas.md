@@ -76,5 +76,8 @@
 - ชื่อไฟล์หลักคือ `LabelDesigner.dc.html` (ไม่มีเว้นวรรค) — `index.html` ชี้ไปไฟล์นี้ ถ้า rename ต้องแก้ `index.html` ด้วย
 
 ## Theme
-- `accentColor` / `canvasMood` / `labelStock` ตั้งผ่าน **data-props ของ dc component เท่านั้น**
-- standalone ไม่มี UI สลับ — ใช้ค่า fallback ใน `renderVals()` (`accentColor ?? '#7b1fa2'`)
+- 3 ค่า: `accentColor` (สีหลัก) / `canvasMood` (พื้นหลัง canvas) / `labelStock` (เนื้อกระดาษ)
+- **มี UI สลับใน standalone แล้ว** — แถบ "ธีม · THEME" ในหน้าตั้งค่าเชื่อมต่อ → `setAccent/setMood/setStock` เก็บ `localStorage` (`ge_accent/ge_mood/ge_stock`)
+- ลำดับความสำคัญใน `renderVals()`: **`state.themeX` (ผู้ใช้เลือก) → `props.X` (dc-editor) → ค่า default**
+  - state เริ่มเป็น `null` ตั้งใจ เพื่อ**คงพฤติกรรม dc-editor** (ปรับ props สดได้ตราบที่ผู้ใช้ยังไม่เลือกในแอป); `loadTheme()` ใน componentDidMount เติม state จาก localStorage
+- ถ้าจะเพิ่มสี accent ต้องแก้ทั้ง `accentChoices` (renderVals) และ options ใน data-props ให้ตรงกัน

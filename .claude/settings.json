@@ -21,7 +21,8 @@
       "Bash(node scripts/fetch-vendor.js)",
       "Bash(node --check support.js)",
       "Bash(node --check server.js)",
-      "Bash(node --check scripts/fetch-vendor.js)"
+      "Bash(node --check scripts/fetch-vendor.js)",
+      "Bash(xxd)"
     ]
   }
 }

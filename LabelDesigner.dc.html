@@ -144,7 +144,7 @@
         <label style="display:block;margin-bottom:5px;font-size:11px;color:#78716c;">ชื่อแม่แบบ</label>
         <div style="display:flex;gap:6px;margin-bottom:12px;">
           <input value="{{ labelName }}" onChange="{{ onName }}" placeholder="ตั้งชื่อแม่แบบ…" title="ชื่อที่จะใช้บันทึกแม่แบบ" style="flex:1;min-width:0;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:500;color:#1B1A18;border:1px solid #E6E3DF;border-radius:7px;padding:7px 9px;background:#FBFAF9;transition:all .15s;" style-focus="border-color:#7b1fa2;background:#fff;" />
-          <button onClick="{{ save }}" title="บันทึกแม่แบบด้วยชื่อนี้" style="display:flex;align-items:center;gap:5px;flex-shrink:0;height:33px;padding:0 12px;border-radius:7px;border:1px solid #7b1fa2;background:#7b1fa2;color:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:12px;font-weight:500;transition:all .15s;" style-hover="background:#6a1a8e;">
+          <button onClick="{{ save }}" title="บันทึกแม่แบบด้วยชื่อนี้" style="{{ saveBtnStyle }}" style-hover="{{ accentBtnHover }}">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             บันทึก
           </button>
@@ -517,7 +517,7 @@
             <input value="{{ scanCode }}" onChange="{{ onScanInput }}" onKeyDown="{{ onScanKey }}" placeholder="สแกน หรือพิมพ์คำค้น แล้วกด Enter…" style="flex:1;min-width:0;border:none;background:transparent;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#1B1A18;outline:none;" />
           </div>
 
-          <button onClick="{{ doScan }}" style="display:flex;align-items:center;justify-content:center;gap:6px;height:38px;padding:0 16px;border-radius:8px;border:1px solid #7b1fa2;background:#7b1fa2;color:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:600;transition:all .15s;flex-shrink:0;" style-hover="background:#6a1a8e;">
+          <button onClick="{{ doScan }}" style="{{ scanAddStyle }}" style-hover="{{ accentBtnHover }}">
             <svg width="15" height="15" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             เพิ่ม
           </button>
@@ -727,6 +727,37 @@
             </label>
           </div>
         </div>
+
+        <div style="background:#fff;border:1px solid #E6E3DF;border-radius:14px;padding:20px;margin-top:16px;">
+          <div style="font-size:10px;font-weight:600;color:#9A938A;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:14px;">ธีม · THEME</div>
+          <div style="margin-bottom:16px;">
+            <span style="font-size:11px;color:#78716c;display:block;margin-bottom:8px;">สีหลักของแอป · Accent</span>
+            <div style="display:flex;gap:10px;">
+              <sc-for list="{{ accentSwatches }}" as="a" hint-placeholder-count="5"><button onClick="{{ a.apply }}" style="{{ a.style }}"></button></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;">
+            <label style="flex:1;">
+              <span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">พื้นหลังพื้นที่ออกแบบ · Canvas</span>
+              <select value="{{ themeMood }}" onChange="{{ onThemeMood }}" style="width:100%;font-family:'IBM Plex Sans Thai';font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;cursor:pointer;" style-focus="border-color:#7b1fa2;background:#fff;">
+                <option value="studio">สตูดิโอ (จุดเทา)</option>
+                <option value="blueprint">บลูพรินต์ (กริดน้ำเงิน)</option>
+                <option value="spotlight">สปอตไลต์ (ไล่แสง)</option>
+                <option value="paper">กระดาษ (โทนอุ่น)</option>
+              </select>
+            </label>
+            <label style="flex:1;">
+              <span style="font-size:11px;color:#78716c;display:block;margin-bottom:5px;">เนื้อกระดาษป้าย · Stock</span>
+              <select value="{{ themeStock }}" onChange="{{ onThemeStock }}" style="width:100%;font-family:'IBM Plex Sans Thai';font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:9px 11px;background:#FBFAF9;cursor:pointer;" style-focus="border-color:#7b1fa2;background:#fff;">
+                <option value="plain">เรียบ (ขาว)</option>
+                <option value="cream">ครีม</option>
+                <option value="kraft">คราฟท์</option>
+                <option value="thermal">เทอร์มอล</option>
+              </select>
+            </label>
+          </div>
+          <div style="margin-top:12px;font-size:10px;color:#9A938A;line-height:1.5;">บันทึกในเครื่องอัตโนมัติ (localStorage) — จำค่าเมื่อเปิดโปรแกรมใหม่</div>
+        </div>
       </div>
     </div>
     </sc-if>
@@ -754,7 +785,7 @@
             <option value="5">อ้างอิง</option>
           </select>
           <input value="{{ poSearch }}" onChange="{{ onPoSearch }}" onKeyDown="{{ onPoSearchKey }}" placeholder="ค้นหาใบสั่งซื้อ…" style="flex:1;font-family:'IBM Plex Sans Thai';font-size:12.5px;border:1px solid #E6E3DF;border-radius:8px;padding:8px 11px;background:#FBFAF9;" style-focus="border-color:#7b1fa2;background:#fff;" />
-          <button onClick="{{ doPoSearch }}" style="display:flex;align-items:center;gap:5px;padding:0 14px;border-radius:8px;border:1px solid #7b1fa2;background:#7b1fa2;color:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:12.5px;font-weight:500;transition:all .15s;" style-hover="background:#6a1a8e;">
+          <button onClick="{{ doPoSearch }}" style="{{ poSearchStyle }}" style-hover="{{ accentBtnHover }}">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
             ค้นหา
           </button>
@@ -793,7 +824,7 @@
             <div style="font-size:15px;font-weight:600;">พบ {{ scanResultsCount }} รายการ</div>
             <div style="font-size:11px;color:#9A938A;">เลือกเพิ่มทีละรายการ หรือเพิ่มทั้งหมด</div>
           </div>
-          <button onClick="{{ addAllResults }}" style="display:flex;align-items:center;gap:6px;height:34px;padding:0 13px;border-radius:8px;border:1px solid #7b1fa2;background:#7b1fa2;color:#fff;cursor:pointer;font-family:'IBM Plex Sans Thai';font-size:12.5px;font-weight:600;transition:all .15s;" style-hover="background:#6a1a8e;">
+          <button onClick="{{ addAllResults }}" style="{{ addAllStyle }}" style-hover="{{ accentBtnHover }}">
             <svg width="14" height="14" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             เพิ่มทั้งหมด
           </button>
@@ -897,6 +928,8 @@ class Component extends DCLogic {
       savedTemplates: [], templateId: '', templateName: '', confirmDup: null,
       spaceHeld: false,
       view: 'design',
+      // theme overrides (null = ใช้ props/ค่า default; ผู้ใช้เลือกผ่านหน้า "ธีม" → เก็บ localStorage)
+      themeAccent: null, themeMood: null, themeStock: null,
     };
     this._drag = null;
   }
@@ -1066,10 +1099,10 @@ class Component extends DCLogic {
     const S = this.state;
     const PX = this.PX;
     const sel = this.selEl();
-    const accentHex = this.props.accentColor ?? '#7b1fa2';
+    const accentHex = S.themeAccent || this.props.accentColor || '#7b1fa2';
     const A = this.accentVars(accentHex);
-    const mood = this.props.canvasMood ?? 'studio';
-    const stock = this.props.labelStock ?? 'plain';
+    const mood = S.themeMood || this.props.canvasMood || 'studio';
+    const stock = S.themeStock || this.props.labelStock || 'plain';
     const _moods = {
       studio:{ color:'#DEDBD6', img:'radial-gradient(#cfcbc4 1px,transparent 1px)', size:'22px 22px', shadow:'0 8px 40px rgba(0,0,0,0.16)' },
       blueprint:{ color:'#0e2a44', img:'linear-gradient(rgba(120,200,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(120,200,255,.18) 1px,transparent 1px)', size:'24px 24px', shadow:'0 0 0 1px rgba(130,200,255,.55),0 14px 50px rgba(0,0,0,0.55)' },
@@ -1092,6 +1125,13 @@ class Component extends DCLogic {
     const printPrimaryHover = { background:A.dark };
     const connectBtnStyle = { width:'100%', height:'42px', marginTop:'18px', border:'none', borderRadius:'10px', background:A.base, cursor:'pointer', fontFamily:"'IBM Plex Sans Thai'", fontSize:'13.5px', fontWeight:600, color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px', boxShadow:'0 3px 12px '+A.shadow, transition:'all .15s' };
     const connectBtnHover = { background:A.dark };
+    // ปุ่มทึบสี accent (themeable) — เดิม hardcode #7b1fa2; ปรับ height/padding ต่างกันแต่ละจุด
+    const _accBtn = (o)=>Object.assign({ display:'flex', alignItems:'center', justifyContent:'center', gap:'6px', borderRadius:'8px', border:'1px solid '+A.base, background:A.base, color:'#fff', cursor:'pointer', fontFamily:"'IBM Plex Sans Thai'", fontWeight:600, transition:'all .15s', flexShrink:0 }, o);
+    const accentBtnHover = { background:A.dark, borderColor:A.dark };
+    const saveBtnStyle = _accBtn({ gap:'5px', height:'33px', padding:'0 12px', borderRadius:'7px', fontSize:'12px', fontWeight:500 });
+    const scanAddStyle = _accBtn({ height:'38px', padding:'0 16px', fontSize:'13px' });
+    const poSearchStyle = _accBtn({ gap:'5px', padding:'0 14px', fontSize:'12.5px', fontWeight:500 });
+    const addAllStyle = _accBtn({ height:'34px', padding:'0 13px', fontSize:'12.5px' });
     const countBoxStyle = { background:A.soft, border:'1px solid '+A.softBorder, borderRadius:'10px', padding:'11px 13px', marginBottom:'14px' };
     const countNumStyle = { fontFamily:"'IBM Plex Mono',monospace", fontSize:'20px', fontWeight:700, color:A.base };
     const countLabelStyle = { fontSize:'12px', color:A.text };
@@ -1167,6 +1207,14 @@ class Component extends DCLogic {
     const colorSwatches = colors.map(c=>mkSwatch(c, curColor, ()=>this.updateSel({color:c})));
     const bgs = ['#ffffff','#FFF8E7','#FFE8E2','#E9F2FF','#1b1a18'];
     const bgSwatches = bgs.map(c=>mkSwatch(c, S.bg, ()=>this.setState({bg:c})));
+
+    // theme: accent palette (highlight current) + mood/stock select values
+    const accentChoices = ['#7b1fa2','#2563EB','#0E9F6E','#7C3AED','#3F3F46'];
+    const _curAccent = accentHex.toLowerCase();
+    const accentSwatches = accentChoices.map(c=>({ apply:()=>this.setAccent(c),
+      style:{ width:'30px', height:'30px', borderRadius:'8px', cursor:'pointer', background:c, transition:'all .12s',
+        border:(_curAccent===c.toLowerCase())?'2px solid #1B1A18':'1px solid #d8d3cc',
+        boxShadow:(_curAccent===c.toLowerCase())?'0 0 0 2px #fff inset':'none' } }));
 
     // format options
     const fmts = [ {label:'Code128', v:'CODE128'}, {label:'EAN-13', v:'EAN13'}, {label:'Code39', v:'CODE39'} ];
@@ -1310,6 +1358,9 @@ class Component extends DCLogic {
       addQr:()=>this.addElement('qr'), addImage:()=>this.addElement('image'), addFrame:()=>this.addElement('frame'),
       templates, sizePresets, skuView, skuRowCount:S.skuRows.length,
       colorSwatches, bgSwatches, formatOptions,
+      accentSwatches, themeMood:mood, themeStock:stock,
+      saveBtnStyle, scanAddStyle, poSearchStyle, addAllStyle, accentBtnHover,
+      onThemeMood:(e)=>this.setMood(e.target.value), onThemeStock:(e)=>this.setStock(e.target.value),
       elementsView, artStyle, guides,
       hasSel, noSel:!sel, selStyle,
       hnw:handles.nw, hn:handles.n, hne:handles.ne, he:handles.e, hse:handles.se, hs:handles.s, hsw:handles.sw, hw:handles.w,
@@ -1447,6 +1498,18 @@ class Component extends DCLogic {
     const rgba=(a)=>'rgba('+r+','+g+','+b+','+a+')';
     const dk=(f)=>'rgb('+Math.round(r*f)+','+Math.round(g*f)+','+Math.round(b*f)+')';
     return { base:'#'+h, soft:rgba(0.10), softBorder:rgba(0.30), dark:dk(0.84), text:dk(0.74), shadow:rgba(0.34) };
+  }
+
+  // ---- theme override (เก็บใน localStorage ให้จำตอนเปิดใหม่; ทำงานใน standalone/.exe)
+  _lsGet(k){ try{ return window.localStorage.getItem(k); }catch(e){ return null; } }
+  _lsSet(k,v){ try{ window.localStorage.setItem(k,v); }catch(e){} }
+  setAccent(hex){ this._lsSet('ge_accent', hex); this.setState({ themeAccent:hex }); }
+  setMood(m){ this._lsSet('ge_mood', m); this.setState({ themeMood:m }); }
+  setStock(s){ this._lsSet('ge_stock', s); this.setState({ themeStock:s }); }
+  loadTheme(){
+    const a=this._lsGet('ge_accent'), m=this._lsGet('ge_mood'), s=this._lsGet('ge_stock');
+    const p={}; if(a) p.themeAccent=a; if(m) p.themeMood=m; if(s) p.themeStock=s;
+    if(Object.keys(p).length) this.setState(p);
   }
 
   setSize(w,h){
@@ -2070,6 +2133,7 @@ class Component extends DCLogic {
     if(this._vp) this._vp.addEventListener('wheel', this._wheel, { passive:false });
     setTimeout(()=>this.fitView(), 60);
     this.ensureLibs();
+    this.loadTheme();
     this.loadConfig(); this.loadBizList(true); this.loadShopList(true); this.bootTemplates();
   }
   componentDidUpdate(){ this.renderBarcodes(); }
