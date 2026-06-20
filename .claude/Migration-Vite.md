@@ -3,7 +3,7 @@
 แผนย้าย **GeniuzBarCode Label Designer** จาก dc-runtime (`.dc.html` + `support.js`)
 ไปเป็น **Vite + React** แบบเป็นเฟส (scaffold → ย้ายทีละหน้า → cutover)
 
-> สถานะ: **ร่าง / ยังไม่เริ่ม** — เอกสารวางแผน ไม่ใช่บันทึกสิ่งที่ทำแล้ว
+> สถานะ: **Phase 0 — กำลังทำ** (branch `feat/vite-migration`; main = แอป dc เดิมใช้งานได้ปกติ)
 
 ---
 
@@ -78,10 +78,14 @@ web/
 
 ## เฟส
 
-### Phase 0 — เตรียม (ครึ่งวัน)
-- [ ] แตก branch `feat/vite-migration`
-- [ ] ผ่าน decision gate ข้างบน (ยืนยันยอมเสีย Claude Design sync)
-- [ ] freeze ฟีเจอร์ใหม่บนแอปเดิมระหว่างย้าย (กันต้องย้ายสองรอบ)
+### Phase 0 — เตรียม (ครึ่งวัน) — ✅ เสร็จ
+- [x] commit งานที่ค้างลง main ก่อนแตก branch — `938cb9c` (theme switcher + button fix) · `68a5fee` (แผนนี้) → push แล้ว
+- [x] แตก branch `feat/vite-migration` (จาก main `68a5fee`)
+- [x] decision gate — ผู้ใช้สั่ง "ลุยเฟส 0" = รับทราบจะเสีย Claude Design sync
+      (จุด irreversible จริงคือ Phase 6/7 ตอนลบ `.dc.html`/`support.js` — ก่อนหน้านั้นทิ้ง branch ได้)
+- [x] freeze ฟีเจอร์ใหม่บนแอปเดิม (main) ระหว่างย้าย — แก้บั๊กได้ แต่ฟีเจอร์ใหม่รอหลัง cutover
+
+**ถัดไป → [Phase 1 — Scaffold](#phase-1--scaffold-1-วัน)**
 
 ### Phase 1 — Scaffold (1 วัน)
 - [ ] `npm create vite@latest web -- --template react-ts` (วางใน `web/`)
