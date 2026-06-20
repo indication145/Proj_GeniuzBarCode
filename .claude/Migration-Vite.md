@@ -3,7 +3,7 @@
 แผนย้าย **GeniuzBarCode Label Designer** จาก dc-runtime (`.dc.html` + `support.js`)
 ไปเป็น **Vite + React** แบบเป็นเฟส (scaffold → ย้ายทีละหน้า → cutover)
 
-> สถานะ: **Phase 1 เสร็จ** (scaffold `web/` + proxy ใช้ได้); ถัดไป Phase 2 — branch `feat/vite-migration`; main = แอป dc เดิมใช้งานปกติ
+> สถานะ: **Phase 2 เสร็จ** (logic ย้ายเข้า `web/src/lib/` + vitest 22 ผ่าน); ถัดไป Phase 3 — branch `feat/vite-migration`; main = แอป dc เดิมใช้งานปกติ
 
 ---
 
@@ -100,16 +100,21 @@ web/
 
 **ถัดไป → Phase 2 — ย้าย logic → `web/src/lib/`**
 
-### Phase 2 — ย้าย logic ที่ไม่พึ่ง React → `src/lib/` (2–3 วัน)
-ย้าย "อัลกอริทึม" ก่อน (copy logic เดิมเกือบตรง ๆ, เพิ่ม type):
-- [ ] `units.ts`, `elements.ts` (mkEl + tpl*), `theme.ts` (accentVars + choices)
-- [ ] `barcode.ts` — `import JsBarcode from 'jsbarcode'` + `import QRCode from 'qrcode'`
-      (เลิกพึ่ง `window.*`; วาดใน component ผ่าน ref)
-- [ ] `print.ts` — port `buildPrintHTML` (ดู "จุดเสี่ยง: print window")
-- [ ] `snap.ts` — `_snapMove`, `alignSel`
-- [ ] `api.ts` — รวม fetch ของทุก endpoint เป็นฟังก์ชัน typed
-- [ ] เขียน unit test (vitest) ให้ snap/units/print อย่างน้อย happy path
-- **เช็ค:** `vitest` เขียว; logic เหล่านี้ import ได้โดยไม่ต้องมี DOM
+### Phase 2 — ย้าย logic → `web/src/lib/` — ✅ เสร็จ
+port logic เดิมเป็น TS module (มี type) — ทั้งหมดไม่พึ่ง React:
+- [x] `types.ts` (El/Sku/LabelDoc/ResolveCtx/Guide)
+- [x] `units.ts` (PX, mm↔px, snapHalf, fmtPrice, num)
+- [x] `theme.ts` (accentVars, ACCENT_CHOICES, MOODS/STOCKS, loadTheme/save* localStorage)
+- [x] `elements.ts` (defaultsFor, mkEl, tplPriceTag/Sticker/Qr, resolveValue + binding, defaultSku)
+- [x] `snap.ts` (snapMove, alignBox)
+- [x] `print.ts` (buildPrintHTML/printElHTML — pure; `assetBase` param แทน hardcode origin)
+- [x] `barcode.ts` (`import JsBarcode from 'jsbarcode'`, `import QRCode from 'qrcode'`; drawBarcode/drawQRCanvas/qrToDataURL — เลิกพึ่ง `window.*`)
+- [x] `api.ts` (typed wrapper ทุก `/api/*`: skus/biz/shops/po/templates/config/health)
+- [x] vitest — `lib.test.ts` **22 ผ่าน** (units/theme/elements/snap/print)
+- **เช็คแล้ว:** `npm test` 22/22 เขียว · `npm run build` (tsc+vite) ผ่าน
+- **หมายเหตุ:** ติดตั้ง `jsbarcode` `qrcode` (runtime) + `vitest` `@types/*` (dev)
+
+**ถัดไป → Phase 3 — shell + store (Zustand)**
 
 ### Phase 3 — Shell + store (2 วัน)
 - [ ] `useStore.ts` (Zustand) — ย้าย `this.state` เดิมมาเป็น slice: editor / data / ui / theme
