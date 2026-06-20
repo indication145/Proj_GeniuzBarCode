@@ -1,0 +1,213 @@
+# Migration Plan — ย้าย frontend ไป Vite + React
+
+แผนย้าย **GeniuzBarCode Label Designer** จาก dc-runtime (`.dc.html` + `support.js`)
+ไปเป็น **Vite + React** แบบเป็นเฟส (scaffold → ย้ายทีละหน้า → cutover)
+
+> สถานะ: **ร่าง / ยังไม่เริ่ม** — เอกสารวางแผน ไม่ใช่บันทึกสิ่งที่ทำแล้ว
+
+---
+
+## ⚠️ ก่อนตัดสินใจเริ่ม (decision gate)
+
+1. **เสีย re-sync กับ Claude Design ถาวร** — ดู [Decisions.md](Decisions.md) D1. หลังย้ายเป็น JSX
+   จะดึงงานออกแบบจาก Claude Design กลับมาไม่ได้อีก แก้ดีไซน์ต้องทำมือใน JSX
+2. **perf gain ต่อ end-user น้อย** — Babel ไม่ได้ถูกโหลดอยู่แล้ว (logic เป็น ES class), template parse
+   แค่ครั้งเดียวตอนบูต. ของจริงที่ได้คือ **DX + โครงระยะยาว + ตัด vendor/ hack** ไม่ใช่ "ผู้ใช้รู้สึกเร็วขึ้น"
+3. งานนี้ ≈ **เขียน frontend ใหม่ ~2,100 บรรทัด** (template+logic). Backend ไม่กระทบ
+
+**เริ่มก็ต่อเมื่อ:** เลิกพึ่ง Claude Design แล้ว · อยากได้ TS/test/tooling · จะต่อฟีเจอร์อีกเยอะ
+
+---
+
+## เป้าหมาย / ไม่ใช่เป้าหมาย
+
+**เป้าหมาย**
+- frontend เป็น React + JSX (Vite build, esbuild/SWC transform), TypeScript
+- ตัด CDN/vendor hack — ใช้ npm import (React/JsBarcode/qrcode) bundle เอง
+- คงพฤติกรรม UI/ฟีเจอร์ทุกอย่างให้เทียบเท่าของเดิม (design/print/settings/theme/snap/PO/SQL)
+
+**ไม่ใช่เป้าหมาย (คงเดิม ห้ามแตะตอนย้าย)**
+- `server.js` (static + API proxy), `dataSource.js`, `templates.js` — Node ล้วน
+- API contract: `/api/skus` `/api/templates` `/api/biz` `/api/shops` `/api/po` `/api/po/lines` `/api/config`
+- `.env` / SQL layer / token cache / pkg-based `.exe` (เปลี่ยนแค่ build step)
+
+---
+
+## หลักการ migration
+
+1. **ย้ายแบบขนาน** — Vite app อยู่ใน `web/` แยก ไม่แตะ `LabelDesigner.dc.html` จนกว่าจะ cutover
+2. **server.js เป็นแกนเดิม** — dev: Vite proxy `/api` → server.js; prod: `vite build` → `web/dist` แล้ว server.js เสิร์ฟ
+3. **ย้ายทีละหน้า** — เทียบกับแอปเดิม (เปิดคู่กัน) ได้ตลอด หน้าไหนยังไม่ย้ายให้ redirect ไปแอปเดิมก่อน
+4. **logic ก่อน UI** — แยก logic ที่ไม่พึ่ง React (units/print/snap/theme/api) เป็น module + เขียน test ก่อน
+
+---
+
+## โครงสร้างปลายทาง (เสนอ)
+
+```
+web/
+  index.html              # entry ของ Vite (แทน LabelDesigner.dc.html)
+  vite.config.ts          # + proxy /api -> http://localhost:8080
+  tsconfig.json
+  src/
+    main.tsx              # ReactDOM.createRoot
+    App.tsx              # shell: header + nav rail + view switch + toast
+    store/
+      useStore.ts        # Zustand (state ก้อนเดียวแบบ this.state เดิม แต่แยก slice)
+    lib/                 # framework-agnostic (port ตรงจาก logic เดิม + test)
+      units.ts           # PX=3.7795, mm<->px, _fmtPrice
+      elements.ts        # mkEl, tplPriceTag/tplProduct/tplQr, model ของ element
+      barcode.ts         # วาด JsBarcode/QRCode (รับ canvas/svg, import npm)
+      print.ts           # buildPrintHTML / printElHTML / printLabelHTML
+      snap.ts            # _snapMove, alignSel
+      theme.ts           # accentVars, accentChoices, moods/stocks, localStorage
+      api.ts             # fetch wrapper ของทุก /api/*
+    views/
+      DesignView.tsx     # canvas + inspector + palette + saved/templates/size
+      PrintView.tsx      # scan bar + grid + copies + media + preview
+      SettingsView.tsx   # connection (REST/SQL) + scope + theme
+    components/
+      Canvas.tsx, ElementBox.tsx, Inspector.tsx, AlignBar.tsx,
+      NavRail.tsx, Header.tsx, Toast.tsx,
+      PoModal.tsx, ScanResultsModal.tsx, ConfirmDupModal.tsx
+```
+
+หลัง cutover: `LabelDesigner.dc.html` + `support.js` + `vendor/` + `scripts/fetch-vendor.js` ลบได้
+
+---
+
+## เฟส
+
+### Phase 0 — เตรียม (ครึ่งวัน)
+- [ ] แตก branch `feat/vite-migration`
+- [ ] ผ่าน decision gate ข้างบน (ยืนยันยอมเสีย Claude Design sync)
+- [ ] freeze ฟีเจอร์ใหม่บนแอปเดิมระหว่างย้าย (กันต้องย้ายสองรอบ)
+
+### Phase 1 — Scaffold (1 วัน)
+- [ ] `npm create vite@latest web -- --template react-ts` (วางใน `web/`)
+- [ ] `vite.config.ts`: dev proxy
+  ```ts
+  server: { proxy: { '/api': 'http://localhost:8080' } }
+  ```
+- [ ] รัน 2 process ตอน dev: `node server.js` (API @8080) + `vite` (UI @5173)
+- [ ] render "hello" + ยิง `/api/health` ให้ผ่าน proxy ได้
+- [ ] ตั้ง path alias `@/` → `web/src`
+- **เช็ค:** เปิด :5173 เห็น React render + network เรียก `/api/health` 200
+
+### Phase 2 — ย้าย logic ที่ไม่พึ่ง React → `src/lib/` (2–3 วัน)
+ย้าย "อัลกอริทึม" ก่อน (copy logic เดิมเกือบตรง ๆ, เพิ่ม type):
+- [ ] `units.ts`, `elements.ts` (mkEl + tpl*), `theme.ts` (accentVars + choices)
+- [ ] `barcode.ts` — `import JsBarcode from 'jsbarcode'` + `import QRCode from 'qrcode'`
+      (เลิกพึ่ง `window.*`; วาดใน component ผ่าน ref)
+- [ ] `print.ts` — port `buildPrintHTML` (ดู "จุดเสี่ยง: print window")
+- [ ] `snap.ts` — `_snapMove`, `alignSel`
+- [ ] `api.ts` — รวม fetch ของทุก endpoint เป็นฟังก์ชัน typed
+- [ ] เขียน unit test (vitest) ให้ snap/units/print อย่างน้อย happy path
+- **เช็ค:** `vitest` เขียว; logic เหล่านี้ import ได้โดยไม่ต้องมี DOM
+
+### Phase 3 — Shell + store (2 วัน)
+- [ ] `useStore.ts` (Zustand) — ย้าย `this.state` เดิมมาเป็น slice: editor / data / ui / theme
+- [ ] `App.tsx` — header (biz/shop + สถานะเชื่อมต่อ), `NavRail`, สลับ view, `Toast`
+- [ ] theme provider — อ่าน localStorage (`ge_accent/mood/stock`) ใส่ store, accent ผ่าน CSS var
+      (เสนอ: ตั้ง `--accent` ที่ root แล้วปุ่ม/ไอคอนใช้ `var(--accent)` → ตัดปัญหา hardcode สีที่เคยเจอ)
+- **เช็ค:** สลับ 3 เมนูได้ (หน้ายังว่าง), toast เด้งได้, เปลี่ยน accent แล้วทั้ง shell เปลี่ยน
+
+### Phase 4 — ย้ายทีละหน้า (ง่าย→ยาก)
+ลำดับ: **Settings → Print → Design**
+
+- [ ] **SettingsView** (ง่ายสุด — ฟอร์มล้วน)
+  - REST/SQL tabs, SCOPE (biz/shop), THEME (swatch + dropdown)
+  - ผูก `/api/config` `/api/biz` `/api/shops`
+  - **เช็ค:** บันทึก config → `.env` เปลี่ยนจริง (เทียบ behavior แอปเดิม)
+- [ ] **PrintView**
+  - scan bar (Fg select + ค้น), grid `<table>`, copies stepper, media A4/roll, preview
+  - `PoModal`, `ScanResultsModal`
+  - ปุ่มพิมพ์ → `print.ts`
+  - **เช็ค:** สแกน SKU จริงเข้า grid + พิมพ์ออกหน้าต่าง print ถูกต้อง (เทียบ pixel กับเดิม)
+- [ ] **DesignView** (ยากสุด — editor)
+  - `Canvas` + `ElementBox` (drag/resize/select), zoom/pan, guides
+  - `Inspector` (TRANSFORM/ALIGN/CONTENT/color/binding/image), ELEMENTS palette,
+    TEMPLATES, SAVED, LABEL SIZE
+  - snap (`snap.ts`), keyboard shortcuts (Arrow/Del/Esc/Ctrl+D/Space/Alt)
+  - barcode/QR วาดผ่าน ref + `barcode.ts`
+  - **เช็ค:** เพิ่ม/ย้าย/ปรับขนาด/snap/align/บันทึกแม่แบบ → `templates.json` เหมือนเดิม
+
+### Phase 5 — Print window (ดู จุดเสี่ยง ด้านล่าง) (1 วัน)
+- [ ] ตัดสินวิธี render หน้าต่างพิมพ์ในโลก bundled (ไม่มี `/vendor/` static แล้ว)
+- [ ] เทียบผลพิมพ์ A4 หลายดวง + ม้วน + Save-as-PDF กับแอปเดิม
+
+### Phase 6 — Cutover + แพ็ก exe (1 วัน)
+- [ ] `vite build` → `web/dist`
+- [ ] `server.js`: ชี้ static root ไป `web/dist` (เดิมเสิร์ฟ root ของโปรเจกต์); `/` → `web/dist/index.html`
+- [ ] `package.json` `pkg.assets`: เปลี่ยน `LabelDesigner.dc.html`/`support.js`/`vendor/**`
+      → `web/dist/**`
+- [ ] `scripts/build-exe.js`: เพิ่ม step รัน `vite build` ก่อน pkg
+- [ ] ทดสอบ `.exe` จริง: เปิดได้, ออฟไลน์, ต่อ SQL, พิมพ์ผ่าน
+- **เช็ค:** exe ใหม่ทำงานเทียบเท่า exe เดิมทุกฟีเจอร์
+
+### Phase 7 — Cleanup + docs (ครึ่งวัน)
+- [ ] ลบ `LabelDesigner.dc.html`, `support.js`, `vendor/`, `scripts/fetch-vendor.js`, `index.html` เดิม
+- [ ] อัปเดต [Roadmap.md](Roadmap.md) / [Gotchas.md](Gotchas.md) / [Decisions.md](Decisions.md)
+      (เพิ่ม ADR "ย้าย Vite, เลิก dc-runtime/Claude Design sync")
+- [ ] อัปเดต `deploy/client/README.md` + `run.bat` (dev ต้องรัน 2 process หรือทำ script รวม)
+
+---
+
+## ตาราง mapping เดิม → ใหม่
+
+| dc-runtime (เดิม) | Vite + React (ใหม่) |
+|---|---|
+| `<x-dc>` template + `{{ }}` | JSX |
+| `<sc-if value="{{x}}">` | `{x && <.../>}` |
+| `<sc-for list="{{xs}}" as="i">` | `{xs.map(i => <.../>)}` |
+| `style="{{ obj }}"` / `style-hover` | `style={obj}` + `:hover` (CSS) / `onMouseEnter` |
+| `onClick="{{ fn }}"` | `onClick={fn}` |
+| `renderVals()` object ก้อนใหญ่ | ค่าใน component + `useMemo`/store |
+| `class extends DCLogic` + `setState` | function component + Zustand/hooks |
+| `window.JsBarcode` / `window.QRCode` | `import` จาก npm |
+| `support.js` loadReactUmd + vendor | Vite bundle (ตัดทิ้ง) |
+| `props.accentColor` (dc props) | CSS var `--accent` + store |
+
+---
+
+## จุดเสี่ยง / ของยาก
+
+### 1. Print window (สำคัญ)
+ตอนนี้ `doPrint` เปิด `window.open('', '_blank')` + `document.write(buildPrintHTML)` แล้วโหลด
+JsBarcode/QR + ฟอนต์จาก `origin/vendor/...`. โลก bundled ไม่มี static `/vendor/` แล้ว — เลือกทางใดทางหนึ่ง:
+- **(แนะนำ) pre-render บาร์โค้ด/QR เป็น data-URL ในแอปหลัก** แล้ว write HTML ที่มีแต่ `<img>`
+  → หน้าต่างพิมพ์ไม่ต้องมี JS/lib เลย, ออฟไลน์ชัวร์, ฟอนต์ฝัง `@font-face` data-URL ได้
+- หรือ render print ใน **hidden iframe / React portal** แล้วเรียก `iframe.contentWindow.print()`
+- หรือชี้ `<script src>` ไปไฟล์ asset ที่ Vite build (path มี hash — ต้องอ่านจาก manifest)
+
+### 2. Canvas drag/resize/zoom-pan
+logic พิกัด (mm↔px, snap, guides) ย้ายได้ตรง ๆ แต่ event handling ต้องเป็น React
+(`onMouseDown` + global `mousemove`/`mouseup` ผ่าน `useEffect`). ระวัง stale closure — ใช้ store/ref
+
+### 3. barcode draw timing
+เดิมวาดใน `componentDidUpdate` + draw-cache (`dataset.drawn`). ใน React ใช้ `useEffect([deps])`
++ ref ต่อ element; EAN13 fallback → CODE128 คงไว้
+
+### 4. .exe / offline
+Vite bundle ทุกอย่างเข้า `dist/` (มี hash) → ออฟไลน์ได้ฟรี **ไม่ต้องมี vendor/**.
+ฟอนต์ IBM Plex: ใช้ `@fontsource/ibm-plex-sans-thai` (npm) ให้ Vite bundle woff2 เอง
+
+### 5. dev workflow เปลี่ยน
+เดิมดับเบิลคลิก `run.bat` → node เดียว. ใหม่ตอน dev ต้อง 2 process (server.js + vite).
+prod ยังเป็น exe เดียว (รัน server.js เสิร์ฟ dist). อาจทำ `npm run dev` รวมด้วย `concurrently`
+
+---
+
+## Rollback
+- ทุกเฟสอยู่บน branch `feat/vite-migration` — main ยังเป็นแอป dc เดิมใช้งานได้
+- ยังไม่ cutover (Phase 6) ก็ทิ้ง branch ได้ทันที ไม่กระทบ production
+- เก็บ tag commit สุดท้ายก่อนลบ `.dc.html`/`support.js` เผื่อย้อนดู
+
+---
+
+## Definition of Done
+- [ ] ทุกหน้า (design/print/settings) + ทุกฟีเจอร์เทียบเท่าแอปเดิม (snap/align/theme/PO/SQL/print/templates)
+- [ ] `.exe` ใหม่: เปิด-ออฟไลน์-ต่อ SQL-พิมพ์ ผ่านครบ
+- [ ] ไม่มี `vendor/` / `support.js` / `.dc.html` เหลือ
+- [ ] docs อัปเดต + ADR ใหม่
+- [ ] เวลาโดยรวมประเมิน ~**8–11 วันทำงาน** (logic 2-3 + shell 2 + 3 หน้า 4-5 + print 1 + cutover 1)
