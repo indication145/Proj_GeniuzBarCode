@@ -152,29 +152,38 @@ async function handleApi(req, res) {
   sendJson(res, 404, { ok: false, error: "unknown api endpoint" });
 }
 
-const server = http.createServer((req, res) => {
-  if (req.url.startsWith("/api/")) { handleApi(req, res); return; }
+// Static root = the built Vite app (web/dist), bundled into the exe via pkg.assets.
+const WEB_DIR = path.join(ROOT, "web", "dist");
 
-  let urlPath = decodeURIComponent(req.url.split("?")[0]);
-  if (urlPath === "/") urlPath = "/index.html";
-
-  // Resolve safely inside ROOT (block path traversal).
-  const filePath = path.join(ROOT, path.normalize(urlPath));
-  if (!filePath.startsWith(ROOT)) {
-    res.writeHead(403).end("Forbidden");
-    return;
-  }
-
+function serveFile(res, filePath, fallback) {
   fs.readFile(filePath, (err, data) => {
     if (err) {
+      if (fallback) { serveFile(res, fallback, null); return; }
       res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-      res.end("404 Not Found: " + urlPath);
+      res.end("404 Not Found (run: cd web && npm run build)");
       return;
     }
     const type = MIME[path.extname(filePath).toLowerCase()] || "application/octet-stream";
     res.writeHead(200, { "Content-Type": type });
     res.end(data);
   });
+}
+
+const server = http.createServer((req, res) => {
+  if (req.url.startsWith("/api/")) { handleApi(req, res); return; }
+
+  let urlPath = decodeURIComponent(req.url.split("?")[0]);
+  if (urlPath === "/") urlPath = "/index.html";
+
+  // Resolve safely inside WEB_DIR (block path traversal).
+  const filePath = path.join(WEB_DIR, path.normalize(urlPath));
+  const indexPath = path.join(WEB_DIR, "index.html");
+  if (!filePath.startsWith(WEB_DIR)) {
+    res.writeHead(403).end("Forbidden");
+    return;
+  }
+  // SPA-ish fallback: unknown extensionless paths → index.html
+  serveFile(res, filePath, path.extname(urlPath) ? null : indexPath);
 });
 
 function openBrowser(url) {

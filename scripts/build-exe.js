@@ -74,6 +74,12 @@ async function rceditRetry(target, opts) {
 }
 
 async function main() {
+  // 0) build the Vite app -> web/dist (bundled into the exe via pkg.assets)
+  console.log("[build] vite build (web/)…");
+  // shell:true so Windows resolves npm.cmd (execFileSync on .cmd throws EINVAL otherwise)
+  execFileSync("npm", ["--prefix", "web", "run", "build"], { stdio: "inherit", cwd: ROOT, shell: true });
+  if (!fs.existsSync(path.join(ROOT, "web", "dist", "index.html"))) throw new Error("web/dist/index.html ไม่พบหลัง vite build");
+
   // 1) icon: png -> (square) -> ico
   if (!fs.existsSync(PNG)) throw new Error("ไม่พบไฟล์ icon ต้นฉบับ: " + PNG);
   console.log("[build] สร้าง icon จาก", path.relative(ROOT, PNG));

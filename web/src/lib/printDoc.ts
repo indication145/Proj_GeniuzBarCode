@@ -112,7 +112,7 @@ export async function buildPrintDoc(doc: LabelDoc, items: number[], ctx: Resolve
   return (
     '<!DOCTYPE html><html lang="th"><head><meta charset="utf-8">' +
     `<title>${esc(doc.labelName)} — พิมพ์</title>` +
-    `<style>${fonts}*{box-sizing:border-box;}html,body{margin:0;padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}${pageCss}${layoutCss}</style>` +
+    `<style>${fonts}*{box-sizing:border-box;}html,body{margin:0;padding:0;background:#fff;font-family:'IBM Plex Sans Thai',sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact;}${pageCss}${layoutCss}</style>` +
     '</head><body>' +
     body +
     '<script>window.onload=function(){document.fonts&&document.fonts.ready?document.fonts.ready.then(function(){setTimeout(function(){window.print()},120)}):setTimeout(function(){window.print()},200)};<\/script>' +
