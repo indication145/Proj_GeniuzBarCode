@@ -7,7 +7,7 @@
 ```powershell
 cd <repo>
 npm install                 # ดึง @yao-pkg/pkg, png-to-ico, rcedit (และ mssql ถ้าจะใช้)
-npm run build:exe           # ได้ dist\Geniuz_Barcode.exe (~95 MB)
+npm run build:exe           # vite build (web) -> ฝัง icon -> pkg -> dist\Geniuz_Barcode.exe (~101 MB)
 ```
 > ครั้งแรก pkg จะดาวน์โหลด Node base binary (ต้องต่อเน็ต) — ครั้งถัดไปเร็วขึ้น
 > build:exe ([scripts/build-exe.js](../../scripts/build-exe.js)) จะ:
@@ -33,6 +33,7 @@ Geniuz_Barcode.exe       <- ตัวโปรแกรม (มี icon Geniuz)
 - ⚠️ ทุกเครื่องจะมี API key ในไฟล์ `.env` → ถ้ามีหลายเครื่อง ควรใช้ key ที่จำกัดสิทธิ์ และพร้อม rotate
 
 ## ข้อจำกัด
-- ยังต้องต่อเน็ต (ยิง csith + โหลด lib จาก CDN)
+- **UI ออฟไลน์ได้** — React/บาร์โค้ด/QR/ฟอนต์ ถูก bundle ใน `web/dist` (Vite) ไม่พึ่ง CDN
+- ยังต้องต่อเน็ต/เครือข่าย **เฉพาะตอนดึงข้อมูลจริง** (REST csith หรือ SQL Server)
 - โหมด **SQL Server ใช้ใน .exe ได้** (mssql ใช้ driver `tedious` ซึ่งเป็น pure JS — pkg แพ็กได้)
   ต้องวาง `.env` ข้าง exe ให้มี `DATA_SOURCE=sql` + `SQL_HOST/SQL_DATABASE/SQL_USER/SQL_PASSWORD` แล้วเครื่อง client ต้องต่อถึง SQL Server ได้

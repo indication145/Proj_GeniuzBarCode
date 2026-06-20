@@ -1,34 +1,24 @@
 @echo off
-rem GeniuzBarCode Label Designer - double-click to run
+rem GeniuzBarCode Label Designer - run from source (double-click)
+rem For end users: distribute dist\Geniuz_Barcode.exe instead (no Node needed).
 title GeniuzBarCode Label Designer
 cd /d "%~dp0"
 
 where node >nul 2>nul
-if %errorlevel%==0 (
-    echo Starting server with Node.js...
-    node server.js
+if not %errorlevel%==0 (
+    echo Node.js not found. Install it from https://nodejs.org then run again.
     goto :end
 )
 
-where py >nul 2>nul
-if %errorlevel%==0 (
-    echo Node not found. Falling back to Python...
-    start "" http://localhost:8080/
-    py -3 -m http.server 8080
-    goto :end
+rem Build the Vite app once if it hasn't been built yet
+if not exist "web\dist\index.html" (
+    echo Building web app ^(first run^)...
+    call npm --prefix web install
+    call npm --prefix web run build
 )
 
-where python >nul 2>nul
-if %errorlevel%==0 (
-    echo Node not found. Falling back to Python...
-    start "" http://localhost:8080/
-    python -m http.server 8080
-    goto :end
-)
-
-echo.
-echo Could not find Node.js or Python on this machine.
-echo Install Node.js (https://nodejs.org) or Python, then run this again.
+echo Starting server with Node.js...
+node server.js
 
 :end
 echo.

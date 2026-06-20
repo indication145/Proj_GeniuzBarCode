@@ -1,81 +1,70 @@
 # Architecture — Print Labels & Barcodes
 
-ระบบ **GeniuzBarCode Label Designer** (ออกแบบ & พิมพ์ป้าย / บาร์โค้ด) เป็นเว็บแอปหน้าเดียว (SPA)
-ที่ build จาก Claude Design component format (`.dc.html`) ทำงานแบบ self-contained ในเบราว์เซอร์
+ระบบ **GeniuzBarCode Label Designer** (ออกแบบ & พิมพ์ป้าย / บาร์โค้ด) เป็น **React SPA (Vite + TypeScript)**
+หน้าบ้านอยู่ใน `web/` + backend Node ล้วน (`server.js`) เป็น static server + API proxy
+แพ็กเป็น `.exe` เดียวด้วย pkg (bundle `web/dist` เข้าไป) ทำงานออฟไลน์ได้
+
+> ก่อนหน้านี้เป็น Claude Design `.dc.html` + dc-runtime — ย้ายมา Vite แล้ว ดู [Migration-Vite.md](Migration-Vite.md) · [Decisions.md](Decisions.md) D9
 
 ## ไฟล์ในโปรเจกต์
 
-| ไฟล์ | หน้าที่ |
+| ไฟล์ / โฟลเดอร์ | หน้าที่ |
 |------|---------|
-| `LabelDesigner.dc.html` | ตัวแอปทั้งหมด — template (`<x-dc>`) + logic (`<script data-dc-script>`) |
-| `support.js` | dc-runtime (GENERATED จาก dc-runtime/src/*.ts) — parser + React renderer |
-| `index.html` | จุดเข้า redirect ไป `LabelDesigner.dc.html` (เลี่ยงชื่อไฟล์มีเว้นวรรค) |
-| `server.js` | static file server เขียนด้วย Node ล้วน ไม่มี dependency |
-| `run.bat` | ตัวเปิดแบบดับเบิลคลิก (Node → fallback Python) |
+| `web/` | React app (Vite + TS) — source ใน `web/src`, build ออก `web/dist` |
+| `server.js` | Node ล้วน: เสิร์ฟ `web/dist` (static) + `/api/*` proxy; พอร์ต 8080 |
+| `dataSource.js` | data layer REST(csith)/SQL(mssql) + `.env` loader |
+| `templates.js` | เก็บ/อ่านแม่แบบลง `templates.json` |
+| `scripts/build-exe.js` | `vite build` → ฝัง icon → pkg → `dist/Geniuz_Barcode.exe` |
+| `run.bat` | เปิดจาก source (build web ครั้งแรก แล้ว `node server.js`) |
 
-## Runtime flow
+## โครงสร้าง `web/src`
 
 ```
-เปิด LabelDesigner.dc.html
-  └─ <script src="./support.js">  (dc-runtime)
-       1. โหลด React 18.3.1 + ReactDOM + Babel standalone จาก unpkg (CDN)
-       2. parse <x-dc> template + data-dc-script
-       3. mount บน DOMContentLoaded → render React tree เข้า rootRef
-  └─ <helmet> โหลด JsBarcode 3.11.6 (jsdelivr) + qrcodejs 1.0.0 (cloudflare)
-                + ฟอนต์ IBM Plex Sans Thai / IBM Plex Mono (Google Fonts)
+main.tsx            entry — import @fontsource (offline) + render <App/>
+App.tsx             shell: Header + NavRail + สลับ view + Toast
+store/useStore.ts   Zustand store ก้อนเดียว: ui · theme · header · editor · data · po
+theme/useApplyAccent.ts   ดัน accent → CSS var --accent* ที่ :root
+lib/                framework-agnostic (มี vitest):
+  units · elements · snap · theme · print · printDoc · barcode · api · types
+views/              SettingsView · PrintView · DesignView
+components/          Header NavRail Toast · Canvas ElementBox BarcodeCanvas QrBox
+                    LabelPreview Inspector DesignSidebar PoModal ScanResultsModal
 ```
 
-> ดู [Gotchas.md](Gotchas.md) — ทุกอย่างพึ่ง CDN จึงต้องต่อเน็ต
+## Runtime flow (dev / prod)
 
-## โครงสร้างโค้ดในตัวแอป
+```
+DEV:  node server.js (API :8080)  +  cd web && npm run dev (Vite :5173, proxy /api → 8080)
+PROD: npm run build:exe → dist/Geniuz_Barcode.exe → รัน → server.js เสิร์ฟ web/dist ที่ :8080
+```
 
-### Template (`<x-dc>`)
-HTML + binding syntax ของ dc-runtime:
-- `{{ expr }}` — ผูกค่า/สไตล์/อีเวนต์จาก `renderVals()`
-- `<sc-for list="{{ }}" as="x">` — loop
-- `<sc-if value="{{ }}">` — conditional
+- ไลบรารี (React/jsbarcode/qrcode) + ฟอนต์ IBM Plex ถูก **bundle โดย Vite** ไม่พึ่ง CDN → ออฟไลน์
+- บาร์โค้ด/QR วาดผ่าน `barcode.ts` (`jsbarcode`/`qrcode` npm) ลง `<canvas>` ใน component
 
-Layout 3 คอลัมน์ + header + print modal — ดู [Design.md](Design.md)
+## State (Zustand — `store/useStore.ts`)
 
-### Logic (`class Component extends DCLogic`)
-- **`state`** — single source of truth (ดู State ด้านล่าง)
-- **`renderVals()`** — แปลง state → props/styles ทั้งหมดที่ template ใช้ (เรียกทุก render)
-- **`elView(el, idx)`** — แปลง element 1 ตัว → style + ค่าที่ resolve แล้ว
-- **`resolve(el, idx)`** / **`skuVal(field, idx)`** — data binding กับแถว SKU
-- **`renderBarcodes()`** — วาด JsBarcode/QR ลง canvas หลัง mount (มี draw-cache ด้วย `dataset.drawn`)
-- **`accentVars(hex)`** — derive เฉดสี (base / soft / dark / text / shadow) จากสี accent
+| slice | ฟิลด์หลัก |
+|---|---|
+| ui | `view`, `toast*` |
+| theme | `accent/mood/stock` (+ localStorage `ge_*`) |
+| header | `bizList/bizId/shopList/shop/connMode/connStatus` |
+| editor | `labelName/W/H/bg/elements/printMedia/roll* · selectedId/zoom/pan/guides · savedTemplates` |
+| data | `skuRows/skuSel/copiesMap/useQty/scan*` |
+| po | `poOpen/poList/poFg/poSearch` |
 
-### ระบบพิกัด
-- ทุกตำแหน่ง/ขนาด element เก็บเป็น **มิลลิเมตร (mm)**
-- แปลงเป็น pixel ด้วยค่าคงที่ `PX = 3.7795` (px ต่อ mm ที่ 96dpi)
+## ระบบพิกัด
+- ตำแหน่ง/ขนาด element เก็บเป็น **มิลลิเมตร (mm)**; แปลงเป็น px ด้วย `PX = 3.7795` (`lib/units.ts`)
 - canvas ใช้ CSS transform `translate(panX,panY) scale(zoom)`
 
-## State (โครงสร้างหลัก)
-
-```
-labelName, labelW, labelH, bg          // ป้าย
-elements[]                              // องค์ประกอบบนป้าย
-selectedId, tool, guides[]             // การเลือก/แก้ไข
-zoom, panX, panY, spaceHeld            // viewport
-skuRows[], activeSku                   // ข้อมูล SKU (mock)
-printOpen, printMedia, printCopies, skuSel, printing   // การพิมพ์
-connOpen, connMode(api|sql), connStatus                // การเชื่อมต่อ (mock)
-toast
-```
-
 ### Element types
-`text` · `price` · `barcode` · `qr` · `image` · `frame`
-แต่ละชนิดมี `x,y,w,h` (mm) + props เฉพาะ (เช่น `fontSize/weight/align/color/binding`,
-`value/format/showText`, `border/radius`) — ดูเต็มใน `defaultsFor()`
+`text` · `price` · `barcode` · `qr` · `image` · `frame` — แต่ละชนิดมี `x,y,w,h` (mm) + props เฉพาะ (ดู `lib/elements.ts` `defaultsFor`)
 
 ### Data binding
-element ผูกกับฟิลด์ SKU ได้: `name` · `price` · `barcode` · `sku` · `unit`
-→ `resolve()` แทนค่าตามแถว SKU ที่ active (ราคาฟอร์แมต locale `th-TH`)
+ผูกฟิลด์ SKU: `name` · `price` · `barcode` · `sku` · `unit` · `shop.*` → `resolveValue()` แทนค่าตามแถว SKU
 
-## Theme (ผ่าน data-props ของ dc component)
-- `accentColor` (default `#7b1fa2` ม่วงเข้ม)
-- `canvasMood`: studio | blueprint | spotlight | paper
-- `labelStock`: plain | cream | kraft | thermal
+## Theme
+- accent 5 สี + canvas mood (studio/blueprint/spotlight/paper) + label stock (plain/cream/kraft/thermal)
+- ตั้งจากหน้า Settings → เก็บ localStorage → ใช้ผ่าน CSS var `--accent*` (ไม่ hardcode สีแล้ว)
 
-> standalone (รันเอง) ไม่มี UI สลับ theme — ใช้ค่า fallback ใน `renderVals()`
-> ดู [Decisions.md](Decisions.md)
+## พิมพ์ (offline, ไม่มี vendor)
+`lib/printDoc.ts` pre-render บาร์โค้ด/QR เป็น **PNG data-URL** + ฝัง `@font-face` จากแอป → เปิด popup เป็น HTML ล้วน → `window.print()` (รองรับ A4 หลายดวง / ม้วน / Save-as-PDF)

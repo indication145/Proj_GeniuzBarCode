@@ -4,7 +4,14 @@
 
 ---
 
-## D1 — เก็บรูปแบบ `.dc.html` + `support.js` ไว้ ไม่ rewrite เป็น React app ปกติ
+## D9 — ย้ายจาก dc-runtime (`.dc.html`) ไป Vite + React + TS (กลับทิศ D1)
+**ตัดสินใจ:** rewrite หน้าบ้านเป็น React app ปกติใน `web/` (Vite, TypeScript, Zustand) แล้ว**ลบ** `LabelDesigner.dc.html`/`support.js`/`vendor/`/`fetch-vendor.js`/`index.html` เดิม
+**เหตุผล:** ต้องการ tooling/TS/test/HMR + ตัด vendor hack (Vite bundle เอง ออฟไลน์ฟรี) + แก้ปัญหา hardcode สี (ใช้ CSS var)
+**ผลตามมา (สำคัญ):** **เลิก re-sync กับ Claude Design ถาวร** (ยกเลิก D1) — แก้ดีไซน์ทำใน JSX อย่างเดียว
+**คงไว้:** `server.js` + API contract + `dataSource.js`/`templates.js`/`.env`/SQL + pkg `.exe` (เปลี่ยนแค่ bundle `web/dist`)
+**Safety:** tag `pre-vite-cutover` = commit สุดท้ายที่ dc app ยังอยู่ครบ; แผนเต็มใน [Migration-Vite.md](Migration-Vite.md)
+
+## D1 — ~~เก็บรูปแบบ `.dc.html` + `support.js` ไว้ ไม่ rewrite เป็น React app ปกติ~~ (ยกเลิกโดย D9)
 **ตัดสินใจ:** ใช้ไฟล์ที่ import มาจาก Claude Design ตามเดิม
 **เหตุผล:** ยัง re-sync กับ Claude Design ได้, ลด effort, ตัวแอปทำงานครบอยู่แล้ว
 **ผลตามมา:** พึ่ง dc-runtime + Babel standalone ตอน runtime (ดู [Gotchas.md](Gotchas.md)); ถ้าจะ production จริงค่อยพิจารณา pre-compile

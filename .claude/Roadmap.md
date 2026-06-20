@@ -1,8 +1,10 @@
 # Roadmap — Print Labels & Barcodes
 
 แผนพัฒนา **GeniuzBarCode Label Designer** (ออกแบบ & พิมพ์ป้าย)
-สถานะปัจจุบัน: **ใช้งานได้จริงครบวงจร + ออฟไลน์** — ออกแบบ → บันทึกแม่แบบ → ดึง SKU/PO จริง (REST หรือ SQL Server) → พิมพ์ → แพ็กเป็น `.exe` แจกได้ (ไลบรารี/ฟอนต์ self-host ใน `vendor/` ไม่ต้องต่อเน็ต)
+สถานะปัจจุบัน: **ใช้งานได้จริงครบวงจร + ออฟไลน์** — ออกแบบ → บันทึกแม่แบบ → ดึง SKU/PO จริง (REST หรือ SQL Server) → พิมพ์ → แพ็กเป็น `.exe` แจกได้
 (เหลือเฉพาะ feature เสริม เช่น Undo-Redo / code signing ดูด้านล่าง)
+
+> **สถาปัตยกรรมใหม่:** ย้ายจาก dc-runtime (`.dc.html`) → **Vite + React + TS** (`web/`) เสร็จแล้ว — ไลบรารี/ฟอนต์ bundle โดย Vite (ไม่ใช้ `vendor/`/CDN แล้ว) · ดู [Migration-Vite.md](Migration-Vite.md) · [Architecture.md](Architecture.md)
 
 ## ตอนนี้ทำได้ (Done)
 - ✅ ออกแบบป้าย: เพิ่ม/ย้าย/ปรับขนาด element (text, price, barcode, QR, image, frame)
