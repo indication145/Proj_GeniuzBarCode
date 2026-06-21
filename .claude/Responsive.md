@@ -3,7 +3,7 @@
 แผนทำให้ **GeniuzBarCode Label Designer** (Vite + React; ดู [Architecture.md](Architecture.md)) ใช้บนจอเล็กได้
 แบบเป็นเฟส (Print/Settings ก่อน → Editor บนแท็บเล็ต → มือถือเล็ก)
 
-> สถานะ: **R0 + R1 + R2 เสร็จ** (เหลือทดสอบพิมพ์/ลากบนมือถือ**จริง** 1 เครื่อง) · R3 ยังไม่เริ่ม
+> สถานะ: **R0–R3 เสร็จครบ** ✅ (เหลือทดสอบพิมพ์/ลากบนมือถือ**จริง** 1 เครื่องตามจุดเสี่ยง)
 
 ---
 
@@ -76,9 +76,10 @@ export function useMediaQuery(q: string) {
 - [x] toolbar canvas (undo/redo + zoom เดิม) + ปุ่มเปิด drawer ; เพิ่ม element ทำผ่าน drawer ซ้าย
 - **เช็ค:** ✅ verify ที่ 834px (touch emulate) — drawer เปิด/ปิด, toolbar แสดง, touch pan ทำงาน · ⏳ ลาก/resize ละเอียดด้วยนิ้วจริงยังไม่ทดสอบบนเครื่องจริง
 
-### R3 — มือถือเล็ก: ดู/พิมพ์ (optional · ~1 วัน)
-- [ ] บนมือถือ (< 640) หน้า Design = **โหมดพรีวิว** (ดูแม่แบบ + เปลี่ยนขนาด/เปิดแม่แบบ + ไปพิมพ์) — ล็อกการแก้ละเอียด (drag/resize) เพราะทำยากบนจอจิ๋ว
-- [ ] เน้น flow: เลือกแม่แบบ → ไปหน้าพิมพ์ → สแกน → พิมพ์
+### R3 — มือถือเล็ก: ดู/พิมพ์ (optional · ~1 วัน) ✅ เสร็จ
+- [x] บนมือถือ (< 640) หน้า Design = **โหมดพรีวิว** (`MobileDesignView` ใน DesignView) — แสดง `LabelPreview` แบบอ่านอย่างเดียว (ไม่มี drag/resize), fit-to-screen อัตโนมัติ
+- [x] drawer "☰ แม่แบบ / ขนาด" (reuse `DesignSidebar`) เปลี่ยน preset/ขนาด/บันทึก/เปิดแม่แบบได้
+- [x] ปุ่มเด่น **"ไปหน้าพิมพ์ป้ายราคา →"** + ข้อความบอกว่าแก้ละเอียดบนจอใหญ่ → เน้น flow เลือกแม่แบบ → พิมพ์
 
 ---
 
@@ -105,8 +106,9 @@ export function useMediaQuery(q: string) {
 - ทดสอบจริงบนมือถือ 1 เครื่อง (iOS Safari + Android Chrome) อย่างน้อยหน้า Print
 
 ## Definition of Done
-- [ ] หน้า Print + Settings ใช้งานครบบนมือถือ (สแกน/เพิ่ม/พิมพ์/ตั้งค่า)
-- [ ] Editor ใช้บนแท็บเล็ตได้ (touch drag/resize/snap/save)
-- [ ] desktop ไม่ regress (เทียบของเดิม)
-- [ ] พิมพ์ออก PDF/เครื่องพิมพ์ได้จากมือถืออย่างน้อย 1 ช่องทาง
+- [x] หน้า Print + Settings ใช้งานครบบนมือถือ (สแกน/เพิ่ม/พิมพ์/ตั้งค่า) — layout verify แล้ว
+- [x] Editor ใช้บนแท็บเล็ตได้ (touch drag/resize/snap/save) — pointer events + drawers
+- [x] desktop ไม่ regress — ≥1024 ใช้ layout เดิมทุกหน้า (เช็คด้วย screenshot 1280px)
+- [x] พิมพ์ออก PDF/เครื่องพิมพ์ได้จากมือถือ — iframe print + "Save as PDF" ใน native sheet
+- ⏳ เหลือ: ทดสอบบนเครื่องจริง 1 เครื่อง (iOS Safari + Android Chrome) — พฤติกรรม print sheet + ลาก/resize ด้วยนิ้ว
 - เวลาโดยรวมประเมิน ~**6–9 วันทำงาน** (R0 0.5–1 + R1 2–3 + R2 3–4 + R3 1)
