@@ -134,7 +134,23 @@ export function PrintView() {
           <button onClick={s.clearGrid} style={{ height: 38, padding: '0 14px', border: '1px solid #E6E3DF', borderRadius: 8, background: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", color: '#44403B', flexShrink: 0 }}>
             ล้างรายการ
           </button>
-          <button onClick={() => void doPrint()} style={{ height: 38, padding: '0 16px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, flexShrink: 0, boxShadow: '0 2px 8px var(--accent-shadow)' }}>
+          <button
+            onClick={() => void doPrint()}
+            disabled={printCount === 0}
+            title={printCount === 0 ? 'ยังไม่มีรายการที่จะพิมพ์' : undefined}
+            style={{
+              height: 38,
+              padding: '0 16px',
+              borderRadius: 8,
+              border: 'none',
+              fontFamily: "'IBM Plex Sans Thai'",
+              fontWeight: 600,
+              flexShrink: 0,
+              ...(printCount === 0
+                ? { background: '#EDEBE8', color: '#B4ADA4', cursor: 'not-allowed' }
+                : { background: 'var(--accent)', color: '#fff', cursor: 'pointer', boxShadow: '0 2px 8px var(--accent-shadow)' }),
+            }}
+          >
             พิมพ์เลย
           </button>
           <span style={{ fontSize: 10.5, background: '#F0F7F2', color: '#1F8A5B', border: '1px solid #cde9d8', padding: '5px 10px', borderRadius: 20, fontFamily: "'IBM Plex Mono'", flexShrink: 0 }}>{skuRows.length} รายการ</span>
