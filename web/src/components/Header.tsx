@@ -1,16 +1,17 @@
 import { useStore, pick, type ConnStatus } from '@/store/useStore'
 
 const selStyle: React.CSSProperties = {
-  height: 34,
+  height: 38,
   border: '1px solid #E6E3DF',
   borderRadius: 9,
   background: '#FBFAF9',
-  padding: '0 10px',
+  padding: '0 11px',
   fontFamily: "'IBM Plex Sans Thai'",
-  fontSize: 12.5,
+  fontSize: 14.5,
+  fontWeight: 500,
   color: '#1B1A18',
   cursor: 'pointer',
-  maxWidth: 230,
+  maxWidth: 260,
 }
 
 const statusColor: Record<ConnStatus, string> = { connected: '#1F8A5B', offline: '#C2410C', checking: '#9A938A' }
@@ -32,7 +33,7 @@ export function Header() {
       <div style={{ flex: 1 }} />
 
       <label title="ธุรกิจ" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 11, color: '#9A938A' }}>ธุรกิจ</span>
+        <span style={{ fontSize: 13, color: '#9A938A' }}>ธุรกิจ</span>
         <select value={bizId} onChange={(e) => void selectBiz(e.target.value)} style={selStyle}>
           <option value="">— เลือกธุรกิจ —</option>
           {bizList.map((b, i) => {
@@ -47,7 +48,7 @@ export function Header() {
       </label>
 
       <label title="ร้าน/สาขา" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 11, color: '#9A938A' }}>ร้าน</span>
+        <span style={{ fontSize: 13, color: '#9A938A' }}>ร้าน</span>
         <select value={shopId} onChange={(e) => selectShop(e.target.value)} style={selStyle}>
           <option value="">— เลือกร้าน —</option>
           {shopList.map((s, i) => {
