@@ -4,6 +4,7 @@ import { snapMove } from '@/lib/snap'
 import { defaultSku } from '@/lib/elements'
 import { MOODS, STOCKS } from '@/lib/theme'
 import { useStore } from '@/store/useStore'
+import { useBreakpoint, useMediaQuery } from '@/lib/useMediaQuery'
 import { ElementBox } from './ElementBox'
 import type { El } from '@/lib/types'
 
@@ -12,13 +13,21 @@ type Drag =
   | { mode: 'move'; id: string; mx: number; my: number; sx: number; sy: number }
   | { mode: 'resize'; dir: string; mx: number; my: number; sx: number; sy: number; sw: number; sh: number }
 
+type Pinch = { dist: number; midX: number; midY: number; zoom: number; panX: number; panY: number }
+
 const HANDLES = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'] as const
 
-export function Canvas() {
+const clampZoom = (z: number) => Math.max(0.4, Math.min(20, z))
+
+export function Canvas({ onToggleLeft, onToggleRight }: { onToggleLeft?: () => void; onToggleRight?: () => void } = {}) {
   const s = useStore()
   const { elements, labelW, labelH, bg, zoom, panX, panY, selectedId, guides, mood, stock } = s
+  const { isTablet } = useBreakpoint()
+  const coarse = useMediaQuery('(pointer: coarse)')
   const vpRef = useRef<HTMLDivElement>(null)
   const drag = useRef<Drag | null>(null)
+  const pointers = useRef<Map<number, { x: number; y: number }>>(new Map())
+  const pinch = useRef<Pinch | null>(null)
   const [spaceHeld, setSpaceHeld] = useState(false)
   const spaceRef = useRef(false)
   const sel = elements.find((e) => e.id === selectedId) || null
@@ -48,7 +57,7 @@ export function Canvas() {
       e.preventDefault()
       const st = useStore.getState()
       if (e.ctrlKey || e.metaKey) {
-        const nz = Math.max(0.4, Math.min(20, st.zoom * (e.deltaY < 0 ? 1.08 : 0.93)))
+        const nz = clampZoom(st.zoom * (e.deltaY < 0 ? 1.08 : 0.93))
         const r = vp.getBoundingClientRect()
         const px = e.clientX - r.left
         const py = e.clientY - r.top
@@ -61,7 +70,7 @@ export function Canvas() {
     return () => vp.removeEventListener('wheel', onWheel)
   }, [])
 
-  // space-to-pan + drag move/up listeners
+  // space-to-pan (desktop)
   useEffect(() => {
     const kd = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName?.toUpperCase()
@@ -80,64 +89,79 @@ export function Canvas() {
         setSpaceHeld(false)
       }
     }
-    const mv = (e: MouseEvent) => {
-      const d = drag.current
-      if (!d) return
-      const st = useStore.getState()
-      const z = st.zoom
-      if (d.mode === 'pan') {
-        st.setView3({ panX: d.panX + (e.clientX - d.mx), panY: d.panY + (e.clientY - d.my) })
-        return
-      }
-      const dxmm = (e.clientX - d.mx) / (PX * z)
-      const dymm = (e.clientY - d.my) / (PX * z)
-      if (d.mode === 'move') {
-        const el = st.elements.find((o) => o.id === d.id)
-        if (!el) return
-        const r = e.altKey ? { x: snapHalf(d.sx + dxmm), y: snapHalf(d.sy + dymm), guides: [] } : snapMove(el, d.sx + dxmm, d.sy + dymm, st.labelW, st.labelH, st.elements)
-        st.patchEl(d.id, { x: r.x, y: r.y })
-        st.setGuides(r.guides)
-      } else {
-        const dir = d.dir
-        let x = d.sx
-        let y = d.sy
-        let w = d.sw
-        let h = d.sh
-        if (dir.includes('e')) w = d.sw + dxmm
-        if (dir.includes('s')) h = d.sh + dymm
-        if (dir.includes('w')) {
-          w = d.sw - dxmm
-          x = d.sx + dxmm
-        }
-        if (dir.includes('n')) {
-          h = d.sh - dymm
-          y = d.sy + dymm
-        }
-        w = Math.max(2, w)
-        h = Math.max(2, h)
-        if (st.selectedId) st.patchEl(st.selectedId, { x: snapHalf(x), y: snapHalf(y), w: snapHalf(w), h: snapHalf(h) })
-      }
-    }
-    const up = () => {
-      if (drag.current) {
-        drag.current = null
-        if (useStore.getState().guides.length) useStore.getState().setGuides([])
-      }
-    }
     window.addEventListener('keydown', kd)
     window.addEventListener('keyup', ku)
-    window.addEventListener('mousemove', mv)
-    window.addEventListener('mouseup', up)
     return () => {
       window.removeEventListener('keydown', kd)
       window.removeEventListener('keyup', ku)
-      window.removeEventListener('mousemove', mv)
-      window.removeEventListener('mouseup', up)
     }
   }, [])
 
-  function onDown(e: React.MouseEvent) {
+  // ----- one drag step (shared by pointer move) -----
+  function applyDrag(clientX: number, clientY: number, altKey: boolean) {
+    const d = drag.current
+    if (!d) return
     const st = useStore.getState()
+    const z = st.zoom
+    if (d.mode === 'pan') {
+      st.setView3({ panX: d.panX + (clientX - d.mx), panY: d.panY + (clientY - d.my) })
+      return
+    }
+    const dxmm = (clientX - d.mx) / (PX * z)
+    const dymm = (clientY - d.my) / (PX * z)
+    if (d.mode === 'move') {
+      const el = st.elements.find((o) => o.id === d.id)
+      if (!el) return
+      const r = altKey ? { x: snapHalf(d.sx + dxmm), y: snapHalf(d.sy + dymm), guides: [] } : snapMove(el, d.sx + dxmm, d.sy + dymm, st.labelW, st.labelH, st.elements)
+      st.patchEl(d.id, { x: r.x, y: r.y })
+      st.setGuides(r.guides)
+    } else {
+      const dir = d.dir
+      let x = d.sx
+      let y = d.sy
+      let w = d.sw
+      let h = d.sh
+      if (dir.includes('e')) w = d.sw + dxmm
+      if (dir.includes('s')) h = d.sh + dymm
+      if (dir.includes('w')) {
+        w = d.sw - dxmm
+        x = d.sx + dxmm
+      }
+      if (dir.includes('n')) {
+        h = d.sh - dymm
+        y = d.sy + dymm
+      }
+      w = Math.max(2, w)
+      h = Math.max(2, h)
+      if (st.selectedId) st.patchEl(st.selectedId, { x: snapHalf(x), y: snapHalf(y), w: snapHalf(w), h: snapHalf(h) })
+    }
+  }
+
+  function endDrag() {
+    if (drag.current) {
+      drag.current = null
+      if (useStore.getState().guides.length) useStore.getState().setGuides([])
+    }
+  }
+
+  function onPointerDown(e: React.PointerEvent) {
+    const vp = vpRef.current
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+    // second finger → start pinch-zoom, abandon any single drag
+    if (pointers.current.size === 2) {
+      drag.current = null
+      const pts = [...pointers.current.values()]
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y)
+      const st = useStore.getState()
+      pinch.current = { dist, midX: (pts[0].x + pts[1].x) / 2, midY: (pts[0].y + pts[1].y) / 2, zoom: st.zoom, panX: st.panX, panY: st.panY }
+      return
+    }
+    if (pointers.current.size > 2) return
+
+    vp?.setPointerCapture?.(e.pointerId)
+    const st = useStore.getState()
+    const isTouch = e.pointerType === 'touch'
     if (spaceRef.current || e.button === 1) {
       drag.current = { mode: 'pan', mx: e.clientX, my: e.clientY, panX: st.panX, panY: st.panY }
       e.preventDefault()
@@ -166,7 +190,42 @@ export function Canvas() {
       e.preventDefault()
       return
     }
+    // empty area: touch → one-finger pan (and deselect); mouse → deselect
     st.setSelected(null)
+    if (isTouch) {
+      drag.current = { mode: 'pan', mx: e.clientX, my: e.clientY, panX: st.panX, panY: st.panY }
+    }
+  }
+
+  function onPointerMove(e: React.PointerEvent) {
+    if (!pointers.current.has(e.pointerId)) return
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+    if (pointers.current.size >= 2 && pinch.current) {
+      const vp = vpRef.current
+      if (!vp) return
+      const pts = [...pointers.current.values()]
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y)
+      const p0 = pinch.current
+      const nz = clampZoom(p0.zoom * (dist / (p0.dist || 1)))
+      const r = vp.getBoundingClientRect()
+      const startMidLocalX = p0.midX - r.left
+      const startMidLocalY = p0.midY - r.top
+      const curMidLocalX = (pts[0].x + pts[1].x) / 2 - r.left
+      const curMidLocalY = (pts[0].y + pts[1].y) / 2 - r.top
+      const contentX = (startMidLocalX - p0.panX) / p0.zoom
+      const contentY = (startMidLocalY - p0.panY) / p0.zoom
+      useStore.getState().setView3({ zoom: nz, panX: curMidLocalX - contentX * nz, panY: curMidLocalY - contentY * nz })
+      return
+    }
+    applyDrag(e.clientX, e.clientY, e.altKey)
+  }
+
+  function onPointerUp(e: React.PointerEvent) {
+    pointers.current.delete(e.pointerId)
+    vpRef.current?.releasePointerCapture?.(e.pointerId)
+    if (pointers.current.size < 2) pinch.current = null
+    if (pointers.current.size === 0) endDrag()
   }
 
   const M = MOODS[mood]
@@ -174,14 +233,40 @@ export function Canvas() {
   // designer always shows data without going to the print page first
   const ctx = { skuRows: s.skuRows.length ? s.skuRows : defaultSku(), shop: s.shop }
   const z = zoom
+  // larger hit targets on touch/coarse pointers
+  const handleBase = coarse ? 17 : 9
+  const toolBtn: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 6, height: 34, padding: '0 12px', border: '1px solid #E6E3DF', borderRadius: 9, background: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12.5, fontWeight: 600, color: '#44403B', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }
 
   return (
     <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, position: 'relative' }}>
       <div
         ref={vpRef}
-        onMouseDown={onDown}
-        style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: spaceHeld ? 'grab' : 'default', backgroundColor: M.color, backgroundImage: M.img, backgroundSize: M.size }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        style={{ flex: 1, position: 'relative', overflow: 'hidden', touchAction: 'none', cursor: spaceHeld ? 'grab' : 'default', backgroundColor: M.color, backgroundImage: M.img, backgroundSize: M.size }}
       >
+        {/* tablet: open panel drawers */}
+        {isTablet && (onToggleLeft || onToggleRight) && (
+          <div style={{ position: 'absolute', top: 12, left: 12, right: 12, display: 'flex', justifyContent: 'space-between', zIndex: 40, pointerEvents: 'none' }}>
+            {onToggleLeft ? (
+              <button onClick={onToggleLeft} style={{ ...toolBtn, pointerEvents: 'auto' }}>
+                ☰ องค์ประกอบ
+              </button>
+            ) : (
+              <span />
+            )}
+            {onToggleRight ? (
+              <button onClick={onToggleRight} style={{ ...toolBtn, pointerEvents: 'auto' }}>
+                ปรับแต่ง ⚙
+              </button>
+            ) : (
+              <span />
+            )}
+          </div>
+        )}
+
         <div style={{ position: 'absolute', left: 0, top: 0, width: labelW * PX, height: labelH * PX, transform: `translate(${panX}px,${panY}px) scale(${z})`, transformOrigin: '0 0', backgroundColor: bg, backgroundImage: STOCKS[stock], boxShadow: M.shadow, borderRadius: 1 }}>
           {elements.map((el: El) => (
             <ElementBox key={el.id} el={el} ctx={ctx} idx={s.activeSku} interactive />
@@ -199,9 +284,9 @@ export function Canvas() {
           {sel && (
             <div style={{ position: 'absolute', left: sel.x * PX, top: sel.y * PX, width: sel.w * PX, height: sel.h * PX, border: `${1.4 / z}px solid var(--accent)`, boxSizing: 'border-box', pointerEvents: 'none', zIndex: 900 }}>
               {HANDLES.map((dir) => {
-                const hs = 9 / z
+                const hs = handleBase / z
                 const half = hs / 2
-                const pos: React.CSSProperties = { position: 'absolute', width: hs, height: hs, background: '#fff', border: `${Math.max(0.5, 1.2 / z)}px solid var(--accent)`, borderRadius: 2 / z, pointerEvents: 'auto', zIndex: 901 }
+                const pos: React.CSSProperties = { position: 'absolute', width: hs, height: hs, background: '#fff', border: `${Math.max(0.5, 1.2 / z)}px solid var(--accent)`, borderRadius: 2 / z, pointerEvents: 'auto', zIndex: 901, touchAction: 'none' }
                 if (dir.includes('n')) pos.top = -half
                 if (dir.includes('s')) pos.bottom = -half
                 if (dir.includes('w')) pos.left = -half

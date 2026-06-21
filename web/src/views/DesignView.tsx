@@ -1,9 +1,21 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useStore } from '@/store/useStore'
 import { snapHalf } from '@/lib/units'
+import { useBreakpoint } from '@/lib/useMediaQuery'
 import { DesignSidebar } from '@/components/DesignSidebar'
 import { Canvas } from '@/components/Canvas'
 import { Inspector } from '@/components/Inspector'
+
+/** Slide-over drawer used to hold the sidebar / inspector on tablet & smaller. */
+function Drawer({ side, onClose, children }: { side: 'left' | 'right'; onClose: () => void; children: React.ReactNode }) {
+  return (
+    <div onClick={onClose} style={{ position: 'absolute', inset: 0, zIndex: 50, background: 'rgba(27,26,24,0.4)', backdropFilter: 'blur(2px)', display: 'flex', justifyContent: side === 'left' ? 'flex-start' : 'flex-end' }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ height: '100%', maxWidth: '88%', display: 'flex', boxShadow: side === 'left' ? '6px 0 28px rgba(0,0,0,0.22)' : '-6px 0 28px rgba(0,0,0,0.22)' }}>
+        {children}
+      </div>
+    </div>
+  )
+}
 
 function ConfirmDupModal() {
   const dup = useStore((s) => s.confirmDup)
@@ -33,6 +45,10 @@ function ConfirmDupModal() {
 }
 
 export function DesignView() {
+  const { isTablet } = useBreakpoint()
+  const [leftOpen, setLeftOpen] = useState(false)
+  const [rightOpen, setRightOpen] = useState(false)
+
   useEffect(() => {
     const kd = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName?.toUpperCase()
@@ -80,6 +96,25 @@ export function DesignView() {
     window.addEventListener('keydown', kd)
     return () => window.removeEventListener('keydown', kd)
   }, [])
+
+  if (isTablet) {
+    return (
+      <div style={{ flex: 1, display: 'flex', minWidth: 0, minHeight: 0, position: 'relative' }}>
+        <Canvas onToggleLeft={() => setLeftOpen(true)} onToggleRight={() => setRightOpen(true)} />
+        {leftOpen && (
+          <Drawer side="left" onClose={() => setLeftOpen(false)}>
+            <DesignSidebar />
+          </Drawer>
+        )}
+        {rightOpen && (
+          <Drawer side="right" onClose={() => setRightOpen(false)}>
+            <Inspector />
+          </Drawer>
+        )}
+        <ConfirmDupModal />
+      </div>
+    )
+  }
 
   return (
     <div style={{ flex: 1, display: 'flex', minWidth: 0, minHeight: 0 }}>

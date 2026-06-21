@@ -3,7 +3,7 @@
 แผนทำให้ **GeniuzBarCode Label Designer** (Vite + React; ดู [Architecture.md](Architecture.md)) ใช้บนจอเล็กได้
 แบบเป็นเฟส (Print/Settings ก่อน → Editor บนแท็บเล็ต → มือถือเล็ก)
 
-> สถานะ: **R0 + R1 เสร็จ** (เหลือทดสอบพิมพ์บนมือถือ**จริง** 1 เครื่อง) · R2/R3 ยังไม่เริ่ม
+> สถานะ: **R0 + R1 + R2 เสร็จ** (เหลือทดสอบพิมพ์/ลากบนมือถือ**จริง** 1 เครื่อง) · R3 ยังไม่เริ่ม
 
 ---
 
@@ -69,12 +69,12 @@ export function useMediaQuery(q: string) {
 - [x] **พิมพ์บนมือถือ:** เพิ่ม `openPrintFrame` (พิมพ์ผ่าน hidden iframe) → เลี่ยง popup-blocker ของมือถือ; native print sheet มี "Save as PDF" ทั้ง iOS/Android ในตัว → มือถือใช้ iframe เป็นหลัก, desktop ใช้ popup แล้ว fallback เป็น iframe
 - **เช็ค:** ✅ emulate ผ่าน (layout + modal เต็มจอ) · ⏳ ยังไม่ทดสอบ flow พิมพ์จริงบนมือถือ 1 เครื่อง (โค้ดพร้อม)
 
-### R2 — Editor บนแท็บเล็ต (~3–4 วัน)
-- [ ] `DesignSidebar` (ELEMENTS/TEMPLATES/SAVED/SIZE) + `Inspector` → **drawer พับ** บน < 1024 (ปุ่มเปิดบน toolbar canvas) ; desktop คง 3 คอลัมน์
-- [ ] **Canvas → pointer events** (รวม mouse + touch): `onPointerDown/Move/Up`, `setPointerCapture`, `touch-action:none`
-- [ ] **pinch-zoom** (2 pointer) + 1-finger pan เมื่อไม่ได้แตะ element ; handle ปรับขนาดให้ **ใหญ่ขึ้นบน touch** (กดง่าย)
-- [ ] toolbar บน canvas: ปุ่ม add element / undo-redo / align (มีปุ่มอยู่แล้วบางส่วน) ให้กดด้วยนิ้วได้
-- **เช็ค:** บนแท็บเล็ต เพิ่ม/ลาก/ปรับขนาด/snap/บันทึกแม่แบบได้ด้วยนิ้ว
+### R2 — Editor บนแท็บเล็ต (~3–4 วัน) ✅ เสร็จ
+- [x] `DesignSidebar` + `Inspector` → **drawer พับ** บน < 1024 (`DesignView` คุม state, ปุ่มเปิดบน toolbar canvas: ☰ องค์ประกอบ / ปรับแต่ง ⚙) ; desktop คง 3 คอลัมน์
+- [x] **Canvas → pointer events** (mouse + touch): `onPointerDown/Move/Up/Cancel`, `setPointerCapture`, `touch-action:none`
+- [x] **pinch-zoom** (2 pointer, anchor ที่จุดกึ่งกลาง) + **1-finger pan** บนพื้นที่ว่าง (touch) ; handle ปรับขนาดใหญ่ขึ้นบน `(pointer:coarse)` (17px แทน 9px)
+- [x] toolbar canvas (undo/redo + zoom เดิม) + ปุ่มเปิด drawer ; เพิ่ม element ทำผ่าน drawer ซ้าย
+- **เช็ค:** ✅ verify ที่ 834px (touch emulate) — drawer เปิด/ปิด, toolbar แสดง, touch pan ทำงาน · ⏳ ลาก/resize ละเอียดด้วยนิ้วจริงยังไม่ทดสอบบนเครื่องจริง
 
 ### R3 — มือถือเล็ก: ดู/พิมพ์ (optional · ~1 วัน)
 - [ ] บนมือถือ (< 640) หน้า Design = **โหมดพรีวิว** (ดูแม่แบบ + เปลี่ยนขนาด/เปิดแม่แบบ + ไปพิมพ์) — ล็อกการแก้ละเอียด (drag/resize) เพราะทำยากบนจอจิ๋ว
