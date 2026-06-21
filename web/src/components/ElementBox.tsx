@@ -1,5 +1,6 @@
 import { PX } from '@/lib/units'
 import { resolveValue } from '@/lib/elements'
+import { DEFAULT_FONT } from '@/lib/fonts'
 import type { El, ResolveCtx } from '@/lib/types'
 import { BarcodeCanvas } from './BarcodeCanvas'
 import { QrBox } from './QrBox'
@@ -26,7 +27,7 @@ export function ElementBox({ el, ctx, idx, interactive }: { el: El; ctx: Resolve
       display: 'flex',
       alignItems: 'center',
       justifyContent: el.align === 'left' ? 'flex-start' : el.align === 'right' ? 'flex-end' : 'center',
-      fontFamily: "'IBM Plex Sans Thai', sans-serif",
+      fontFamily: el.fontFamily || DEFAULT_FONT,
       fontSize: (el.fontSize ?? 3) * PX,
       fontWeight: el.weight || 600,
       fontStyle: el.italic ? 'italic' : 'normal',

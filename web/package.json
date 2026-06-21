@@ -13,6 +13,10 @@
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.2.7",
     "@fontsource/ibm-plex-sans-thai": "^5.2.8",
+    "@fontsource/kanit": "^5.2.8",
+    "@fontsource/mitr": "^5.2.8",
+    "@fontsource/prompt": "^5.2.8",
+    "@fontsource/sarabun": "^5.2.8",
     "jsbarcode": "^3.12.3",
     "qrcode": "^1.5.4",
     "react": "^19.2.6",

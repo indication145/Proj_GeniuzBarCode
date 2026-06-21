@@ -12,6 +12,7 @@ export interface El {
   h: number
   // text / price
   text?: string
+  fontFamily?: string
   fontSize?: number
   weight?: number
   italic?: boolean

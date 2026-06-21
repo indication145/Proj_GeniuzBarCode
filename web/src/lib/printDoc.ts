@@ -34,7 +34,7 @@ async function elHTML(el: El, ctx: ResolveCtx, idx: number, cache: Map<string, s
     const st =
       pos +
       `display:flex;align-items:center;justify-content:${just};text-align:${el.align || 'center'};` +
-      `font-family:'IBM Plex Sans Thai',sans-serif;font-size:${el.fontSize}mm;font-weight:${el.weight || 600};` +
+      `font-family:${el.fontFamily || "'IBM Plex Sans Thai',sans-serif"};font-size:${el.fontSize}mm;font-weight:${el.weight || 600};` +
       `font-style:${el.italic ? 'italic' : 'normal'};color:${el.color || '#1b1a18'};line-height:1.04;` +
       (el.type === 'price' ? 'white-space:nowrap;' : '')
     return `<div style="${st}">${val}</div>`

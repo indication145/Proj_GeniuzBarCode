@@ -1,6 +1,7 @@
 import { useStore } from '@/store/useStore'
 import { alignBox, type AlignDir } from '@/lib/snap'
 import { num } from '@/lib/units'
+import { FONT_OPTIONS, DEFAULT_FONT } from '@/lib/fonts'
 import type { El } from '@/lib/types'
 
 const COLORS = ['#1b1a18', '#807A72', '#7b1fa2', '#1F6FEB', '#1F8A5B', '#ffffff']
@@ -151,6 +152,16 @@ export function Inspector() {
         <div style={sectionStyle}>
           <div style={labelStyle}>เนื้อหา · CONTENT</div>
           <input className="ge-field" style={{ fontFamily: "'IBM Plex Sans Thai'", marginBottom: 9 }} value={sel.text ?? ''} onChange={(e) => s.updateSel({ text: e.target.value })} placeholder="พิมพ์ข้อความ..." />
+          <label style={{ display: 'block', marginBottom: 9 }}>
+            <span style={{ fontSize: 10, color: '#9A938A', fontFamily: "'IBM Plex Mono'", display: 'block', marginBottom: 4 }}>ฟอนต์ · FONT</span>
+            <select className="ge-field" value={sel.fontFamily || DEFAULT_FONT} onChange={(e) => s.updateSel({ fontFamily: e.target.value })} style={{ fontFamily: sel.fontFamily || DEFAULT_FONT }}>
+              {FONT_OPTIONS.map((f) => (
+                <option key={f.value} value={f.value} style={{ fontFamily: f.value }}>
+                  {f.label}
+                </option>
+              ))}
+            </select>
+          </label>
           <div style={{ display: 'flex', gap: 8, marginBottom: 9 }}>
             <div style={{ ...fieldBox, flex: 1 }}>
               <span style={{ fontSize: 10, color: '#9A938A', fontFamily: "'IBM Plex Mono'" }}>size</span>
