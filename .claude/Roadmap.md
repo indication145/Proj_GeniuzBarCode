@@ -58,7 +58,7 @@
 - [x] โหลด/ลบ แม่แบบที่บันทึกไว้ (section "SAVED · แม่แบบที่บันทึก" ใน sidebar)
 - [x] ทำซ้ำผ่าน "บันทึกเป็นชื่อใหม่" (ชื่อซ้ำเด้งเตือนก่อนเขียนทับ)
 - [ ] export / import แม่แบบเป็นไฟล์ (.json)
-- [ ] **Undo / Redo** (ยังไม่มี — gap หลัก)
+- [x] **Undo / Redo** — history stack ใน editor store (`past`/`future`, snapshot design), คีย์ลัด Ctrl+Z / Ctrl+Shift+Z (+Ctrl+Y) + ปุ่ม ↶↷ บน canvas; snapshot ก่อน mutate (drag snapshot ตอนเริ่มลาก, dedupe no-op), reset history ตอนเปิดแม่แบบ
 
 ### P1 — แพ็กเป็น .exe สำหรับ end-user  (เสร็จ)
 - [x] **single-exe** ด้วย `@yao-pkg/pkg` (`npm run build:exe` → `scripts/build-exe.js`) — bundle static files + อ่าน/เขียน `.env` ข้าง exe

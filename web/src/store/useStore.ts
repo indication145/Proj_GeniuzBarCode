@@ -44,6 +44,18 @@ interface HeaderSlice {
   loadShops: () => Promise<void>
 }
 
+/** Undoable design snapshot (everything that defines the label content). */
+interface Snapshot {
+  elements: El[]
+  labelW: number
+  labelH: number
+  bg: string
+  labelName: string
+  printMedia: PrintMedia
+  rollCols: number
+  rollRows: number
+}
+
 interface EditorSlice {
   labelName: string
   labelW: number
@@ -54,6 +66,12 @@ interface EditorSlice {
   rollCols: number
   rollRows: number
   templateId: string
+  // undo/redo history
+  past: Snapshot[]
+  future: Snapshot[]
+  pushHistory: () => void
+  undo: () => void
+  redo: () => void
   templateName: string
   selectedId: string | null
   zoom: number
@@ -238,8 +256,12 @@ export const useStore = create<Store>((set, get) => ({
   rollCols: 3,
   rollRows: 1,
   templateId: '',
-  setPrintMedia: (m) => set({ printMedia: m }),
+  setPrintMedia: (m) => {
+    get().pushHistory()
+    set({ printMedia: m })
+  },
   bumpRoll: (which, delta) => {
+    get().pushHistory()
     const k = which === 'cols' ? 'rollCols' : 'rollRows'
     set({ [k]: Math.max(1, Math.min(12, get()[k] + delta)) } as Partial<Store>)
   },
@@ -262,6 +284,8 @@ export const useStore = create<Store>((set, get) => ({
         printMedia: d.printMedia === 'roll' ? 'roll' : 'a4',
         rollCols: Number(d.rollCols) || 3,
         rollRows: Number(d.rollRows) || 1,
+        past: [],
+        future: [],
       })
     } catch {
       /* keep default template */
@@ -279,9 +303,34 @@ export const useStore = create<Store>((set, get) => ({
   guides: [],
   savedTemplates: [],
   confirmDup: null,
+  // ---- undo/redo ----
+  past: [],
+  future: [],
+  pushHistory: () => {
+    const s = get()
+    const snap: Snapshot = { elements: s.elements, labelW: s.labelW, labelH: s.labelH, bg: s.bg, labelName: s.labelName, printMedia: s.printMedia, rollCols: s.rollCols, rollRows: s.rollRows }
+    const top = s.past[s.past.length - 1]
+    if (top && JSON.stringify(top) === JSON.stringify(snap)) return // dedupe no-ops
+    set({ past: [...s.past.slice(-49), snap], future: [] })
+  },
+  undo: () => {
+    const s = get()
+    if (!s.past.length) return
+    const prev = s.past[s.past.length - 1]
+    const cur: Snapshot = { elements: s.elements, labelW: s.labelW, labelH: s.labelH, bg: s.bg, labelName: s.labelName, printMedia: s.printMedia, rollCols: s.rollCols, rollRows: s.rollRows }
+    set({ ...prev, past: s.past.slice(0, -1), future: [cur, ...s.future], selectedId: null, guides: [] })
+  },
+  redo: () => {
+    const s = get()
+    if (!s.future.length) return
+    const next = s.future[0]
+    const cur: Snapshot = { elements: s.elements, labelW: s.labelW, labelH: s.labelH, bg: s.bg, labelName: s.labelName, printMedia: s.printMedia, rollCols: s.rollCols, rollRows: s.rollRows }
+    set({ ...next, future: s.future.slice(1), past: [...s.past, cur], selectedId: null, guides: [] })
+  },
   selEl: () => get().elements.find((e) => e.id === get().selectedId) || null,
   setSelected: (id) => set({ selectedId: id }),
   addElement: (type) => {
+    get().pushHistory()
     const s = get()
     const el = mkEl(type, s.labelW, s.labelH)
     set({ elements: [...s.elements, el], selectedId: el.id })
@@ -289,12 +338,15 @@ export const useStore = create<Store>((set, get) => ({
   patchEl: (id, patch) => set((s) => ({ elements: s.elements.map((e) => (e.id === id ? { ...e, ...patch } : e)) })),
   updateSel: (patch) => {
     const id = get().selectedId
-    if (id) get().patchEl(id, patch)
+    if (!id) return
+    get().pushHistory()
+    get().patchEl(id, patch)
   },
   dupSel: () => {
     const s = get()
     const el = s.selEl()
     if (!el) return
+    get().pushHistory()
     const { id: _drop, ...rest } = el
     void _drop
     const copy = mkEl(el.type, s.labelW, s.labelH, { ...rest, x: el.x + 2, y: el.y + 2 })
@@ -303,12 +355,23 @@ export const useStore = create<Store>((set, get) => ({
   deleteSel: () => {
     const id = get().selectedId
     if (!id) return
+    get().pushHistory()
     set((s) => ({ elements: s.elements.filter((e) => e.id !== id), selectedId: null }))
   },
-  setBg: (hex) => set({ bg: hex }),
-  setLabelName: (n) => set({ labelName: n }),
-  setLabelSize: (w, h) => set({ labelW: Math.max(5, Math.min(1000, w || 5)), labelH: Math.max(5, Math.min(1000, h || 5)) }),
+  setBg: (hex) => {
+    get().pushHistory()
+    set({ bg: hex })
+  },
+  setLabelName: (n) => {
+    get().pushHistory()
+    set({ labelName: n })
+  },
+  setLabelSize: (w, h) => {
+    get().pushHistory()
+    set({ labelW: Math.max(5, Math.min(1000, w || 5)), labelH: Math.max(5, Math.min(1000, h || 5)) })
+  },
   applyPreset: (elements, w, h) => {
+    get().pushHistory()
     set({ elements, labelW: w, labelH: h, selectedId: null })
     get().toast('โหลดแม่แบบแล้ว')
   },
@@ -372,6 +435,8 @@ export const useStore = create<Store>((set, get) => ({
         rollRows: Number(d.rollRows) || 1,
         selectedId: null,
         view: 'design',
+        past: [],
+        future: [],
       })
       get().toast(`เปิดแม่แบบ "${t.name}"`)
     } catch (e) {

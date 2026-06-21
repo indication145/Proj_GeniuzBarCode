@@ -148,6 +148,7 @@ export function Canvas() {
     if (handle && st.selectedId) {
       const cur = st.elements.find((o) => o.id === st.selectedId)
       if (cur) {
+        st.pushHistory() // snapshot before resize (dedupe makes click-no-move safe)
         drag.current = { mode: 'resize', dir: handle.getAttribute('data-handle') || 'se', mx: e.clientX, my: e.clientY, sx: cur.x, sy: cur.y, sw: cur.w, sh: cur.h }
         e.preventDefault()
         return
@@ -158,7 +159,10 @@ export function Canvas() {
       const id = node.getAttribute('data-id')!
       const el = st.elements.find((o) => o.id === id)
       st.setSelected(id)
-      if (el) drag.current = { mode: 'move', id, mx: e.clientX, my: e.clientY, sx: el.x, sy: el.y }
+      if (el) {
+        st.pushHistory() // snapshot before move
+        drag.current = { mode: 'move', id, mx: e.clientX, my: e.clientY, sx: el.x, sy: el.y }
+      }
       e.preventDefault()
       return
     }
@@ -219,6 +223,14 @@ export function Canvas() {
 
         <div style={{ position: 'absolute', left: '50%', bottom: 14, transform: 'translateX(-50%)', background: 'rgba(27,26,24,0.82)', color: '#fff', fontFamily: "'IBM Plex Mono'", fontSize: 11, padding: '5px 12px', borderRadius: 20, pointerEvents: 'none' }}>
           {labelW} × {labelH} mm
+        </div>
+        <div style={{ position: 'absolute', left: 14, bottom: 14, display: 'flex', alignItems: 'center', gap: 2, background: '#fff', border: '1px solid #E6E3DF', borderRadius: 10, padding: 3, boxShadow: '0 3px 12px rgba(0,0,0,0.08)' }}>
+          <button onClick={() => useStore.getState().undo()} disabled={!s.past.length} title="ย้อนกลับ (Ctrl+Z)" style={{ width: 30, height: 30, border: 'none', background: 'transparent', borderRadius: 7, cursor: s.past.length ? 'pointer' : 'default', opacity: s.past.length ? 1 : 0.3, fontSize: 16 }}>
+            ↶
+          </button>
+          <button onClick={() => useStore.getState().redo()} disabled={!s.future.length} title="ทำซ้ำ (Ctrl+Shift+Z)" style={{ width: 30, height: 30, border: 'none', background: 'transparent', borderRadius: 7, cursor: s.future.length ? 'pointer' : 'default', opacity: s.future.length ? 1 : 0.3, fontSize: 16 }}>
+            ↷
+          </button>
         </div>
         <div style={{ position: 'absolute', right: 14, bottom: 14, display: 'flex', alignItems: 'center', gap: 2, background: '#fff', border: '1px solid #E6E3DF', borderRadius: 10, padding: 3, boxShadow: '0 3px 12px rgba(0,0,0,0.08)' }}>
           <button onClick={() => useStore.getState().setView3({ zoom: Math.max(0.4, z * 0.85) })} style={{ width: 30, height: 30, border: 'none', background: 'transparent', borderRadius: 7, cursor: 'pointer' }}>

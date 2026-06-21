@@ -38,6 +38,18 @@ export function DesignView() {
       const tag = (e.target as HTMLElement)?.tagName?.toUpperCase()
       if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return
       const st = useStore.getState()
+      const mod = e.metaKey || e.ctrlKey
+      if (mod && e.key.toLowerCase() === 'z') {
+        if (e.shiftKey) st.redo()
+        else st.undo()
+        e.preventDefault()
+        return
+      }
+      if (mod && e.key.toLowerCase() === 'y') {
+        st.redo()
+        e.preventDefault()
+        return
+      }
       if ((e.key === 'Delete' || e.key === 'Backspace') && st.selectedId) {
         st.deleteSel()
         e.preventDefault()
