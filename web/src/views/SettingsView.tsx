@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import * as api from '@/lib/api'
 import { ACCENT_CHOICES, type Mood, type Stock } from '@/lib/theme'
 import { useStore, pick } from '@/store/useStore'
+import { useBreakpoint } from '@/lib/useMediaQuery'
 
 const MOOD_OPTS: { v: Mood; label: string }[] = [
   { v: 'studio', label: 'สตูดิโอ (จุดเทา)' },
@@ -41,6 +42,8 @@ export function SettingsView() {
   const [cfg, setCfg] = useState<Cfg>(EMPTY)
   const [busy, setBusy] = useState(false)
   const up = (p: Partial<Cfg>) => setCfg((c) => ({ ...c, ...p }))
+  const { isMobile } = useBreakpoint()
+  const pair: React.CSSProperties = { display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 10 : 12 }
 
   useEffect(() => {
     api
@@ -105,7 +108,7 @@ export function SettingsView() {
   })
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: '#F4F3F1', padding: '28px 24px' }}>
+    <div style={{ flex: 1, overflowY: 'auto', background: '#F4F3F1', padding: isMobile ? '16px 12px' : '28px 24px' }}>
       <div style={{ maxWidth: 560, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
           <div>
@@ -147,7 +150,7 @@ export function SettingsView() {
                 <span style={fieldLabel}>Server / Host</span>
                 <input className="ge-field" value={cfg.sqlHost} onChange={(e) => up({ sqlHost: e.target.value })} placeholder="192.168.1.10\GENIUZ" />
               </label>
-              <div style={{ display: 'flex', gap: 10 }}>
+              <div style={pair}>
                 <label style={{ flex: 2 }}>
                   <span style={fieldLabel}>Database</span>
                   <input className="ge-field" value={cfg.sqlDatabase} onChange={(e) => up({ sqlDatabase: e.target.value })} placeholder="GeniuzPOS" />
@@ -157,7 +160,7 @@ export function SettingsView() {
                   <input className="ge-field" value={cfg.sqlPort} onChange={(e) => up({ sqlPort: e.target.value })} placeholder="1433" />
                 </label>
               </div>
-              <div style={{ display: 'flex', gap: 10 }}>
+              <div style={pair}>
                 <label style={{ flex: 1 }}>
                   <span style={fieldLabel}>User</span>
                   <input className="ge-field" value={cfg.sqlUser} onChange={(e) => up({ sqlUser: e.target.value })} placeholder="sa" />
@@ -182,7 +185,7 @@ export function SettingsView() {
         {/* scope */}
         <div style={card}>
           <div style={cardLabel}>ขอบเขตข้อมูล · SCOPE</div>
-          <div style={{ display: 'flex', gap: 12 }}>
+          <div style={pair}>
             <label style={{ flex: 1 }}>
               <span style={fieldLabel}>ธุรกิจ · Business</span>
               <select className="ge-field" value={bizId} onChange={(e) => void selectBiz(e.target.value)}>
@@ -226,7 +229,7 @@ export function SettingsView() {
               })}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 12 }}>
+          <div style={pair}>
             <label style={{ flex: 1 }}>
               <span style={fieldLabel}>พื้นหลังพื้นที่ออกแบบ · Canvas</span>
               <select className="ge-field" value={mood} onChange={(e) => setMood(e.target.value as Mood)}>

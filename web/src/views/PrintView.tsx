@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import { useStore } from '@/store/useStore'
 import { fmtPrice } from '@/lib/units'
 import { openPrint } from '@/lib/printDoc'
 import { LabelPreview } from '@/components/LabelPreview'
 import { PoModal } from '@/components/PoModal'
 import { ScanResultsModal } from '@/components/ScanResultsModal'
+import { useBreakpoint } from '@/lib/useMediaQuery'
 import type { Sku } from '@/lib/types'
 
 const FG_OPTS = [
@@ -23,6 +25,9 @@ export function PrintView() {
   const s = useStore()
   const { skuRows, shop, printMedia, labelW, labelH, bg, elements, rollCols, rollRows } = s
   const ctx = { skuRows, shop }
+  const { isTablet, isMobile } = useBreakpoint()
+  const narrow = isTablet
+  const [tab, setTab] = useState<'list' | 'preview'>('list')
 
   // ----- preview layout (mirrors the dc app) -----
   const selected = s.selectedIndices()
@@ -77,18 +82,37 @@ export function PrintView() {
   const rollBtn: React.CSSProperties = { width: 24, height: 24, border: '1px solid #E6E3DF', borderRadius: 5, background: '#fff', cursor: 'pointer', color: '#44403B' }
   const mediaBtn = (on: boolean): React.CSSProperties => ({ flex: 1, height: 32, border: '1px solid ' + (on ? 'var(--accent)' : '#E6E3DF'), borderRadius: 8, background: on ? 'var(--accent-soft)' : '#fff', color: on ? 'var(--accent)' : '#78716c', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12, fontWeight: 600 })
 
+  const showList = !narrow || tab === 'list'
+  const showPreview = !narrow || tab === 'preview'
+
   return (
-    <div style={{ flex: 1, display: 'flex', minWidth: 0 }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: narrow ? 'column' : 'row', minWidth: 0, minHeight: 0 }}>
+      {/* narrow: tab switcher between list / preview */}
+      {narrow && (
+        <div style={{ flexShrink: 0, display: 'flex', gap: 6, padding: '8px 12px', background: '#fff', borderBottom: '1px solid #E6E3DF' }}>
+          {(['list', 'preview'] as const).map((t) => {
+            const on = tab === t
+            return (
+              <button key={t} onClick={() => setTab(t)} style={{ flex: 1, height: 34, borderRadius: 8, border: '1px solid ' + (on ? 'var(--accent)' : '#E6E3DF'), background: on ? 'var(--accent-soft)' : '#fff', color: on ? 'var(--accent)' : '#78716c', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12.5, fontWeight: 600 }}>
+                {t === 'list' ? `รายการ (${skuRows.length})` : `ตัวอย่าง · ${printCount} ดวง`}
+              </button>
+            )
+          })}
+        </div>
+      )}
+
       {/* left: grid */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div style={{ flex: 1, display: showList ? 'flex' : 'none', flexDirection: 'column', minWidth: 0, minHeight: 0 }}>
         {/* media row */}
-        <div style={{ flexShrink: 0, background: '#fff', borderBottom: '1px solid #E6E3DF', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ lineHeight: 1.25 }}>
-            <div style={{ fontSize: 15, fontWeight: 600 }}>พิมพ์ป้ายราคา</div>
-            <div style={{ fontSize: 11, color: '#9A938A' }}>ใส่รหัสสินค้าเพื่อพิมพ์บาร์โค้ด</div>
-          </div>
-          <div style={{ flex: 1 }} />
-          <div style={{ display: 'flex', gap: 6, width: 230, flexShrink: 0 }}>
+        <div style={{ flexShrink: 0, background: '#fff', borderBottom: '1px solid #E6E3DF', padding: narrow ? '10px 12px' : '12px 16px', display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: 12 }}>
+          {!isMobile && (
+            <div style={{ lineHeight: 1.25 }}>
+              <div style={{ fontSize: 15, fontWeight: 600 }}>พิมพ์ป้ายราคา</div>
+              <div style={{ fontSize: 11, color: '#9A938A' }}>ใส่รหัสสินค้าเพื่อพิมพ์บาร์โค้ด</div>
+            </div>
+          )}
+          {!isMobile && <div style={{ flex: 1 }} />}
+          <div style={{ display: 'flex', gap: 6, width: isMobile ? '100%' : 230, flexShrink: 0 }}>
             <button style={mediaBtn(isA4)} onClick={() => s.setPrintMedia('a4')}>
               A4 หลายดวง
             </button>
@@ -119,7 +143,7 @@ export function PrintView() {
         </div>
 
         {/* scan bar */}
-        <div style={{ flexShrink: 0, background: '#fff', borderBottom: '1px solid #EFEDEA', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ flexShrink: 0, background: '#fff', borderBottom: '1px solid #EFEDEA', padding: narrow ? '10px 12px' : '10px 16px', display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: 8 }}>
           <select className="ge-field" style={{ width: 'auto', flexShrink: 0, height: 38 }} value={s.skuFg} onChange={(e) => s.setSkuFg(e.target.value)}>
             {FG_OPTS.map(([v, l]) => (
               <option key={v} value={v}>
@@ -127,7 +151,7 @@ export function PrintView() {
               </option>
             ))}
           </select>
-          <input className="ge-field" style={{ flex: 1, minWidth: 0, height: 38, fontFamily: "'IBM Plex Mono'" }} value={s.scanCode} onChange={(e) => s.setScanCode(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && void s.addByCode()} placeholder="สแกน หรือพิมพ์คำค้น แล้วกด Enter…" />
+          <input className="ge-field" style={{ flex: '1 1 160px', minWidth: 0, height: 38, fontFamily: "'IBM Plex Mono'" }} value={s.scanCode} onChange={(e) => s.setScanCode(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && void s.addByCode()} placeholder="สแกน หรือพิมพ์คำค้น แล้วกด Enter…" />
           <button onClick={() => void s.addByCode()} style={{ height: 38, padding: '0 16px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, flexShrink: 0 }}>
             + เพิ่ม
           </button>
@@ -157,7 +181,43 @@ export function PrintView() {
         </div>
 
         {/* grid */}
-        <div style={{ flex: 1, overflow: 'auto', padding: '14px 16px', minHeight: 0 }}>
+        <div style={{ flex: 1, overflow: 'auto', padding: narrow ? '12px' : '14px 16px', minHeight: 0 }}>
+          {narrow ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {skuRows.map((r: Sku, i) => {
+                const active = s.activeSku === i
+                return (
+                  <div key={i} onClick={() => useStore.setState({ activeSku: i })} style={{ background: active ? 'var(--accent-soft)' : '#fff', border: '1px solid ' + (active ? 'var(--accent-soft-border)' : '#E6E3DF'), borderRadius: 10, padding: 12, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13.5, fontWeight: 600, marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.name || '—'}</div>
+                      <div style={{ fontSize: 11, color: '#78716c', fontFamily: "'IBM Plex Mono'" }}>
+                        {r.sku}
+                        {r.pluCode ? ` · ${r.pluCode}` : ''}
+                      </div>
+                      <div style={{ fontSize: 11, color: '#9A938A', marginTop: 2 }}>
+                        {[r.catName, r.supplierName].filter(Boolean).join(' · ')}
+                      </div>
+                      <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 15, fontWeight: 700, color: 'var(--accent)', marginTop: 5 }}>{fmtPrice(r.price)}</div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+                      <button onClick={(e) => { e.stopPropagation(); s.removeRow(i) }} title="ลบ" style={{ width: 30, height: 30, border: '1px solid #EBE8E3', borderRadius: 7, background: '#fff', cursor: 'pointer', color: '#C2410C' }}>
+                        ✕
+                      </button>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }} onClick={(e) => e.stopPropagation()}>
+                        <button style={{ ...stepBtn, width: 30, height: 30 }} onClick={() => s.setCopies(i, s.copiesFor(i) - 1)}>
+                          −
+                        </button>
+                        <input value={s.copiesFor(i)} onChange={(e) => s.setCopies(i, Number(e.target.value) || 0)} style={{ width: 40, height: 30, textAlign: 'center', border: '1px solid #E6E3DF', borderRadius: 6, fontFamily: "'IBM Plex Mono'" }} />
+                        <button style={{ ...stepBtn, width: 30, height: 30 }} onClick={() => s.setCopies(i, s.copiesFor(i) + 1)}>
+                          +
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', border: '1px solid #E6E3DF', borderRadius: 8, tableLayout: 'auto' }}>
             <thead>
               <tr style={{ background: '#EFEDEA', fontSize: 10.5, fontWeight: 600, color: '#57534e', fontFamily: "'IBM Plex Mono'" }}>
@@ -211,11 +271,12 @@ export function PrintView() {
               })}
             </tbody>
           </table>
+          )}
           {skuRows.length === 0 && <div style={{ padding: '40px 16px', textAlign: 'center', color: '#9A938A', fontSize: 13, lineHeight: 1.6 }}>ยังไม่มีรายการสินค้า<br />สแกน/พิมพ์รหัสด้านบน หรือกด "ใบสั่งซื้อ" เพื่อดึงทั้งใบ</div>}
         </div>
 
         {/* footer */}
-        <div style={{ flexShrink: 0, background: '#fff', borderTop: '1px solid #E6E3DF', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ flexShrink: 0, background: '#fff', borderTop: '1px solid #E6E3DF', padding: narrow ? '10px 12px' : '12px 16px', display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: narrow ? 10 : 14 }}>
           <button onClick={s.openPo} style={{ height: 38, padding: '0 14px', borderRadius: 8, border: '1px solid #E6E3DF', background: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, color: '#44403B' }}>
             ใบสั่งซื้อ
           </button>
@@ -234,7 +295,7 @@ export function PrintView() {
       </div>
 
       {/* right: preview */}
-      <div style={{ width: 480, flexShrink: 0, background: '#fff', borderLeft: '1px solid #E6E3DF', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+      <div style={{ width: narrow ? '100%' : 480, flex: narrow ? 1 : undefined, flexShrink: 0, background: '#fff', borderLeft: narrow ? 'none' : '1px solid #E6E3DF', display: showPreview ? 'flex' : 'none', flexDirection: 'column', minHeight: 0, minWidth: 0 }}>
         <div style={{ flexShrink: 0, padding: '13px 16px', borderBottom: '1px solid #E6E3DF', display: 'flex', alignItems: 'center', gap: 9 }}>
           <span style={{ fontSize: 12, fontWeight: 600, color: '#44403B' }}>ตัวอย่าง</span>
           <span style={{ fontSize: 10.5, color: 'var(--accent)', fontFamily: "'IBM Plex Mono'", background: 'var(--accent-soft)', border: '1px solid var(--accent-soft-border)', padding: '2px 8px', borderRadius: 20 }}>หน้า 1 / {totalPages}</span>

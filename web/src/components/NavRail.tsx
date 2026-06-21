@@ -35,11 +35,14 @@ const ITEMS: { view: View; label: string; icon: React.ReactNode }[] = [
   },
 ]
 
-export function NavRail() {
+export function NavRail({ bottom = false }: { bottom?: boolean }) {
   const view = useStore((s) => s.view)
   const setView = useStore((s) => s.setView)
+  const navStyle: React.CSSProperties = bottom
+    ? { flexShrink: 0, background: '#fff', borderTop: '1px solid #E6E3DF', display: 'flex', justifyContent: 'space-around', alignItems: 'stretch', paddingBottom: 'env(safe-area-inset-bottom, 0px)', zIndex: 30 }
+    : { width: 72, flexShrink: 0, background: '#fff', borderRight: '1px solid #E6E3DF', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 10, gap: 6 }
   return (
-    <nav style={{ width: 72, flexShrink: 0, background: '#fff', borderRight: '1px solid #E6E3DF', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 10, gap: 6 }}>
+    <nav style={navStyle}>
       {ITEMS.map((it) => {
         const active = view === it.view
         return (
@@ -48,23 +51,25 @@ export function NavRail() {
             onClick={() => setView(it.view)}
             title={it.label.replace('\n', ' ')}
             style={{
-              width: 56,
-              padding: '9px 0',
+              width: bottom ? undefined : 56,
+              flex: bottom ? 1 : undefined,
+              padding: bottom ? '8px 0 7px' : '9px 0',
               border: 'none',
-              borderRadius: 10,
+              borderRadius: bottom ? 0 : 10,
               cursor: 'pointer',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 5,
+              gap: bottom ? 3 : 5,
               fontFamily: "'IBM Plex Sans Thai'",
               fontSize: 10,
               fontWeight: 600,
               lineHeight: 1.2,
               whiteSpace: 'pre-line',
               textAlign: 'center',
-              background: active ? 'var(--accent-soft)' : 'transparent',
+              background: !bottom && active ? 'var(--accent-soft)' : 'transparent',
               color: active ? 'var(--accent)' : '#78716c',
+              borderTop: bottom ? `2px solid ${active ? 'var(--accent)' : 'transparent'}` : undefined,
             }}
           >
             {it.icon}

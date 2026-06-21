@@ -3,7 +3,7 @@
 แผนทำให้ **GeniuzBarCode Label Designer** (Vite + React; ดู [Architecture.md](Architecture.md)) ใช้บนจอเล็กได้
 แบบเป็นเฟส (Print/Settings ก่อน → Editor บนแท็บเล็ต → มือถือเล็ก)
 
-> สถานะ: **ร่าง / ยังไม่เริ่ม** — เอกสารวางแผน
+> สถานะ: **R0 เสร็จ · R1 เกือบเสร็จ** (เหลือ modal full-screen sheet + ทดสอบพิมพ์บนมือถือจริง) · R2/R3 ยังไม่เริ่ม
 
 ---
 
@@ -50,23 +50,24 @@ export function useMediaQuery(q: string) {
 
 ## เฟส
 
-### R0 — Foundation (~0.5–1 วัน)
-- [ ] `useMediaQuery` hook + breakpoint constants
-- [ ] เพิ่ม `isMobile`/`isTablet` เข้าถึงได้ (hook หรือ store)
-- [ ] ตั้ง `touch-action: none` ที่ viewport canvas (กัน scroll ชนการลาก) — เฉพาะ canvas
-- [ ] โครง responsive ของ App shell (Header/Nav ปรับตาม breakpoint)
-- **เช็ค:** resize หน้าต่าง → ค่า isMobile/isTablet สลับถูก, desktop ยังเหมือนเดิม
+### R0 — Foundation (~0.5–1 วัน) ✅ เสร็จ
+- [x] `useMediaQuery` hook + breakpoint constants → [web/src/lib/useMediaQuery.ts](../web/src/lib/useMediaQuery.ts) (`useMediaQuery`, `useBreakpoint`, `BP`)
+- [x] เพิ่ม `isMobile`/`isTablet` เข้าถึงได้ → `useBreakpoint()` คืน `{ isMobile, isTablet, isDesktop }`
+- [ ] ตั้ง `touch-action: none` ที่ viewport canvas (กัน scroll ชนการลาก) — **ยกไป R2** (ทำพร้อม pointer events)
+- [x] โครง responsive ของ App shell — `App.tsx` ย้าย NavRail ลงล่างเมื่อ mobile
+- **เช็ค:** ✅ verify ด้วย headless Chrome 3 viewport (390/820/1280) — isMobile/isTablet สลับถูก, desktop ไม่เปลี่ยน
 
-### R1 — Print + Settings responsive (คุ้มสุด · ~2–3 วัน)
-- [ ] **Header** — บนจอแคบ: ย่อโลโก้, ย้าย biz/shop เป็นแถวที่สอง หรือยุบเป็นปุ่ม/sheet; chip สถานะคงไว้
-- [ ] **NavRail** → **bottom tab bar** บนมือถือ (3 ไอคอน) แทน rail ซ้าย
-- [ ] **PrintView**
-  - grid `<table>` กว้าง → **card list** ต่อ SKU บน < 1024 (ชื่อ/ราคา/บาร์โค้ด + stepper + ลบ)
-  - preview panel (480px ข้าง) → **stack ใต้ตาราง** (หรือ tab สลับ "รายการ/พรีวิว")
-  - scan bar: input เต็มกว้าง, ปุ่มเล็กลง/ไอคอน; `PoModal`/`ScanResultsModal` → **full-screen sheet** บนมือถือ
-- [ ] **SettingsView** — การ์ดเรียง 1 คอลัมน์, ฟิลด์เต็มกว้าง (ปัจจุบัน max-width 560 อยู่แล้ว แค่ลด padding + stack คู่ฟิลด์)
-- **เช็ค:** บนมือถือ (เบราว์เซอร์/emulate) สแกน → เพิ่ม → พิมพ์ ได้; ตั้งค่า REST/SQL ได้
-- ⚠️ **พิมพ์บนมือถือ:** `window.open + print` → iOS Safari/Chrome รองรับ "Save as PDF/แชร์" ต่างกัน — ทดสอบจริง; สำรอง: ปุ่ม "ดาวน์โหลด PDF"
+### R1 — Print + Settings responsive (คุ้มสุด · ~2–3 วัน) — เกือบเสร็จ
+- [x] **Header** — มือถือ: ซ่อน subtitle, ย้าย biz/shop เป็นแถวสอง (เต็มกว้าง), chip ย่อเหลือ SQL/REST
+- [x] **NavRail** → **bottom tab bar** บนมือถือ (3 ไอคอน) + `safe-area-inset-bottom`
+- [x] **PrintView**
+  - [x] grid `<table>` → **card list** ต่อ SKU บน < 1024 (ชื่อ/ราคา/รหัส + stepper + ลบ)
+  - [x] preview panel → **tab สลับ "รายการ / ตัวอย่าง"** บน < 1024
+  - [x] media row / scan bar / footer → wrap + ปุ่มเต็มกว้างบนมือถือ
+  - [ ] `PoModal`/`ScanResultsModal` → **full-screen sheet** บนมือถือ (ยังเป็น modal กลางจอ)
+- [x] **SettingsView** — คู่ฟิลด์ (host/port, user/pass, biz/shop, mood/stock) stack 1 คอลัมน์บนมือถือ + ลด padding
+- **เช็ค:** ✅ emulate ผ่าน (layout) · ⏳ ยังไม่ทดสอบ flow สแกน→เพิ่ม→พิมพ์ บนมือถือจริง
+- ⚠️ **พิมพ์บนมือถือ:** `window.open + print` → iOS/Android ต่างกัน — **ยังไม่ทดสอบจริง**; สำรอง: ปุ่ม "ดาวน์โหลด PDF" (ยังไม่ทำ)
 
 ### R2 — Editor บนแท็บเล็ต (~3–4 วัน)
 - [ ] `DesignSidebar` (ELEMENTS/TEMPLATES/SAVED/SIZE) + `Inspector` → **drawer พับ** บน < 1024 (ปุ่มเปิดบน toolbar canvas) ; desktop คง 3 คอลัมน์
