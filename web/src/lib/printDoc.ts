@@ -78,8 +78,10 @@ async function labelHTML(doc: LabelDoc, ctx: ResolveCtx, idx: number, cache: Map
   return `<div class="label" style="width:${doc.labelW}mm;height:${doc.labelH}mm;background:${doc.bg};">${inner}</div>`
 }
 
-/** Build the full print document (Promise — barcodes render async). */
-export async function buildPrintDoc(doc: LabelDoc, items: number[], ctx: ResolveCtx): Promise<string> {
+/** Build the full print document (Promise — barcodes render async).
+ *  `auto` embeds a script that calls window.print() on load (popup path);
+ *  set false for the iframe path where the caller triggers print itself. */
+export async function buildPrintDoc(doc: LabelDoc, items: number[], ctx: ResolveCtx, auto = true): Promise<string> {
   const cache = new Map<string, string>()
   const roll = doc.printMedia === 'roll'
   let pageCss: string
@@ -109,13 +111,16 @@ export async function buildPrintDoc(doc: LabelDoc, items: number[], ctx: Resolve
   }
 
   const fonts = fontFaceCss(window.location.origin)
+  const autoScript = auto
+    ? '<script>window.onload=function(){document.fonts&&document.fonts.ready?document.fonts.ready.then(function(){setTimeout(function(){window.print()},120)}):setTimeout(function(){window.print()},200)};<\/script>'
+    : ''
   return (
     '<!DOCTYPE html><html lang="th"><head><meta charset="utf-8">' +
     `<title>${esc(doc.labelName)} — พิมพ์</title>` +
     `<style>${fonts}*{box-sizing:border-box;}html,body{margin:0;padding:0;background:#fff;font-family:'IBM Plex Sans Thai',sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact;}${pageCss}${layoutCss}</style>` +
     '</head><body>' +
     body +
-    '<script>window.onload=function(){document.fonts&&document.fonts.ready?document.fonts.ready.then(function(){setTimeout(function(){window.print()},120)}):setTimeout(function(){window.print()},200)};<\/script>' +
+    autoScript +
     '</body></html>'
   )
 }
@@ -128,5 +133,41 @@ export async function openPrint(doc: LabelDoc, items: number[], ctx: ResolveCtx)
   w.document.open()
   w.document.write(html)
   w.document.close()
+  return true
+}
+
+/** Print via a hidden iframe — no popup, so it survives mobile popup-blockers.
+ *  The native print sheet offers "Save as PDF" on both iOS and Android. */
+export async function openPrintFrame(doc: LabelDoc, items: number[], ctx: ResolveCtx): Promise<boolean> {
+  const html = await buildPrintDoc(doc, items, ctx, false)
+  const iframe = document.createElement('iframe')
+  iframe.setAttribute('aria-hidden', 'true')
+  iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;'
+  document.body.appendChild(iframe)
+  const cw = iframe.contentWindow
+  if (!cw) {
+    iframe.remove()
+    return false
+  }
+  cw.document.open()
+  cw.document.write(html)
+  cw.document.close()
+  const cleanup = () => setTimeout(() => iframe.remove(), 800)
+  cw.onafterprint = cleanup
+  const fire = () => {
+    try {
+      cw.focus()
+      cw.print()
+    } catch {
+      cleanup()
+    }
+  }
+  const fonts = cw.document.fonts
+  if (fonts && fonts.ready) fonts.ready.then(() => setTimeout(fire, 120))
+  else setTimeout(fire, 250)
+  // safety: drop the iframe even if onafterprint never fires (some browsers)
+  setTimeout(() => {
+    if (document.body.contains(iframe)) iframe.remove()
+  }, 60000)
   return true
 }

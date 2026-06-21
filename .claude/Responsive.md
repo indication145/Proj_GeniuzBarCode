@@ -3,7 +3,7 @@
 แผนทำให้ **GeniuzBarCode Label Designer** (Vite + React; ดู [Architecture.md](Architecture.md)) ใช้บนจอเล็กได้
 แบบเป็นเฟส (Print/Settings ก่อน → Editor บนแท็บเล็ต → มือถือเล็ก)
 
-> สถานะ: **R0 เสร็จ · R1 เกือบเสร็จ** (เหลือ modal full-screen sheet + ทดสอบพิมพ์บนมือถือจริง) · R2/R3 ยังไม่เริ่ม
+> สถานะ: **R0 + R1 เสร็จ** (เหลือทดสอบพิมพ์บนมือถือ**จริง** 1 เครื่อง) · R2/R3 ยังไม่เริ่ม
 
 ---
 
@@ -64,10 +64,10 @@ export function useMediaQuery(q: string) {
   - [x] grid `<table>` → **card list** ต่อ SKU บน < 1024 (ชื่อ/ราคา/รหัส + stepper + ลบ)
   - [x] preview panel → **tab สลับ "รายการ / ตัวอย่าง"** บน < 1024
   - [x] media row / scan bar / footer → wrap + ปุ่มเต็มกว้างบนมือถือ
-  - [ ] `PoModal`/`ScanResultsModal` → **full-screen sheet** บนมือถือ (ยังเป็น modal กลางจอ)
+  - [x] `PoModal`/`ScanResultsModal` → **full-screen sheet** บนมือถือ (100vw × 100dvh, search row wrap)
 - [x] **SettingsView** — คู่ฟิลด์ (host/port, user/pass, biz/shop, mood/stock) stack 1 คอลัมน์บนมือถือ + ลด padding
-- **เช็ค:** ✅ emulate ผ่าน (layout) · ⏳ ยังไม่ทดสอบ flow สแกน→เพิ่ม→พิมพ์ บนมือถือจริง
-- ⚠️ **พิมพ์บนมือถือ:** `window.open + print` → iOS/Android ต่างกัน — **ยังไม่ทดสอบจริง**; สำรอง: ปุ่ม "ดาวน์โหลด PDF" (ยังไม่ทำ)
+- [x] **พิมพ์บนมือถือ:** เพิ่ม `openPrintFrame` (พิมพ์ผ่าน hidden iframe) → เลี่ยง popup-blocker ของมือถือ; native print sheet มี "Save as PDF" ทั้ง iOS/Android ในตัว → มือถือใช้ iframe เป็นหลัก, desktop ใช้ popup แล้ว fallback เป็น iframe
+- **เช็ค:** ✅ emulate ผ่าน (layout + modal เต็มจอ) · ⏳ ยังไม่ทดสอบ flow พิมพ์จริงบนมือถือ 1 เครื่อง (โค้ดพร้อม)
 
 ### R2 — Editor บนแท็บเล็ต (~3–4 วัน)
 - [ ] `DesignSidebar` (ELEMENTS/TEMPLATES/SAVED/SIZE) + `Inspector` → **drawer พับ** บน < 1024 (ปุ่มเปิดบน toolbar canvas) ; desktop คง 3 คอลัมน์

@@ -1,12 +1,18 @@
 import { useStore } from '@/store/useStore'
 import { fmtPrice } from '@/lib/units'
+import { useBreakpoint } from '@/lib/useMediaQuery'
 
-const overlay: React.CSSProperties = { position: 'fixed', inset: 0, background: 'rgba(27,26,24,0.45)', backdropFilter: 'blur(3px)', zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }
-const sheet: React.CSSProperties = { width: 520, maxWidth: '94vw', maxHeight: '80vh', background: '#fff', borderRadius: 16, boxShadow: '0 24px 80px rgba(0,0,0,0.35)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }
+const overlayBase: React.CSSProperties = { position: 'fixed', inset: 0, background: 'rgba(27,26,24,0.45)', backdropFilter: 'blur(3px)', zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center' }
+const sheetBase: React.CSSProperties = { background: '#fff', boxShadow: '0 24px 80px rgba(0,0,0,0.35)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }
 
 export function ScanResultsModal() {
   const { scanResultsOpen, scanResults, appendSku, addAllResults, closeScanResults, toast } = useStore()
+  const { isMobile } = useBreakpoint()
   if (!scanResultsOpen) return null
+  const overlay: React.CSSProperties = { ...overlayBase, padding: isMobile ? 0 : 24 }
+  const sheet: React.CSSProperties = isMobile
+    ? { ...sheetBase, width: '100vw', height: '100dvh', borderRadius: 0 }
+    : { ...sheetBase, width: 520, maxWidth: '94vw', maxHeight: '80vh', borderRadius: 16 }
   return (
     <div style={overlay} onClick={closeScanResults}>
       <div style={sheet} onClick={(e) => e.stopPropagation()}>

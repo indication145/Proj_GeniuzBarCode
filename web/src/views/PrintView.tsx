@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useStore } from '@/store/useStore'
 import { fmtPrice } from '@/lib/units'
-import { openPrint } from '@/lib/printDoc'
+import { openPrint, openPrintFrame } from '@/lib/printDoc'
 import { LabelPreview } from '@/components/LabelPreview'
 import { PoModal } from '@/components/PoModal'
 import { ScanResultsModal } from '@/components/ScanResultsModal'
@@ -74,8 +74,10 @@ export function PrintView() {
       s.toast('จำนวนพิมพ์เป็น 0 — ตรวจ qty หรือปิดโหมดพิมพ์ตาม PO')
       return
     }
-    const ok = await openPrint(s.doc(), items, ctx)
-    s.toast(ok ? 'เตรียม ' + items.length + ' ดวง — เลือกเครื่องพิมพ์ หรือ Save as PDF' : 'เบราว์เซอร์บล็อกหน้าต่างพิมพ์ — โปรดอนุญาต popup')
+    // Mobile: popups are routinely blocked → print via hidden iframe (native
+    // sheet still offers "Save as PDF"). Desktop: popup, fall back to iframe.
+    const ok = isMobile ? await openPrintFrame(s.doc(), items, ctx) : (await openPrint(s.doc(), items, ctx)) || (await openPrintFrame(s.doc(), items, ctx))
+    s.toast(ok ? 'เตรียม ' + items.length + ' ดวง — เลือกเครื่องพิมพ์ หรือ Save as PDF' : 'พิมพ์ไม่สำเร็จ — ลองอีกครั้ง')
   }
 
   const stepBtn: React.CSSProperties = { width: 22, height: 22, border: '1px solid #E6E3DF', borderRadius: 5, background: '#fff', cursor: 'pointer', color: '#44403B', lineHeight: 1 }
