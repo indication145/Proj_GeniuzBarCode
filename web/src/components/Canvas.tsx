@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { PX, snapHalf } from '@/lib/units'
 import { snapMove } from '@/lib/snap'
+import { defaultSku } from '@/lib/elements'
 import { MOODS, STOCKS } from '@/lib/theme'
 import { useStore } from '@/store/useStore'
 import { ElementBox } from './ElementBox'
@@ -165,7 +166,9 @@ export function Canvas() {
   }
 
   const M = MOODS[mood]
-  const ctx = { skuRows: s.skuRows, shop: s.shop }
+  // preview falls back to a sample SKU when no real rows loaded yet, so the
+  // designer always shows data without going to the print page first
+  const ctx = { skuRows: s.skuRows.length ? s.skuRows : defaultSku(), shop: s.shop }
   const z = zoom
 
   return (
