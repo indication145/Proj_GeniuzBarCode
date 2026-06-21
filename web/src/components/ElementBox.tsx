@@ -69,8 +69,8 @@ export function ElementBox({ el, ctx, idx, interactive }: { el: El; ctx: Resolve
   if (el.type === 'image') {
     if (el.src) {
       return (
-        <div style={wrap}>
-          <img src={el.src} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} alt="" />
+        <div {...idAttr} style={wrap}>
+          <img src={el.src} draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', pointerEvents: 'none' }} alt="" />
         </div>
       )
     }
