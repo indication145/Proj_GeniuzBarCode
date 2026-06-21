@@ -1,0 +1,111 @@
+# Responsive Plan — ใช้งานบนมือถือ/แท็บเล็ต
+
+แผนทำให้ **GeniuzBarCode Label Designer** (Vite + React; ดู [Architecture.md](Architecture.md)) ใช้บนจอเล็กได้
+แบบเป็นเฟส (Print/Settings ก่อน → Editor บนแท็บเล็ต → มือถือเล็ก)
+
+> สถานะ: **ร่าง / ยังไม่เริ่ม** — เอกสารวางแผน
+
+---
+
+## เป้าหมาย / ไม่ใช่เป้าหมาย
+**เป้าหมาย**
+- หน้า **พิมพ์ป้ายราคา** + **ตั้งค่า** ใช้บนมือถือได้จริง (สแกน/เพิ่ม/พิมพ์/ตั้งค่า)
+- หน้า **สร้าง Template** ใช้บน **แท็บเล็ต** ได้ (touch drag/resize, panel พับ)
+- ไม่ทำลาย desktop (ยังเป็นหลัก)
+
+**ไม่ใช่เป้าหมาย**
+- ไม่ทำ native app — เป็น responsive web ในเบราว์เซอร์มือถือ
+- ไม่รื้อ data layer / store / API (เปลี่ยนเฉพาะ layout + input ของ UI)
+
+---
+
+## จุดตั้งต้น (ของที่ต้องแก้)
+- **layout ความกว้างคงที่** — `App` = Header(54px) + [NavRail(72px) | view]; DesignView = Sidebar(252) | Canvas | Inspector(288); PrintView = grid | preview(480)
+- **inline styles ล้วน** (`React.CSSProperties`) → ทำ `@media` ตรง ๆ ไม่ได้ → ต้องมี `useMediaQuery` หรือย้าย layout หลักไป CSS class
+- **canvas ใช้ mouse events** (`onMouseDown` + window `mousemove/mouseup` + `wheel`) → ต้องเป็น **pointer events** ให้รองรับนิ้ว + pinch
+- `index.html` มี `<meta viewport>` แล้ว ✓
+
+---
+
+## รากฐานทางเทคนิค (ทำใน R0)
+**breakpoints** (เสนอ)
+```
+mobile : < 640px      tablet : 640–1023px      desktop : ≥ 1024px
+```
+**1) `useMediaQuery` hook** (`web/src/lib/useMediaQuery.ts`)
+```ts
+export function useMediaQuery(q: string) {
+  const [m, setM] = useState(() => matchMedia(q).matches)
+  useEffect(() => { const mq = matchMedia(q); const h = () => setM(mq.matches)
+    mq.addEventListener('change', h); return () => mq.removeEventListener('change', h) }, [q])
+  return m
+}
+// useStore: isMobile = useMediaQuery('(max-width: 639px)'), isTablet = '(max-width: 1023px)'
+```
+**2) layout หลักย้ายไป CSS class** (`index.css`) — ส่วนที่ต้องพึ่ง `@media` (เช่น flex direction, panel width/drawer) ใช้ class; ส่วน cosmetic คงเป็น inline ได้
+**3) Drawer pattern** — panel ซ้าย/ขวาบนจอเล็ก = overlay + `transform: translateX()` + ปุ่ม toggle + backdrop
+**4) Pointer events** — แปลง Canvas เป็น `onPointerDown/Move/Up` + `setPointerCapture`; `touch-action: none` ที่ viewport; pinch-zoom = ติดตาม 2 pointer
+
+---
+
+## เฟส
+
+### R0 — Foundation (~0.5–1 วัน)
+- [ ] `useMediaQuery` hook + breakpoint constants
+- [ ] เพิ่ม `isMobile`/`isTablet` เข้าถึงได้ (hook หรือ store)
+- [ ] ตั้ง `touch-action: none` ที่ viewport canvas (กัน scroll ชนการลาก) — เฉพาะ canvas
+- [ ] โครง responsive ของ App shell (Header/Nav ปรับตาม breakpoint)
+- **เช็ค:** resize หน้าต่าง → ค่า isMobile/isTablet สลับถูก, desktop ยังเหมือนเดิม
+
+### R1 — Print + Settings responsive (คุ้มสุด · ~2–3 วัน)
+- [ ] **Header** — บนจอแคบ: ย่อโลโก้, ย้าย biz/shop เป็นแถวที่สอง หรือยุบเป็นปุ่ม/sheet; chip สถานะคงไว้
+- [ ] **NavRail** → **bottom tab bar** บนมือถือ (3 ไอคอน) แทน rail ซ้าย
+- [ ] **PrintView**
+  - grid `<table>` กว้าง → **card list** ต่อ SKU บน < 1024 (ชื่อ/ราคา/บาร์โค้ด + stepper + ลบ)
+  - preview panel (480px ข้าง) → **stack ใต้ตาราง** (หรือ tab สลับ "รายการ/พรีวิว")
+  - scan bar: input เต็มกว้าง, ปุ่มเล็กลง/ไอคอน; `PoModal`/`ScanResultsModal` → **full-screen sheet** บนมือถือ
+- [ ] **SettingsView** — การ์ดเรียง 1 คอลัมน์, ฟิลด์เต็มกว้าง (ปัจจุบัน max-width 560 อยู่แล้ว แค่ลด padding + stack คู่ฟิลด์)
+- **เช็ค:** บนมือถือ (เบราว์เซอร์/emulate) สแกน → เพิ่ม → พิมพ์ ได้; ตั้งค่า REST/SQL ได้
+- ⚠️ **พิมพ์บนมือถือ:** `window.open + print` → iOS Safari/Chrome รองรับ "Save as PDF/แชร์" ต่างกัน — ทดสอบจริง; สำรอง: ปุ่ม "ดาวน์โหลด PDF"
+
+### R2 — Editor บนแท็บเล็ต (~3–4 วัน)
+- [ ] `DesignSidebar` (ELEMENTS/TEMPLATES/SAVED/SIZE) + `Inspector` → **drawer พับ** บน < 1024 (ปุ่มเปิดบน toolbar canvas) ; desktop คง 3 คอลัมน์
+- [ ] **Canvas → pointer events** (รวม mouse + touch): `onPointerDown/Move/Up`, `setPointerCapture`, `touch-action:none`
+- [ ] **pinch-zoom** (2 pointer) + 1-finger pan เมื่อไม่ได้แตะ element ; handle ปรับขนาดให้ **ใหญ่ขึ้นบน touch** (กดง่าย)
+- [ ] toolbar บน canvas: ปุ่ม add element / undo-redo / align (มีปุ่มอยู่แล้วบางส่วน) ให้กดด้วยนิ้วได้
+- **เช็ค:** บนแท็บเล็ต เพิ่ม/ลาก/ปรับขนาด/snap/บันทึกแม่แบบได้ด้วยนิ้ว
+
+### R3 — มือถือเล็ก: ดู/พิมพ์ (optional · ~1 วัน)
+- [ ] บนมือถือ (< 640) หน้า Design = **โหมดพรีวิว** (ดูแม่แบบ + เปลี่ยนขนาด/เปิดแม่แบบ + ไปพิมพ์) — ล็อกการแก้ละเอียด (drag/resize) เพราะทำยากบนจอจิ๋ว
+- [ ] เน้น flow: เลือกแม่แบบ → ไปหน้าพิมพ์ → สแกน → พิมพ์
+
+---
+
+## ตาราง layout เดิม → responsive
+
+| ส่วน | desktop (≥1024) | tablet (640–1023) | mobile (<640) |
+|---|---|---|---|
+| NavRail | rail ซ้าย 72px | rail ซ้าย | **bottom tab bar** |
+| Header biz/shop | inline ขวา | inline/ย่อ | แถวสอง หรือ sheet |
+| Design sidebar/inspector | 252 / 288 คงที่ | **drawer พับ** | ซ่อน (โหมดพรีวิว) |
+| Print grid | table + preview ข้าง | table, preview ใต้ | **cards**, preview tab |
+| Modals (PO/scan) | กลางจอ | กลางจอ | **full-screen sheet** |
+
+---
+
+## จุดเสี่ยง
+1. **inline styles เยอะ** — refactor layout ผ่าน `useMediaQuery` ต้องแตะหลาย component; ทำทีละหน้า (R1 ก่อน) ลดความเสี่ยง
+2. **touch drag/resize ใน canvas** — ส่วนยากสุด: ต้องคุม `touch-action`, pinch vs drag, handle ขนาดนิ้ว; snap ช่วยได้
+3. **พิมพ์บนมือถือ** — พฤติกรรม print dialog ต่างกันแต่ละ OS/เบราว์เซอร์ → ต้องทดสอบจริง + อาจต้องปุ่มดาวน์โหลด PDF สำรอง
+4. **ไม่มีคีย์บอร์ด** บนมือถือ → ฟีเจอร์ที่พึ่ง shortcut (undo/nudge/delete) ต้องมีปุ่มบนจอ (มี align/dup/delete/undo ปุ่มแล้ว ขยายให้ครบ)
+
+## ทดสอบ
+- Chrome DevTools device emulation + viewport ต่าง ๆ; Playwright/puppeteer ตั้ง `viewport` + `isMobile`/`hasTouch` จำลอง touch ได้
+- ทดสอบจริงบนมือถือ 1 เครื่อง (iOS Safari + Android Chrome) อย่างน้อยหน้า Print
+
+## Definition of Done
+- [ ] หน้า Print + Settings ใช้งานครบบนมือถือ (สแกน/เพิ่ม/พิมพ์/ตั้งค่า)
+- [ ] Editor ใช้บนแท็บเล็ตได้ (touch drag/resize/snap/save)
+- [ ] desktop ไม่ regress (เทียบของเดิม)
+- [ ] พิมพ์ออก PDF/เครื่องพิมพ์ได้จากมือถืออย่างน้อย 1 ช่องทาง
+- เวลาโดยรวมประเมิน ~**6–9 วันทำงาน** (R0 0.5–1 + R1 2–3 + R2 3–4 + R3 1)
