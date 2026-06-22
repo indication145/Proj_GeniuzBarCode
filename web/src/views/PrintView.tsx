@@ -326,8 +326,8 @@ export function PrintView() {
               {skuRows.map((r: Sku, i) => {
                 const active = s.activeSku === i
                 return (
-                  <tr key={i} style={{ background: active ? 'var(--accent-soft)' : '#fff' }}>
-                    <td style={{ ...td, textAlign: 'center', cursor: 'pointer', fontFamily: "'IBM Plex Mono'", color: active ? 'var(--accent)' : '#9A938A' }} onClick={() => useStore.setState({ activeSku: i })}>
+                  <tr key={i} onClick={() => useStore.setState({ activeSku: i })} style={{ background: active ? 'var(--accent-soft)' : '#fff', cursor: 'pointer', boxShadow: active ? 'inset 3px 0 0 var(--accent)' : undefined }}>
+                    <td style={{ ...td, textAlign: 'center', fontFamily: "'IBM Plex Mono'", fontWeight: active ? 700 : 400, color: active ? 'var(--accent)' : '#9A938A' }}>
                       {i + 1}
                     </td>
                     <td style={{ ...td, fontFamily: "'IBM Plex Mono'" }}>{r.sku}</td>
@@ -339,7 +339,7 @@ export function PrintView() {
                     <td style={td}>{r.supplierName}</td>
                     <td style={{ ...td, textAlign: 'right', fontFamily: "'IBM Plex Mono'" }}>{fmtPrice(r.price)}</td>
                     <td style={{ ...td, textAlign: 'center' }}>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }} onClick={(e) => e.stopPropagation()}>
                         <button style={stepBtn} onClick={() => s.setCopies(i, s.copiesFor(i) - 1)}>
                           −
                         </button>
@@ -350,7 +350,7 @@ export function PrintView() {
                       </span>
                     </td>
                     <td style={{ ...td, borderRight: 'none', textAlign: 'center' }}>
-                      <button onClick={() => s.removeRow(i)} title="ลบแถว" style={{ width: 26, height: 26, border: '1px solid #EBE8E3', borderRadius: 6, background: '#fff', cursor: 'pointer', color: '#C2410C' }}>
+                      <button onClick={(e) => { e.stopPropagation(); s.removeRow(i) }} title="ลบแถว" style={{ width: 26, height: 26, border: '1px solid #EBE8E3', borderRadius: 6, background: '#fff', cursor: 'pointer', color: '#C2410C' }}>
                         ✕
                       </button>
                     </td>
