@@ -17,9 +17,9 @@ const STOCK_OPTS: { v: Stock; label: string }[] = [
   { v: 'thermal', label: 'เทอร์มอล' },
 ]
 
-const card: React.CSSProperties = { background: '#fff', border: '1px solid #E6E3DF', borderRadius: 14, padding: 20, marginBottom: 16 }
-const cardLabel: React.CSSProperties = { fontSize: 10, fontWeight: 600, color: '#9A938A', letterSpacing: '0.06em', fontFamily: "'IBM Plex Mono'", marginBottom: 12 }
-const fieldLabel: React.CSSProperties = { fontSize: 11, color: '#78716c', display: 'block', marginBottom: 5 }
+const card: React.CSSProperties = { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: 20, marginBottom: 16 }
+const cardLabel: React.CSSProperties = { fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.06em', fontFamily: "'IBM Plex Mono'", marginBottom: 12 }
+const fieldLabel: React.CSSProperties = { fontSize: 11, color: 'var(--text-3)', display: 'block', marginBottom: 5 }
 
 interface Cfg {
   baseUrl: string
@@ -102,29 +102,29 @@ export function SettingsView() {
     fontFamily: "'IBM Plex Sans Thai'",
     fontSize: 12.5,
     fontWeight: 600,
-    background: on ? '#fff' : 'transparent',
-    color: on ? 'var(--accent)' : '#78716c',
+    background: on ? 'var(--surface)' : 'transparent',
+    color: on ? 'var(--accent)' : 'var(--text-3)',
     boxShadow: on ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
   })
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: '#F4F3F1', padding: isMobile ? '16px 12px' : '28px 24px' }}>
+    <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)', padding: isMobile ? '16px 12px' : '28px 24px' }}>
       <div style={{ maxWidth: 560, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
           <div>
             <div style={{ fontSize: 18, fontWeight: 600 }}>ตั้งค่าการเชื่อมต่อข้อมูล</div>
-            <div style={{ fontSize: 12, color: '#9A938A' }}>Data Connection · SQL Server หรือ REST API</div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Data Connection · SQL Server หรือ REST API</div>
           </div>
           <div style={{ flex: 1 }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7, height: 30, padding: '0 12px', borderRadius: 20, border: '1px solid #E6E3DF', background: '#FBFAF9', fontSize: 11.5 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: connStatus === 'connected' ? '#1F8A5B' : connStatus === 'offline' ? '#C2410C' : '#9A938A' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7, height: 30, padding: '0 12px', borderRadius: 20, border: '1px solid var(--border)', background: 'var(--surface-2)', fontSize: 11.5 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: connStatus === 'connected' ? '#1F8A5B' : connStatus === 'offline' ? '#C2410C' : 'var(--text-muted)' }} />
             {connStatus}
           </div>
         </div>
 
         {/* connection */}
         <div style={card}>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 18, background: '#F4F3F1', padding: 4, borderRadius: 10 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 18, background: 'var(--bg)', padding: 4, borderRadius: 10 }}>
             <button onClick={() => setConnMode('api')} style={tabStyle(connMode === 'api')}>
               REST API
             </button>
@@ -225,7 +225,7 @@ export function SettingsView() {
             <div style={{ display: 'flex', gap: 10 }}>
               {ACCENT_CHOICES.map((c) => {
                 const on = accent.toLowerCase() === c.toLowerCase()
-                return <button key={c} onClick={() => setAccent(c)} title={c} style={{ width: 30, height: 30, borderRadius: 8, cursor: 'pointer', background: c, border: on ? '2px solid #1B1A18' : '1px solid #d8d3cc', boxShadow: on ? '0 0 0 2px #fff inset' : 'none' }} />
+                return <button key={c} onClick={() => setAccent(c)} title={c} style={{ width: 30, height: 30, borderRadius: 8, cursor: 'pointer', background: c, border: on ? '2px solid var(--text)' : '1px solid #d8d3cc', boxShadow: on ? '0 0 0 2px var(--surface) inset' : 'none' }} />
               })}
             </div>
           </div>

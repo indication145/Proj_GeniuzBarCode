@@ -39,8 +39,8 @@ export function NavRail({ bottom = false }: { bottom?: boolean }) {
   const view = useStore((s) => s.view)
   const setView = useStore((s) => s.setView)
   const navStyle: React.CSSProperties = bottom
-    ? { flexShrink: 0, background: '#fff', borderTop: '1px solid #E6E3DF', display: 'flex', justifyContent: 'space-around', alignItems: 'stretch', paddingBottom: 'env(safe-area-inset-bottom, 0px)', zIndex: 30 }
-    : { width: 72, flexShrink: 0, background: '#fff', borderRight: '1px solid #E6E3DF', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 10, gap: 6 }
+    ? { flexShrink: 0, background: 'var(--surface)', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-around', alignItems: 'stretch', paddingBottom: 'env(safe-area-inset-bottom, 0px)', zIndex: 30 }
+    : { width: 72, flexShrink: 0, background: 'var(--surface)', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 10, gap: 6 }
   return (
     <nav style={navStyle}>
       {ITEMS.map((it) => {
@@ -68,7 +68,7 @@ export function NavRail({ bottom = false }: { bottom?: boolean }) {
               whiteSpace: 'pre-line',
               textAlign: 'center',
               background: !bottom && active ? 'var(--accent-soft)' : 'transparent',
-              color: active ? 'var(--accent)' : '#78716c',
+              color: active ? 'var(--accent)' : 'var(--text-3)',
               borderTop: bottom ? `2px solid ${active ? 'var(--accent)' : 'transparent'}` : undefined,
             }}
           >

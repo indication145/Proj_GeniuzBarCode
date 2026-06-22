@@ -44,14 +44,14 @@ function MobileDesignView() {
   }, [labelW, labelH])
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0, position: 'relative', background: '#F4F3F1' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0, position: 'relative', background: 'var(--bg)' }}>
       {/* top strip */}
-      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', background: '#fff', borderBottom: '1px solid #E6E3DF' }}>
+      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div style={{ flex: 1, minWidth: 0, lineHeight: 1.25 }}>
           <div style={{ fontSize: 13.5, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.labelName || '(ไม่มีชื่อ)'}</div>
-          <div style={{ fontSize: 11, color: '#9A938A', fontFamily: "'IBM Plex Mono'" }}>{labelW} × {labelH} มม. · {elements.length} ชิ้น</div>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: "'IBM Plex Mono'" }}>{labelW} × {labelH} มม. · {elements.length} ชิ้น</div>
         </div>
-        <button onClick={() => setDrawer(true)} style={{ flexShrink: 0, height: 36, padding: '0 14px', border: '1px solid #E6E3DF', borderRadius: 9, background: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12.5, fontWeight: 600, color: '#44403B' }}>
+        <button onClick={() => setDrawer(true)} style={{ flexShrink: 0, height: 36, padding: '0 14px', border: '1px solid var(--border)', borderRadius: 9, background: 'var(--surface)', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12.5, fontWeight: 600, color: 'var(--text-2)' }}>
           ☰ แม่แบบ / ขนาด
         </button>
       </div>
@@ -62,8 +62,8 @@ function MobileDesignView() {
       </div>
 
       {/* hint + go to print */}
-      <div style={{ flexShrink: 0, padding: '10px 12px 12px', background: '#fff', borderTop: '1px solid #E6E3DF' }}>
-        <div style={{ fontSize: 11, color: '#9A938A', textAlign: 'center', marginBottom: 9, lineHeight: 1.5 }}>โหมดดูบนมือถือ — แก้ไของค์ประกอบแบบละเอียดได้บนแท็บเล็ต/คอมพิวเตอร์</div>
+      <div style={{ flexShrink: 0, padding: '10px 12px 12px', background: 'var(--surface)', borderTop: '1px solid var(--border)' }}>
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center', marginBottom: 9, lineHeight: 1.5 }}>โหมดดูบนมือถือ — แก้ไของค์ประกอบแบบละเอียดได้บนแท็บเล็ต/คอมพิวเตอร์</div>
         <button onClick={() => setView('print')} style={{ width: '100%', height: 46, border: 'none', borderRadius: 11, background: 'var(--accent)', color: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 14, fontWeight: 700, boxShadow: '0 3px 12px var(--accent-shadow)' }}>
           ไปหน้าพิมพ์ป้ายราคา →
         </button>
@@ -86,15 +86,15 @@ function ConfirmDupModal() {
   if (!dup) return null
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(27,26,24,0.45)', backdropFilter: 'blur(3px)', zIndex: 70, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={cancel}>
-      <div style={{ width: 420, maxWidth: '92vw', background: '#fff', borderRadius: 16, boxShadow: '0 24px 80px rgba(0,0,0,0.35)', overflow: 'hidden' }} onClick={(e) => e.stopPropagation()}>
+      <div style={{ width: 420, maxWidth: '92vw', background: 'var(--surface)', borderRadius: 16, boxShadow: '0 24px 80px rgba(0,0,0,0.35)', overflow: 'hidden' }} onClick={(e) => e.stopPropagation()}>
         <div style={{ padding: '20px 22px 6px' }}>
           <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>มีแม่แบบชื่อนี้อยู่แล้ว</div>
-          <div style={{ fontSize: 12.5, color: '#78716c' }}>
-            มีแม่แบบชื่อ <b style={{ color: '#1B1A18' }}>"{dup.name}"</b> อยู่แล้ว — ถ้าเขียนทับ ดีไซน์เดิมจะถูกแทนที่ทั้งหมด
+          <div style={{ fontSize: 12.5, color: 'var(--text-3)' }}>
+            มีแม่แบบชื่อ <b style={{ color: 'var(--text)' }}>"{dup.name}"</b> อยู่แล้ว — ถ้าเขียนทับ ดีไซน์เดิมจะถูกแทนที่ทั้งหมด
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8, padding: '6px 22px 22px' }}>
-          <button onClick={cancel} style={{ flex: 1, height: 40, border: '1px solid #E6E3DF', borderRadius: 9, background: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 13, color: '#44403B' }}>
+          <button onClick={cancel} style={{ flex: 1, height: 40, border: '1px solid var(--border)', borderRadius: 9, background: 'var(--surface)', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 13, color: 'var(--text-2)' }}>
             ยกเลิก (เปลี่ยนชื่อ)
           </button>
           <button onClick={() => void doSave(dup.id, 'overwrite')} style={{ flex: 1, height: 40, border: 'none', borderRadius: 9, background: '#C2410C', color: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 13, fontWeight: 600 }}>

@@ -3,7 +3,7 @@
 import { create } from 'zustand'
 import * as api from '@/lib/api'
 import type { Row } from '@/lib/api'
-import { loadTheme, saveAccent, saveMood, saveStock, type Mood, type Stock } from '@/lib/theme'
+import { loadTheme, saveAccent, saveMood, saveStock, saveDark, type Mood, type Stock } from '@/lib/theme'
 import { tplPriceTag } from '@/lib/elements'
 import { mkEl } from '@/lib/elements'
 import type { El, Guide, LabelDoc, PrintMedia, Sku, Shop } from '@/lib/types'
@@ -23,9 +23,12 @@ interface ThemeSlice {
   accent: string
   mood: Mood
   stock: Stock
+  dark: boolean
   setAccent: (hex: string) => void
   setMood: (m: Mood) => void
   setStock: (s: Stock) => void
+  setDark: (on: boolean) => void
+  toggleDark: () => void
   initTheme: () => void
 }
 
@@ -180,9 +183,19 @@ export const useStore = create<Store>((set, get) => ({
   accent: '#7b1fa2',
   mood: 'studio',
   stock: 'plain',
+  dark: false,
   setAccent: (hex) => {
     saveAccent(hex)
     set({ accent: hex })
+  },
+  setDark: (on) => {
+    saveDark(on)
+    set({ dark: on })
+  },
+  toggleDark: () => {
+    const on = !get().dark
+    saveDark(on)
+    set({ dark: on })
   },
   setMood: (m) => {
     saveMood(m)
@@ -198,6 +211,7 @@ export const useStore = create<Store>((set, get) => ({
     if (t.accent) patch.accent = t.accent
     if (t.mood) patch.mood = t.mood
     if (t.stock) patch.stock = t.stock
+    if (t.dark != null) patch.dark = t.dark
     if (Object.keys(patch).length) set(patch)
   },
 

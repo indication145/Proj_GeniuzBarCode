@@ -19,8 +19,8 @@ const FG_OPTS = [
   ['11', 'แบรนด์'],
 ] as const
 
-const th: React.CSSProperties = { padding: '7px 9px', borderRight: '1px solid #E0DCD6', borderBottom: '1px solid #E6E3DF', textAlign: 'left', whiteSpace: 'nowrap', position: 'relative', overflow: 'hidden', textOverflow: 'ellipsis' }
-const td: React.CSSProperties = { padding: '6px 9px', borderRight: '1px solid #EFEDEA', borderBottom: '1px solid #F1EFEC', fontSize: 12, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
+const th: React.CSSProperties = { padding: '7px 9px', borderRight: '1px solid var(--th-border)', borderBottom: '1px solid var(--border)', textAlign: 'left', whiteSpace: 'nowrap', position: 'relative', overflow: 'hidden', textOverflow: 'ellipsis' }
+const td: React.CSSProperties = { padding: '6px 9px', borderRight: '1px solid var(--c-efedea)', borderBottom: '1px solid var(--td-border)', fontSize: 12, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
 
 // default column widths (px) — order matches the <th> cells below
 const COL_W = [62, 110, 120, 78, 150, 196, 90, 160, 92, 116, 48]
@@ -113,8 +113,8 @@ export function PrintView() {
   const ps = isA4 ? 432 / 210 : Math.max(3.0, Math.min(9, 440 / (pcols * labelW + 2 * (pcols + 1))))
   const gapPx = 2 * ps
   const sheetStyle: React.CSSProperties = isA4
-    ? { boxSizing: 'border-box', width: 210 * ps, height: 297 * ps, padding: 8 * ps, display: 'flex', flexWrap: 'wrap', alignContent: 'flex-start', gap: gapPx, background: '#fff', borderRadius: 2, boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }
-    : { display: 'flex', flexWrap: 'wrap', gap: gapPx, alignContent: 'flex-start', width: pcols * labelW * ps + (pcols - 1) * gapPx + 2 * gapPx, padding: gapPx, background: '#fff', borderRadius: 4, boxShadow: '0 4px 24px rgba(0,0,0,0.1)' }
+    ? { boxSizing: 'border-box', width: 210 * ps, height: 297 * ps, padding: 8 * ps, display: 'flex', flexWrap: 'wrap', alignContent: 'flex-start', gap: gapPx, background: 'var(--surface)', borderRadius: 2, boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }
+    : { display: 'flex', flexWrap: 'wrap', gap: gapPx, alignContent: 'flex-start', width: pcols * labelW * ps + (pcols - 1) * gapPx + 2 * gapPx, padding: gapPx, background: 'var(--surface)', borderRadius: 4, boxShadow: '0 4px 24px rgba(0,0,0,0.1)' }
 
   async function doPrint() {
     const sel = s.selectedIndices()
@@ -151,8 +151,8 @@ export function PrintView() {
     }
   }
 
-  const stepBtn: React.CSSProperties = { width: 22, height: 22, border: '1px solid #E6E3DF', borderRadius: 5, background: '#fff', cursor: 'pointer', color: '#44403B', lineHeight: 1 }
-  const footBtn: React.CSSProperties = { height: 38, padding: '0 14px', borderRadius: 8, border: '1px solid #E6E3DF', background: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, color: '#44403B', display: 'inline-flex', alignItems: 'center', gap: 7, flexShrink: 0 }
+  const stepBtn: React.CSSProperties = { width: 22, height: 22, border: '1px solid var(--border)', borderRadius: 5, background: 'var(--surface)', cursor: 'pointer', color: 'var(--text-2)', lineHeight: 1 }
+  const footBtn: React.CSSProperties = { height: 38, padding: '0 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--surface)', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, color: 'var(--text-2)', display: 'inline-flex', alignItems: 'center', gap: 7, flexShrink: 0 }
   // Excel offline import gets an Excel-green accent so it reads as "load data from a file"
   const excelBtn: React.CSSProperties = { height: 38, padding: '0 14px', borderRadius: 8, border: '1px solid #bfe3cd', background: '#EEF7F1', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 700, color: '#15795A', display: 'inline-flex', alignItems: 'center', gap: 7, flexShrink: 0 }
   const icoUp = (
@@ -169,8 +169,8 @@ export function PrintView() {
       <line x1="12" y1="3" x2="12" y2="15" />
     </svg>
   )
-  const rollBtn: React.CSSProperties = { width: 24, height: 24, border: '1px solid #E6E3DF', borderRadius: 5, background: '#fff', cursor: 'pointer', color: '#44403B' }
-  const mediaBtn = (on: boolean): React.CSSProperties => ({ flex: 1, height: 32, border: '1px solid ' + (on ? 'var(--accent)' : '#E6E3DF'), borderRadius: 8, background: on ? 'var(--accent-soft)' : '#fff', color: on ? 'var(--accent)' : '#78716c', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12, fontWeight: 600 })
+  const rollBtn: React.CSSProperties = { width: 24, height: 24, border: '1px solid var(--border)', borderRadius: 5, background: 'var(--surface)', cursor: 'pointer', color: 'var(--text-2)' }
+  const mediaBtn = (on: boolean): React.CSSProperties => ({ flex: 1, height: 32, border: '1px solid ' + (on ? 'var(--accent)' : 'var(--border)'), borderRadius: 8, background: on ? 'var(--accent-soft)' : 'var(--surface)', color: on ? 'var(--accent)' : 'var(--text-3)', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12, fontWeight: 600 })
 
   const showList = !narrow || tab === 'list'
   const showPreview = !narrow || tab === 'preview'
@@ -179,11 +179,11 @@ export function PrintView() {
     <div style={{ flex: 1, display: 'flex', flexDirection: narrow ? 'column' : 'row', minWidth: 0, minHeight: 0 }}>
       {/* narrow: tab switcher between list / preview */}
       {narrow && (
-        <div style={{ flexShrink: 0, display: 'flex', gap: 6, padding: '8px 12px', background: '#fff', borderBottom: '1px solid #E6E3DF' }}>
+        <div style={{ flexShrink: 0, display: 'flex', gap: 6, padding: '8px 12px', background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           {(['list', 'preview'] as const).map((t) => {
             const on = tab === t
             return (
-              <button key={t} onClick={() => setTab(t)} style={{ flex: 1, height: 34, borderRadius: 8, border: '1px solid ' + (on ? 'var(--accent)' : '#E6E3DF'), background: on ? 'var(--accent-soft)' : '#fff', color: on ? 'var(--accent)' : '#78716c', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12.5, fontWeight: 600 }}>
+              <button key={t} onClick={() => setTab(t)} style={{ flex: 1, height: 34, borderRadius: 8, border: '1px solid ' + (on ? 'var(--accent)' : 'var(--border)'), background: on ? 'var(--accent-soft)' : 'var(--surface)', color: on ? 'var(--accent)' : 'var(--text-3)', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12.5, fontWeight: 600 }}>
                 {t === 'list' ? `รายการ (${skuRows.length})` : `ตัวอย่าง · ${printCount} ดวง`}
               </button>
             )
@@ -194,11 +194,11 @@ export function PrintView() {
       {/* left: grid */}
       <div style={{ flex: 1, display: showList ? 'flex' : 'none', flexDirection: 'column', minWidth: 0, minHeight: 0 }}>
         {/* media row */}
-        <div style={{ flexShrink: 0, background: '#fff', borderBottom: '1px solid #E6E3DF', padding: narrow ? '10px 12px' : '12px 16px', display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: 12 }}>
+        <div style={{ flexShrink: 0, background: 'var(--surface)', borderBottom: '1px solid var(--border)', padding: narrow ? '10px 12px' : '12px 16px', display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: 12 }}>
           {!isMobile && (
             <div style={{ lineHeight: 1.25 }}>
               <div style={{ fontSize: 15, fontWeight: 600 }}>พิมพ์ป้ายราคา</div>
-              <div style={{ fontSize: 11, color: '#9A938A' }}>ใส่รหัสสินค้าเพื่อพิมพ์บาร์โค้ด</div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>ใส่รหัสสินค้าเพื่อพิมพ์บาร์โค้ด</div>
             </div>
           )}
           {!isMobile && <div style={{ flex: 1 }} />}
@@ -211,8 +211,8 @@ export function PrintView() {
             </button>
           </div>
           {!isA4 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0, background: '#FBFAF9', border: '1px solid #E6E3DF', borderRadius: 8, padding: '3px 6px' }}>
-              <span style={{ fontSize: 10, color: '#9A938A', fontFamily: "'IBM Plex Mono'" }}>คอลัมน์</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0, background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, padding: '3px 6px' }}>
+              <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'IBM Plex Mono'" }}>คอลัมน์</span>
               <button style={rollBtn} onClick={() => s.bumpRoll('cols', -1)}>
                 −
               </button>
@@ -220,7 +220,7 @@ export function PrintView() {
               <button style={rollBtn} onClick={() => s.bumpRoll('cols', 1)}>
                 +
               </button>
-              <span style={{ fontSize: 10, color: '#9A938A', fontFamily: "'IBM Plex Mono'", marginLeft: 4 }}>แถว</span>
+              <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'IBM Plex Mono'", marginLeft: 4 }}>แถว</span>
               <button style={rollBtn} onClick={() => s.bumpRoll('rows', -1)}>
                 −
               </button>
@@ -233,7 +233,7 @@ export function PrintView() {
         </div>
 
         {/* scan bar */}
-        <div style={{ flexShrink: 0, background: '#fff', borderBottom: '1px solid #EFEDEA', padding: narrow ? '10px 12px' : '10px 16px', display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: 8 }}>
+        <div style={{ flexShrink: 0, background: 'var(--surface)', borderBottom: '1px solid var(--c-efedea)', padding: narrow ? '10px 12px' : '10px 16px', display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: 8 }}>
           <select className="ge-field" style={{ width: 'auto', flexShrink: 0, height: 38 }} value={s.skuFg} onChange={(e) => s.setSkuFg(e.target.value)}>
             {FG_OPTS.map(([v, l]) => (
               <option key={v} value={v}>
@@ -245,7 +245,7 @@ export function PrintView() {
           <button onClick={() => void s.addByCode()} style={{ height: 38, padding: '0 16px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, flexShrink: 0 }}>
             + เพิ่ม
           </button>
-          <button onClick={s.clearGrid} style={{ height: 38, padding: '0 14px', border: '1px solid #E6E3DF', borderRadius: 8, background: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", color: '#44403B', flexShrink: 0 }}>
+          <button onClick={s.clearGrid} style={{ height: 38, padding: '0 14px', border: '1px solid var(--border)', borderRadius: 8, background: 'var(--surface)', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", color: 'var(--text-2)', flexShrink: 0 }}>
             ล้างรายการ
           </button>
           <button
@@ -261,7 +261,7 @@ export function PrintView() {
               fontWeight: 600,
               flexShrink: 0,
               ...(printCount === 0
-                ? { background: '#EDEBE8', color: '#B4ADA4', cursor: 'not-allowed' }
+                ? { background: 'var(--surface-3)', color: '#B4ADA4', cursor: 'not-allowed' }
                 : { background: 'var(--accent)', color: '#fff', cursor: 'pointer', boxShadow: '0 2px 8px var(--accent-shadow)' }),
             }}
           >
@@ -272,16 +272,16 @@ export function PrintView() {
 
         {/* bulk select + set-qty bar */}
         {skuRows.length > 0 && (
-          <div style={{ flexShrink: 0, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, padding: narrow ? '8px 12px' : '8px 16px', background: '#FBFAF9', borderBottom: '1px solid #EFEDEA' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', fontSize: 12, color: '#44403B', fontWeight: 600, flexShrink: 0 }}>
+          <div style={{ flexShrink: 0, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, padding: narrow ? '8px 12px' : '8px 16px', background: 'var(--surface-2)', borderBottom: '1px solid var(--c-efedea)' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', fontSize: 12, color: 'var(--text-2)', fontWeight: 600, flexShrink: 0 }}>
               <input type="checkbox" checked={allSel} ref={(el) => { if (el) el.indeterminate = someSel }} onChange={(e) => s.setAllSel(e.target.checked)} />
               เลือกทั้งหมด
             </label>
-            <span style={{ fontSize: 11.5, color: '#9A938A', fontFamily: "'IBM Plex Mono'", flexShrink: 0 }}>เลือก {selCount}/{skuRows.length}</span>
+            <span style={{ fontSize: 11.5, color: 'var(--text-muted)', fontFamily: "'IBM Plex Mono'", flexShrink: 0 }}>เลือก {selCount}/{skuRows.length}</span>
             <div style={{ flex: 1, minWidth: 8 }} />
             <span style={{ fontSize: 12, color: '#57534e', flexShrink: 0 }}>ตั้งจำนวนที่เลือก</span>
-            <input type="number" min={0} value={bulkQty} onChange={(e) => setBulkQty(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && applyBulkQty()} style={{ width: 64, height: 32, textAlign: 'center', border: '1px solid #E6E3DF', borderRadius: 7, fontFamily: "'IBM Plex Mono'", flexShrink: 0 }} />
-            <button onClick={applyBulkQty} disabled={selCount === 0} title="ตั้งจำนวนของทุกแถวที่เลือกให้เท่ากัน" style={{ height: 32, padding: '0 16px', borderRadius: 7, border: 'none', cursor: selCount === 0 ? 'not-allowed' : 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, flexShrink: 0, ...(selCount === 0 ? { background: '#EDEBE8', color: '#B4ADA4' } : { background: 'var(--accent)', color: '#fff' }) }}>
+            <input type="number" min={0} value={bulkQty} onChange={(e) => setBulkQty(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && applyBulkQty()} style={{ width: 64, height: 32, textAlign: 'center', border: '1px solid var(--border)', borderRadius: 7, fontFamily: "'IBM Plex Mono'", flexShrink: 0 }} />
+            <button onClick={applyBulkQty} disabled={selCount === 0} title="ตั้งจำนวนของทุกแถวที่เลือกให้เท่ากัน" style={{ height: 32, padding: '0 16px', borderRadius: 7, border: 'none', cursor: selCount === 0 ? 'not-allowed' : 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, flexShrink: 0, ...(selCount === 0 ? { background: 'var(--surface-3)', color: '#B4ADA4' } : { background: 'var(--accent)', color: '#fff' }) }}>
               ใช้
             </button>
           </div>
@@ -294,28 +294,28 @@ export function PrintView() {
               {skuRows.map((r: Sku, i) => {
                 const active = s.activeSku === i
                 return (
-                  <div key={i} onClick={() => useStore.setState({ activeSku: i })} style={{ background: active ? 'var(--accent-soft)' : '#fff', border: '1px solid ' + (active ? 'var(--accent-soft-border)' : '#E6E3DF'), borderRadius: 10, padding: 12, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <div key={i} onClick={() => useStore.setState({ activeSku: i })} style={{ background: active ? 'var(--accent-soft)' : 'var(--surface)', border: '1px solid ' + (active ? 'var(--accent-soft-border)' : 'var(--border)'), borderRadius: 10, padding: 12, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                     <input type="checkbox" checked={s.skuSel[i] !== false} onChange={() => s.toggleSel(i)} onClick={(e) => e.stopPropagation()} style={{ marginTop: 3, flexShrink: 0, width: 18, height: 18 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 13.5, fontWeight: 600, marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.name || '—'}</div>
-                      <div style={{ fontSize: 11, color: '#78716c', fontFamily: "'IBM Plex Mono'" }}>
+                      <div style={{ fontSize: 11, color: 'var(--text-3)', fontFamily: "'IBM Plex Mono'" }}>
                         {r.sku}
                         {r.pluCode ? ` · ${r.pluCode}` : ''}
                       </div>
-                      <div style={{ fontSize: 11, color: '#9A938A', marginTop: 2 }}>
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
                         {[r.catName, r.supplierName].filter(Boolean).join(' · ')}
                       </div>
                       <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 15, fontWeight: 700, color: 'var(--accent)', marginTop: 5 }}>{fmtPrice(r.price)}</div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
-                      <button onClick={(e) => { e.stopPropagation(); s.removeRow(i) }} title="ลบ" style={{ width: 30, height: 30, border: '1px solid #EBE8E3', borderRadius: 7, background: '#fff', cursor: 'pointer', color: '#C2410C' }}>
+                      <button onClick={(e) => { e.stopPropagation(); s.removeRow(i) }} title="ลบ" style={{ width: 30, height: 30, border: '1px solid var(--border-2)', borderRadius: 7, background: 'var(--surface)', cursor: 'pointer', color: '#C2410C' }}>
                         ✕
                       </button>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }} onClick={(e) => e.stopPropagation()}>
                         <button style={{ ...stepBtn, width: 30, height: 30 }} onClick={() => s.setCopies(i, s.copiesFor(i) - 1)}>
                           −
                         </button>
-                        <input value={s.copiesFor(i)} onChange={(e) => s.setCopies(i, Number(e.target.value) || 0)} style={{ width: 40, height: 30, textAlign: 'center', border: '1px solid #E6E3DF', borderRadius: 6, fontFamily: "'IBM Plex Mono'" }} />
+                        <input value={s.copiesFor(i)} onChange={(e) => s.setCopies(i, Number(e.target.value) || 0)} style={{ width: 40, height: 30, textAlign: 'center', border: '1px solid var(--border)', borderRadius: 6, fontFamily: "'IBM Plex Mono'" }} />
                         <button style={{ ...stepBtn, width: 30, height: 30 }} onClick={() => s.setCopies(i, s.copiesFor(i) + 1)}>
                           +
                         </button>
@@ -326,14 +326,14 @@ export function PrintView() {
               })}
             </div>
           ) : (
-          <table style={{ width: totalW, borderCollapse: 'collapse', background: '#fff', border: '1px solid #E6E3DF', borderRadius: 8, tableLayout: 'fixed' }}>
+          <table style={{ width: totalW, borderCollapse: 'collapse', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, tableLayout: 'fixed' }}>
             <colgroup>
               {colW.map((w, i) => (
                 <col key={i} style={{ width: w }} />
               ))}
             </colgroup>
             <thead>
-              <tr style={{ background: '#EFEDEA', fontSize: 10.5, fontWeight: 600, color: '#57534e', fontFamily: "'IBM Plex Mono'" }}>
+              <tr style={{ background: 'var(--c-efedea)', fontSize: 10.5, fontWeight: 600, color: '#57534e', fontFamily: "'IBM Plex Mono'" }}>
                 <th style={{ ...th, textAlign: 'center' }}>#{grip(0)}</th>
                 <th style={th}>SkuCode{grip(1)}</th>
                 <th style={th}>PluCode{grip(2)}</th>
@@ -351,8 +351,8 @@ export function PrintView() {
               {skuRows.map((r: Sku, i) => {
                 const active = s.activeSku === i
                 return (
-                  <tr key={i} onClick={() => useStore.setState({ activeSku: i })} style={{ background: active ? 'var(--accent-soft)' : '#fff', cursor: 'pointer', boxShadow: active ? 'inset 3px 0 0 var(--accent)' : undefined }}>
-                    <td style={{ ...td, textAlign: 'center', fontFamily: "'IBM Plex Mono'", fontWeight: active ? 700 : 400, color: active ? 'var(--accent)' : '#9A938A' }}>
+                  <tr key={i} onClick={() => useStore.setState({ activeSku: i })} style={{ background: active ? 'var(--accent-soft)' : 'var(--surface)', cursor: 'pointer', boxShadow: active ? 'inset 3px 0 0 var(--accent)' : undefined }}>
+                    <td style={{ ...td, textAlign: 'center', fontFamily: "'IBM Plex Mono'", fontWeight: active ? 700 : 400, color: active ? 'var(--accent)' : 'var(--text-muted)' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                         <input type="checkbox" checked={s.skuSel[i] !== false} onChange={() => s.toggleSel(i)} onClick={(e) => e.stopPropagation()} />
                         {i + 1}
@@ -371,14 +371,14 @@ export function PrintView() {
                         <button style={stepBtn} onClick={() => s.setCopies(i, s.copiesFor(i) - 1)}>
                           −
                         </button>
-                        <input value={s.copiesFor(i)} onChange={(e) => s.setCopies(i, Number(e.target.value) || 0)} style={{ width: 34, textAlign: 'center', border: '1px solid #E6E3DF', borderRadius: 5, padding: '3px 0', fontFamily: "'IBM Plex Mono'" }} />
+                        <input value={s.copiesFor(i)} onChange={(e) => s.setCopies(i, Number(e.target.value) || 0)} style={{ width: 34, textAlign: 'center', border: '1px solid var(--border)', borderRadius: 5, padding: '3px 0', fontFamily: "'IBM Plex Mono'" }} />
                         <button style={stepBtn} onClick={() => s.setCopies(i, s.copiesFor(i) + 1)}>
                           +
                         </button>
                       </span>
                     </td>
                     <td style={{ ...td, borderRight: 'none', textAlign: 'center' }}>
-                      <button onClick={(e) => { e.stopPropagation(); s.removeRow(i) }} title="ลบแถว" style={{ width: 26, height: 26, border: '1px solid #EBE8E3', borderRadius: 6, background: '#fff', cursor: 'pointer', color: '#C2410C' }}>
+                      <button onClick={(e) => { e.stopPropagation(); s.removeRow(i) }} title="ลบแถว" style={{ width: 26, height: 26, border: '1px solid var(--border-2)', borderRadius: 6, background: 'var(--surface)', cursor: 'pointer', color: '#C2410C' }}>
                         ✕
                       </button>
                     </td>
@@ -388,19 +388,19 @@ export function PrintView() {
             </tbody>
           </table>
           )}
-          {skuRows.length === 0 && <div style={{ padding: '40px 16px', textAlign: 'center', color: '#9A938A', fontSize: 13, lineHeight: 1.6 }}>ยังไม่มีรายการสินค้า<br />สแกน/พิมพ์รหัสด้านบน หรือกด "ใบสั่งซื้อ" เพื่อดึงทั้งใบ<br />ไม่ได้เชื่อมต่อฐานข้อมูล? กด "เทมเพลต" เพื่อโหลดไฟล์ Excel ไปกรอก แล้ว "นำเข้า Excel"</div>}
+          {skuRows.length === 0 && <div style={{ padding: '40px 16px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13, lineHeight: 1.6 }}>ยังไม่มีรายการสินค้า<br />สแกน/พิมพ์รหัสด้านบน หรือกด "ใบสั่งซื้อ" เพื่อดึงทั้งใบ<br />ไม่ได้เชื่อมต่อฐานข้อมูล? กด "เทมเพลต" เพื่อโหลดไฟล์ Excel ไปกรอก แล้ว "นำเข้า Excel"</div>}
         </div>
 
         {/* footer */}
-        <div style={{ flexShrink: 0, background: '#fff', borderTop: '1px solid #E6E3DF', padding: narrow ? '10px 12px' : '12px 16px', display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: narrow ? 10 : 14 }}>
+        <div style={{ flexShrink: 0, background: 'var(--surface)', borderTop: '1px solid var(--border)', padding: narrow ? '10px 12px' : '12px 16px', display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: narrow ? 10 : 14 }}>
           <button onClick={s.openPo} style={footBtn}>ใบสั่งซื้อ</button>
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', flexShrink: 0 }}>
             <input type="checkbox" checked={s.useQty} onChange={(e) => s.setUseQty(e.target.checked)} />
-            <span style={{ fontSize: 12, color: '#44403B' }}>พิมพ์ตามจำนวนใน PO (qty)</span>
+            <span style={{ fontSize: 12, color: 'var(--text-2)' }}>พิมพ์ตามจำนวนใน PO (qty)</span>
           </label>
 
-          {!narrow && <div style={{ width: 1, height: 26, background: '#E6E3DF', flexShrink: 0 }} />}
+          {!narrow && <div style={{ width: 1, height: 26, background: 'var(--border)', flexShrink: 0 }} />}
 
           {/* offline Excel data — import a filled sheet, or grab the blank template */}
           <label style={excelBtn} title="นำเข้ารายการสินค้าจากไฟล์ Excel (.xlsx / .csv) — พิมพ์ได้แม้ไม่ได้เชื่อมต่อฐานข้อมูล">
@@ -413,21 +413,21 @@ export function PrintView() {
 
           <div style={{ flex: 1 }} />
           <div style={{ textAlign: 'right', lineHeight: 1.2 }}>
-            <div style={{ fontSize: 11, color: '#9A938A' }}>รวมที่จะพิมพ์</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>รวมที่จะพิมพ์</div>
             <div>
-              <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 20, fontWeight: 700, color: 'var(--accent)' }}>{printCount}</span> <span style={{ fontSize: 12, color: '#9A938A' }}>ดวง · {isA4 ? `A4 · ${pcols}×${prows}/แผ่น` : `ม้วน ${pcols}×${prows}/หน้า`}</span>
+              <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 20, fontWeight: 700, color: 'var(--accent)' }}>{printCount}</span> <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>ดวง · {isA4 ? `A4 · ${pcols}×${prows}/แผ่น` : `ม้วน ${pcols}×${prows}/หน้า`}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* right: preview */}
-      <div style={{ width: narrow ? '100%' : 480, flex: narrow ? 1 : undefined, flexShrink: 0, background: '#fff', borderLeft: narrow ? 'none' : '1px solid #E6E3DF', display: showPreview ? 'flex' : 'none', flexDirection: 'column', minHeight: 0, minWidth: 0 }}>
-        <div style={{ flexShrink: 0, padding: '13px 16px', borderBottom: '1px solid #E6E3DF', display: 'flex', alignItems: 'center', gap: 9 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#44403B' }}>ตัวอย่าง</span>
+      <div style={{ width: narrow ? '100%' : 480, flex: narrow ? 1 : undefined, flexShrink: 0, background: 'var(--surface)', borderLeft: narrow ? 'none' : '1px solid var(--border)', display: showPreview ? 'flex' : 'none', flexDirection: 'column', minHeight: 0, minWidth: 0 }}>
+        <div style={{ flexShrink: 0, padding: '13px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 9 }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-2)' }}>ตัวอย่าง</span>
           <span style={{ fontSize: 10.5, color: 'var(--accent)', fontFamily: "'IBM Plex Mono'", background: 'var(--accent-soft)', border: '1px solid var(--accent-soft-border)', padding: '2px 8px', borderRadius: 20 }}>หน้า 1 / {totalPages}</span>
           <div style={{ flex: 1 }} />
-          <button onClick={() => useStore.setState({ view: 'design' })} style={{ height: 30, padding: '0 11px', border: '1px solid #E6E3DF', borderRadius: 8, background: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 11.5, color: '#44403B' }}>
+          <button onClick={() => useStore.setState({ view: 'design' })} style={{ height: 30, padding: '0 11px', border: '1px solid var(--border)', borderRadius: 8, background: 'var(--surface)', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 11.5, color: 'var(--text-2)' }}>
             แก้ไขแม่แบบ
           </button>
         </div>
@@ -439,7 +439,7 @@ export function PrintView() {
               ))}
             </div>
           ) : (
-            <div style={{ margin: 'auto', textAlign: 'center', color: '#9A938A', fontSize: 12.5, lineHeight: 1.5 }}>ยังไม่มีรายการที่จะพิมพ์<br />เพิ่มสินค้าทางซ้ายก่อน</div>
+            <div style={{ margin: 'auto', textAlign: 'center', color: 'var(--text-muted)', fontSize: 12.5, lineHeight: 1.5 }}>ยังไม่มีรายการที่จะพิมพ์<br />เพิ่มสินค้าทางซ้ายก่อน</div>
           )}
         </div>
       </div>

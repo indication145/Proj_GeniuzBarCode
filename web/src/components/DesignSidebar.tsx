@@ -26,19 +26,19 @@ const SIZES: [string, string, number, number][] = [
   ['30 × 20', 'จิ๋ว', 30, 20],
 ]
 
-const head: React.CSSProperties = { fontSize: 10, fontWeight: 600, color: '#9A938A', letterSpacing: '0.08em', fontFamily: "'IBM Plex Mono'", marginBottom: 10 }
-const divider: React.CSSProperties = { height: 1, background: '#EFEDEA', margin: '8px 16px' }
+const head: React.CSSProperties = { fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.08em', fontFamily: "'IBM Plex Mono'", marginBottom: 10 }
+const divider: React.CSSProperties = { height: 1, background: 'var(--c-efedea)', margin: '8px 16px' }
 
 export function DesignSidebar() {
   const s = useStore()
   return (
-    <aside style={{ width: 252, flexShrink: 0, background: '#fff', borderRight: '1px solid #E6E3DF', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+    <aside style={{ width: 252, flexShrink: 0, background: 'var(--surface)', borderRight: '1px solid var(--border)', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
       {/* elements */}
       <div style={{ padding: '16px 16px 8px' }}>
         <div style={head}>ELEMENTS · เพิ่มองค์ประกอบ</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
           {ELEMENTS.map(([type, label]) => (
-            <button key={type} onClick={() => s.addElement(type)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '12px 4px', border: '1px solid #EBE8E3', borderRadius: 10, background: '#FBFAF9', cursor: 'pointer', color: '#44403B', fontFamily: "'IBM Plex Sans Thai'" }}>
+            <button key={type} onClick={() => s.addElement(type)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '12px 4px', border: '1px solid var(--border-2)', borderRadius: 10, background: 'var(--surface-2)', cursor: 'pointer', color: 'var(--text-2)', fontFamily: "'IBM Plex Sans Thai'" }}>
               <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent)' }}>{type === 'text' ? 'T' : type === 'price' ? '฿' : type === 'barcode' ? '|||' : type === 'qr' ? '⊞' : type === 'image' ? '▣' : '▢'}</span>
               <span style={{ fontSize: 10.5, fontWeight: 500 }}>{label}</span>
             </button>
@@ -53,11 +53,11 @@ export function DesignSidebar() {
         <div style={head}>TEMPLATES · แม่แบบสำเร็จรูป</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {PRESETS.map((p) => (
-            <button key={p.name} onClick={() => s.applyPreset(p.fn(p.w, p.h), p.w, p.h)} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: 9, border: '1px solid #EBE8E3', borderRadius: 10, background: '#fff', cursor: 'pointer', textAlign: 'left', fontFamily: "'IBM Plex Sans Thai'" }}>
+            <button key={p.name} onClick={() => s.applyPreset(p.fn(p.w, p.h), p.w, p.h)} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: 9, border: '1px solid var(--border-2)', borderRadius: 10, background: 'var(--surface)', cursor: 'pointer', textAlign: 'left', fontFamily: "'IBM Plex Sans Thai'" }}>
               <div style={{ width: 34, height: 34, borderRadius: 8, background: 'var(--accent-soft)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>▣</div>
               <div style={{ lineHeight: 1.25, minWidth: 0 }}>
                 <div style={{ fontSize: 12.5, fontWeight: 600 }}>{p.name}</div>
-                <div style={{ fontSize: 10.5, color: '#9A938A', fontFamily: "'IBM Plex Mono'" }}>{p.sub}</div>
+                <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: "'IBM Plex Mono'" }}>{p.sub}</div>
               </div>
             </button>
           ))}
@@ -69,7 +69,7 @@ export function DesignSidebar() {
       {/* saved */}
       <div style={{ padding: '8px 16px' }}>
         <div style={head}>SAVED · แม่แบบที่บันทึก</div>
-        <label style={{ display: 'block', marginBottom: 5, fontSize: 11, color: '#78716c' }}>ชื่อแม่แบบ</label>
+        <label style={{ display: 'block', marginBottom: 5, fontSize: 11, color: 'var(--text-3)' }}>ชื่อแม่แบบ</label>
         <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
           <input className="ge-field" style={{ fontFamily: "'IBM Plex Sans Thai'", fontWeight: 500 }} value={s.labelName} onChange={(e) => s.setLabelName(e.target.value)} placeholder="ตั้งชื่อแม่แบบ…" />
           <button onClick={s.saveTemplate} style={{ flexShrink: 0, height: 'auto', padding: '0 12px', borderRadius: 7, border: 'none', background: 'var(--accent)', color: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12, fontWeight: 500 }}>
@@ -77,20 +77,20 @@ export function DesignSidebar() {
           </button>
         </div>
         {s.savedTemplates.length === 0 ? (
-          <div style={{ fontSize: 11, color: '#9A938A', textAlign: 'center', padding: 6 }}>ยังไม่มีแม่แบบที่บันทึก — กด "บันทึก"</div>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center', padding: 6 }}>ยังไม่มีแม่แบบที่บันทึก — กด "บันทึก"</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {s.savedTemplates.map((t, i) => {
               const id = String(t.id)
               return (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 9px', border: '1px solid #EBE8E3', borderRadius: 10, background: '#fff' }}>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 9px', border: '1px solid var(--border-2)', borderRadius: 10, background: 'var(--surface)' }}>
                   <button onClick={() => void s.openTemplate(id)} style={{ flex: 1, minWidth: 0, textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', padding: 0, fontFamily: "'IBM Plex Sans Thai'" }}>
                     <div style={{ fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{pick(t, 'name') || '(ไม่มีชื่อ)'}</div>
-                    <div style={{ fontSize: 10.5, color: '#9A938A', fontFamily: "'IBM Plex Mono'" }}>
+                    <div style={{ fontSize: 10.5, color: 'var(--text-muted)', fontFamily: "'IBM Plex Mono'" }}>
                       {pick(t, 'labelW')}×{pick(t, 'labelH')} มม. · {pick(t, 'count')} ชิ้น
                     </div>
                   </button>
-                  <button onClick={() => void s.removeTemplate(id)} title="ลบแม่แบบ" style={{ width: 26, height: 26, flexShrink: 0, border: '1px solid #EBE8E3', borderRadius: 7, background: '#fff', cursor: 'pointer', color: '#9A938A' }}>
+                  <button onClick={() => void s.removeTemplate(id)} title="ลบแม่แบบ" style={{ width: 26, height: 26, flexShrink: 0, border: '1px solid var(--border-2)', borderRadius: 7, background: 'var(--surface)', cursor: 'pointer', color: 'var(--text-muted)' }}>
                     🗑
                   </button>
                 </div>
@@ -109,7 +109,7 @@ export function DesignSidebar() {
           {SIZES.map(([label, sub, w, h]) => {
             const on = s.labelW === w && s.labelH === h
             return (
-              <button key={label} onClick={() => s.setLabelSize(w, h)} style={{ padding: '8px 6px', borderRadius: 8, cursor: 'pointer', textAlign: 'left', border: '1px solid ' + (on ? 'var(--accent)' : '#EBE8E3'), background: on ? 'var(--accent-soft)' : '#fff', color: on ? 'var(--accent)' : '#44403B', fontFamily: "'IBM Plex Sans Thai'" }}>
+              <button key={label} onClick={() => s.setLabelSize(w, h)} style={{ padding: '8px 6px', borderRadius: 8, cursor: 'pointer', textAlign: 'left', border: '1px solid ' + (on ? 'var(--accent)' : 'var(--border-2)'), background: on ? 'var(--accent-soft)' : 'var(--surface)', color: on ? 'var(--accent)' : 'var(--text-2)', fontFamily: "'IBM Plex Sans Thai'" }}>
                 <div style={{ fontSize: 12.5, fontWeight: 600 }}>{label}</div>
                 <div style={{ fontSize: 10, fontFamily: "'IBM Plex Mono'", opacity: 0.65 }}>{sub}</div>
               </button>
@@ -118,11 +118,11 @@ export function DesignSidebar() {
         </div>
         <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
           <label style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontSize: 10, color: '#9A938A', fontFamily: "'IBM Plex Mono'" }}>กว้าง W (มม.)</span>
+            <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'IBM Plex Mono'" }}>กว้าง W (มม.)</span>
             <input className="ge-field" type="number" value={s.labelW} onChange={(e) => s.setLabelSize(Number(e.target.value) || s.labelW, s.labelH)} />
           </label>
           <label style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontSize: 10, color: '#9A938A', fontFamily: "'IBM Plex Mono'" }}>สูง H (มม.)</span>
+            <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'IBM Plex Mono'" }}>สูง H (มม.)</span>
             <input className="ge-field" type="number" value={s.labelH} onChange={(e) => s.setLabelSize(s.labelW, Number(e.target.value) || s.labelH)} />
           </label>
         </div>

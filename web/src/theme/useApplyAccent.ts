@@ -6,6 +6,7 @@ import { useStore } from '@/store/useStore'
  *  (any `var(--accent*)`) updates with no hardcoded colours. */
 export function useApplyAccent() {
   const accent = useStore((s) => s.accent)
+  const dark = useStore((s) => s.dark)
   useEffect(() => {
     const a = accentVars(accent)
     const s = document.documentElement.style
@@ -16,4 +17,8 @@ export function useApplyAccent() {
     s.setProperty('--accent-text', a.text)
     s.setProperty('--accent-shadow', a.shadow)
   }, [accent])
+  useEffect(() => {
+    // light/dark token set lives in index.css under [data-theme="dark"]
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+  }, [dark])
 }

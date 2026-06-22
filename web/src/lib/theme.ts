@@ -53,9 +53,10 @@ export interface ThemePrefs {
   accent: string | null
   mood: Mood | null
   stock: Stock | null
+  dark: boolean | null
 }
 
-const K = { accent: 'ge_accent', mood: 'ge_mood', stock: 'ge_stock' } as const
+const K = { accent: 'ge_accent', mood: 'ge_mood', stock: 'ge_stock', dark: 'ge_dark' } as const
 
 function lsGet(k: string): string | null {
   try {
@@ -74,13 +75,16 @@ function lsSet(k: string, v: string): void {
 
 /** Read saved overrides (null = not set → caller falls back to defaults). */
 export function loadTheme(): ThemePrefs {
+  const d = lsGet(K.dark)
   return {
     accent: lsGet(K.accent),
     mood: lsGet(K.mood) as Mood | null,
     stock: lsGet(K.stock) as Stock | null,
+    dark: d == null ? null : d === '1',
   }
 }
 
 export const saveAccent = (hex: string) => lsSet(K.accent, hex)
 export const saveMood = (m: Mood) => lsSet(K.mood, m)
 export const saveStock = (s: Stock) => lsSet(K.stock, s)
+export const saveDark = (on: boolean) => lsSet(K.dark, on ? '1' : '0')

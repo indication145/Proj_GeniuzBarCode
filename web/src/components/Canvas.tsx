@@ -246,7 +246,7 @@ export function Canvas({ onToggleLeft, onToggleRight }: { onToggleLeft?: () => v
   const z = zoom
   // larger hit targets on touch/coarse pointers
   const handleBase = coarse ? 17 : 9
-  const toolBtn: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 6, height: 34, padding: '0 12px', border: '1px solid #E6E3DF', borderRadius: 9, background: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12.5, fontWeight: 600, color: '#44403B', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }
+  const toolBtn: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 6, height: 34, padding: '0 12px', border: '1px solid var(--border)', borderRadius: 9, background: 'var(--surface)', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12.5, fontWeight: 600, color: 'var(--text-2)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }
 
   return (
     <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, position: 'relative' }}>
@@ -297,7 +297,7 @@ export function Canvas({ onToggleLeft, onToggleRight }: { onToggleLeft?: () => v
               {HANDLES.map((dir) => {
                 const hs = handleBase / z
                 const half = hs / 2
-                const pos: React.CSSProperties = { position: 'absolute', width: hs, height: hs, background: '#fff', border: `${Math.max(0.5, 1.2 / z)}px solid var(--accent)`, borderRadius: 2 / z, pointerEvents: 'auto', zIndex: 901, touchAction: 'none' }
+                const pos: React.CSSProperties = { position: 'absolute', width: hs, height: hs, background: 'var(--surface)', border: `${Math.max(0.5, 1.2 / z)}px solid var(--accent)`, borderRadius: 2 / z, pointerEvents: 'auto', zIndex: 901, touchAction: 'none' }
                 if (dir.includes('n')) pos.top = -half
                 if (dir.includes('s')) pos.bottom = -half
                 if (dir.includes('w')) pos.left = -half
@@ -320,7 +320,7 @@ export function Canvas({ onToggleLeft, onToggleRight }: { onToggleLeft?: () => v
         <div style={{ position: 'absolute', left: '50%', bottom: 14, transform: 'translateX(-50%)', background: 'rgba(27,26,24,0.82)', color: '#fff', fontFamily: "'IBM Plex Mono'", fontSize: 11, padding: '5px 12px', borderRadius: 20, pointerEvents: 'none' }}>
           {labelW} × {labelH} mm
         </div>
-        <div style={{ position: 'absolute', left: 14, bottom: 14, display: 'flex', alignItems: 'center', gap: 2, background: '#fff', border: '1px solid #E6E3DF', borderRadius: 10, padding: 3, boxShadow: '0 3px 12px rgba(0,0,0,0.08)' }}>
+        <div style={{ position: 'absolute', left: 14, bottom: 14, display: 'flex', alignItems: 'center', gap: 2, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: 3, boxShadow: '0 3px 12px rgba(0,0,0,0.08)' }}>
           <button onClick={() => useStore.getState().undo()} disabled={!s.past.length} title="ย้อนกลับ (Ctrl+Z)" style={{ width: 30, height: 30, border: 'none', background: 'transparent', borderRadius: 7, cursor: s.past.length ? 'pointer' : 'default', opacity: s.past.length ? 1 : 0.3, fontSize: 16 }}>
             ↶
           </button>
@@ -328,7 +328,7 @@ export function Canvas({ onToggleLeft, onToggleRight }: { onToggleLeft?: () => v
             ↷
           </button>
         </div>
-        <div style={{ position: 'absolute', right: 14, bottom: 14, display: 'flex', alignItems: 'center', gap: 2, background: '#fff', border: '1px solid #E6E3DF', borderRadius: 10, padding: 3, boxShadow: '0 3px 12px rgba(0,0,0,0.08)' }}>
+        <div style={{ position: 'absolute', right: 14, bottom: 14, display: 'flex', alignItems: 'center', gap: 2, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: 3, boxShadow: '0 3px 12px rgba(0,0,0,0.08)' }}>
           <button onClick={() => useStore.getState().setView3({ zoom: Math.max(0.4, z * 0.85) })} style={{ width: 30, height: 30, border: 'none', background: 'transparent', borderRadius: 7, cursor: 'pointer' }}>
             −
           </button>

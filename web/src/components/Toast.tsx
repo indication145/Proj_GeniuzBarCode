@@ -14,7 +14,7 @@ export function Toast() {
         display: 'flex',
         alignItems: 'center',
         gap: 11,
-        background: '#1B1A18',
+        background: 'var(--text)',
         color: '#fff',
         padding: '13px 18px',
         borderRadius: 12,
@@ -24,7 +24,7 @@ export function Toast() {
       }}
     >
       <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#1F8A5B', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--surface)" strokeWidth="3" strokeLinecap="round">
           <polyline points="20 6 9 17 4 12" />
         </svg>
       </span>
