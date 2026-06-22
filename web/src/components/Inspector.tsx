@@ -32,7 +32,7 @@ function Swatches({ current, onPick, colors = COLORS }: { current: string; onPic
   return (
     <>
       {colors.map((c) => (
-        <button key={c} onClick={() => onPick(c)} style={{ width: 22, height: 22, borderRadius: 6, cursor: 'pointer', background: c, border: current === c ? '2px solid #1B1A18' : '1px solid #d8d3cc', boxShadow: current === c ? '0 0 0 2px var(--surface) inset' : 'none' }} />
+        <button key={c} onClick={() => onPick(c)} style={{ width: 22, height: 22, borderRadius: 6, cursor: 'pointer', background: c, border: current === c ? '2px solid var(--text)' : '1px solid var(--border)', boxShadow: current === c ? '0 0 0 2px var(--surface) inset' : 'none' }} />
       ))}
     </>
   )
@@ -264,7 +264,7 @@ export function Inspector() {
             </>
           ) : (
             <>
-              <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: 20, border: '1.5px dashed #cfcbc4', borderRadius: 10, background: 'var(--surface-2)', cursor: 'pointer', color: 'var(--text-muted)' }}>
+              <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: 20, border: '1.5px dashed var(--border)', borderRadius: 10, background: 'var(--surface-2)', cursor: 'pointer', color: 'var(--text-muted)' }}>
                 <span style={{ fontSize: 12, fontWeight: 500 }}>คลิกเพื่อเลือกรูป / โลโก้</span>
                 <span style={{ fontSize: 10, fontFamily: "'IBM Plex Mono'" }}>PNG · JPG · SVG · ≤ 3MB</span>
                 <input type="file" accept="image/*" onChange={(e) => pickImage(e.target.files?.[0])} style={{ display: 'none' }} />

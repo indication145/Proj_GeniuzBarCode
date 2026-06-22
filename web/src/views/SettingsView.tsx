@@ -225,7 +225,7 @@ export function SettingsView() {
             <div style={{ display: 'flex', gap: 10 }}>
               {ACCENT_CHOICES.map((c) => {
                 const on = accent.toLowerCase() === c.toLowerCase()
-                return <button key={c} onClick={() => setAccent(c)} title={c} style={{ width: 30, height: 30, borderRadius: 8, cursor: 'pointer', background: c, border: on ? '2px solid var(--text)' : '1px solid #d8d3cc', boxShadow: on ? '0 0 0 2px var(--surface) inset' : 'none' }} />
+                return <button key={c} onClick={() => setAccent(c)} title={c} style={{ width: 30, height: 30, borderRadius: 8, cursor: 'pointer', background: c, border: on ? '2px solid var(--text)' : '1px solid var(--border)', boxShadow: on ? '0 0 0 2px var(--surface) inset' : 'none' }} />
               })}
             </div>
           </div>

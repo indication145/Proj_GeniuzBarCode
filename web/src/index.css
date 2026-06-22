@@ -68,6 +68,13 @@ select:focus {
   outline: none;
 }
 
+/* Buttons default to the system "ButtonText" colour (black), which is invisible
+   on dark surfaces when a button sets only its background. Inherit the themed
+   text colour instead; buttons that set `color` explicitly still override this. */
+button {
+  color: inherit;
+}
+
 /* shared form field — focus ring follows the theme accent */
 .ge-field {
   width: 100%;

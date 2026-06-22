@@ -279,7 +279,7 @@ export function PrintView() {
             </label>
             <span style={{ fontSize: 11.5, color: 'var(--text-muted)', fontFamily: "'IBM Plex Mono'", flexShrink: 0 }}>เลือก {selCount}/{skuRows.length}</span>
             <div style={{ flex: 1, minWidth: 8 }} />
-            <span style={{ fontSize: 12, color: '#57534e', flexShrink: 0 }}>ตั้งจำนวนที่เลือก</span>
+            <span style={{ fontSize: 12, color: 'var(--text-2)', flexShrink: 0 }}>ตั้งจำนวนที่เลือก</span>
             <input type="number" min={0} value={bulkQty} onChange={(e) => setBulkQty(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && applyBulkQty()} style={{ width: 64, height: 32, textAlign: 'center', border: '1px solid var(--border)', borderRadius: 7, fontFamily: "'IBM Plex Mono'", flexShrink: 0 }} />
             <button onClick={applyBulkQty} disabled={selCount === 0} title="ตั้งจำนวนของทุกแถวที่เลือกให้เท่ากัน" style={{ height: 32, padding: '0 16px', borderRadius: 7, border: 'none', cursor: selCount === 0 ? 'not-allowed' : 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, flexShrink: 0, ...(selCount === 0 ? { background: 'var(--surface-3)', color: '#B4ADA4' } : { background: 'var(--accent)', color: '#fff' }) }}>
               ใช้
@@ -333,7 +333,7 @@ export function PrintView() {
               ))}
             </colgroup>
             <thead>
-              <tr style={{ background: 'var(--c-efedea)', fontSize: 10.5, fontWeight: 600, color: '#57534e', fontFamily: "'IBM Plex Mono'" }}>
+              <tr style={{ background: 'var(--c-efedea)', fontSize: 10.5, fontWeight: 600, color: 'var(--text-2)', fontFamily: "'IBM Plex Mono'" }}>
                 <th style={{ ...th, textAlign: 'center' }}>#{grip(0)}</th>
                 <th style={th}>SkuCode{grip(1)}</th>
                 <th style={th}>PluCode{grip(2)}</th>
@@ -407,7 +407,7 @@ export function PrintView() {
             {icoUp} นำเข้าจาก Excel
             <input type="file" accept=".xlsx,.xls,.csv" onChange={(e) => void onImportFile(e.target.files?.[0])} onClick={(e) => ((e.target as HTMLInputElement).value = '')} style={{ display: 'none' }} />
           </label>
-          <button onClick={() => void downloadTemplate()} style={{ ...footBtn, color: '#57534e', fontWeight: 600 }} title="ดาวน์โหลดไฟล์ Excel ตัวอย่าง (มีหัวคอลัมน์พร้อมตัวอย่าง) ไว้กรอกข้อมูลแล้วนำเข้า">
+          <button onClick={() => void downloadTemplate()} style={{ ...footBtn, color: 'var(--text-2)', fontWeight: 600 }} title="ดาวน์โหลดไฟล์ Excel ตัวอย่าง (มีหัวคอลัมน์พร้อมตัวอย่าง) ไว้กรอกข้อมูลแล้วนำเข้า">
             {icoDown} ดาวน์โหลดเทมเพลต
           </button>
 
