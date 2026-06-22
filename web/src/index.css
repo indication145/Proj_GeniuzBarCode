@@ -25,6 +25,7 @@
   --text-3: #78716c;
   --text-muted: #9a938a;
   --scrollbar: #d2cdc6;
+  --toast-bg: #1b1a18;
 }
 
 [data-theme='dark'] {
@@ -42,6 +43,8 @@
   --text-3: #b0a89e;
   --text-muted: #8d857b;
   --scrollbar: #4a443d;
+  /* elevated dark chip — distinct from --bg/--surface so the toast reads in dark */
+  --toast-bg: #3c3833;
 }
 
 * {
