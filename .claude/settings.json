@@ -27,7 +27,10 @@
       "Bash(npm -v)",
       "Bash(npm_config_yes=true npm create vite@latest web -- --template react-ts)",
       "Bash(npm install *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "PowerShell(npm --prefix web run build 2>&1)",
+      "Bash(node node_modules/vite/bin/vite.js preview --port 4327)",
+      "Bash(node node_modules/vite/bin/vite.js preview --port 4329)"
     ]
   }
 }
