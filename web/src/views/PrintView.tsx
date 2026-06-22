@@ -145,7 +145,23 @@ export function PrintView() {
   }
 
   const stepBtn: React.CSSProperties = { width: 22, height: 22, border: '1px solid #E6E3DF', borderRadius: 5, background: '#fff', cursor: 'pointer', color: '#44403B', lineHeight: 1 }
-  const footBtn: React.CSSProperties = { height: 38, padding: '0 14px', borderRadius: 8, border: '1px solid #E6E3DF', background: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, color: '#44403B', display: 'inline-flex', alignItems: 'center', flexShrink: 0 }
+  const footBtn: React.CSSProperties = { height: 38, padding: '0 14px', borderRadius: 8, border: '1px solid #E6E3DF', background: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, color: '#44403B', display: 'inline-flex', alignItems: 'center', gap: 7, flexShrink: 0 }
+  // Excel offline import gets an Excel-green accent so it reads as "load data from a file"
+  const excelBtn: React.CSSProperties = { height: 38, padding: '0 14px', borderRadius: 8, border: '1px solid #bfe3cd', background: '#EEF7F1', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 700, color: '#15795A', display: 'inline-flex', alignItems: 'center', gap: 7, flexShrink: 0 }
+  const icoUp = (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="17 8 12 3 7 8" />
+      <line x1="12" y1="3" x2="12" y2="15" />
+    </svg>
+  )
+  const icoDown = (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="3" x2="12" y2="15" />
+    </svg>
+  )
   const rollBtn: React.CSSProperties = { width: 24, height: 24, border: '1px solid #E6E3DF', borderRadius: 5, background: '#fff', cursor: 'pointer', color: '#44403B' }
   const mediaBtn = (on: boolean): React.CSSProperties => ({ flex: 1, height: 32, border: '1px solid ' + (on ? 'var(--accent)' : '#E6E3DF'), borderRadius: 8, background: on ? 'var(--accent-soft)' : '#fff', color: on ? 'var(--accent)' : '#78716c', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12, fontWeight: 600 })
 
@@ -350,17 +366,23 @@ export function PrintView() {
         {/* footer */}
         <div style={{ flexShrink: 0, background: '#fff', borderTop: '1px solid #E6E3DF', padding: narrow ? '10px 12px' : '12px 16px', display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: narrow ? 10 : 14 }}>
           <button onClick={s.openPo} style={footBtn}>ใบสั่งซื้อ</button>
-          <label style={{ ...footBtn, cursor: 'pointer' }} title="นำเข้ารายการสินค้าจากไฟล์ Excel (.xlsx/.csv)">
-            ⬆ นำเข้า Excel
-            <input type="file" accept=".xlsx,.xls,.csv" onChange={(e) => void onImportFile(e.target.files?.[0])} onClick={(e) => ((e.target as HTMLInputElement).value = '')} style={{ display: 'none' }} />
-          </label>
-          <button onClick={() => void downloadTemplate()} style={footBtn} title="ดาวน์โหลดไฟล์ Excel ตัวอย่างไว้กรอกข้อมูล">
-            ⬇ เทมเพลต
-          </button>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', flexShrink: 0 }}>
             <input type="checkbox" checked={s.useQty} onChange={(e) => s.setUseQty(e.target.checked)} />
             <span style={{ fontSize: 12, color: '#44403B' }}>พิมพ์ตามจำนวนใน PO (qty)</span>
           </label>
+
+          {!narrow && <div style={{ width: 1, height: 26, background: '#E6E3DF', flexShrink: 0 }} />}
+
+          {/* offline Excel data — import a filled sheet, or grab the blank template */}
+          <label style={excelBtn} title="นำเข้ารายการสินค้าจากไฟล์ Excel (.xlsx / .csv) — พิมพ์ได้แม้ไม่ได้เชื่อมต่อฐานข้อมูล">
+            {icoUp} นำเข้าจาก Excel
+            <input type="file" accept=".xlsx,.xls,.csv" onChange={(e) => void onImportFile(e.target.files?.[0])} onClick={(e) => ((e.target as HTMLInputElement).value = '')} style={{ display: 'none' }} />
+          </label>
+          <button onClick={() => void downloadTemplate()} style={{ ...footBtn, color: '#57534e', fontWeight: 600 }} title="ดาวน์โหลดไฟล์ Excel ตัวอย่าง (มีหัวคอลัมน์พร้อมตัวอย่าง) ไว้กรอกข้อมูลแล้วนำเข้า">
+            {icoDown} ดาวน์โหลดเทมเพลต
+          </button>
+
           <div style={{ flex: 1 }} />
           <div style={{ textAlign: 'right', lineHeight: 1.2 }}>
             <div style={{ fontSize: 11, color: '#9A938A' }}>รวมที่จะพิมพ์</div>
