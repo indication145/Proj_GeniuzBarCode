@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useStore } from '@/store/useStore'
 import { fmtPrice } from '@/lib/units'
 import { openPrint, openPrintFrame } from '@/lib/printDoc'
@@ -18,8 +18,12 @@ const FG_OPTS = [
   ['11', 'แบรนด์'],
 ] as const
 
-const th: React.CSSProperties = { padding: '7px 9px', borderRight: '1px solid #E0DCD6', borderBottom: '1px solid #E6E3DF', textAlign: 'left', whiteSpace: 'nowrap' }
-const td: React.CSSProperties = { padding: '6px 9px', borderRight: '1px solid #EFEDEA', borderBottom: '1px solid #F1EFEC', fontSize: 12, whiteSpace: 'nowrap' }
+const th: React.CSSProperties = { padding: '7px 9px', borderRight: '1px solid #E0DCD6', borderBottom: '1px solid #E6E3DF', textAlign: 'left', whiteSpace: 'nowrap', position: 'relative', overflow: 'hidden', textOverflow: 'ellipsis' }
+const td: React.CSSProperties = { padding: '6px 9px', borderRight: '1px solid #EFEDEA', borderBottom: '1px solid #F1EFEC', fontSize: 12, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
+
+// default column widths (px) — order matches the <th> cells below
+const COL_W = [42, 110, 120, 78, 150, 200, 90, 160, 92, 116, 48]
+const COL_KEY = 'ge.print.colw'
 
 export function PrintView() {
   const s = useStore()
@@ -28,6 +32,51 @@ export function PrintView() {
   const { isTablet, isMobile } = useBreakpoint()
   const narrow = isTablet
   const [tab, setTab] = useState<'list' | 'preview'>('list')
+
+  // resizable grid columns (desktop table only) — persisted in localStorage
+  const [colW, setColW] = useState<number[]>(() => {
+    try {
+      const raw = localStorage.getItem(COL_KEY)
+      if (raw) {
+        const a = JSON.parse(raw)
+        if (Array.isArray(a) && a.length === COL_W.length) return a
+      }
+    } catch {
+      /* ignore */
+    }
+    return COL_W
+  })
+  const resizing = useRef<{ i: number; startX: number; startW: number } | null>(null)
+  useEffect(() => {
+    try {
+      localStorage.setItem(COL_KEY, JSON.stringify(colW))
+    } catch {
+      /* ignore */
+    }
+  }, [colW])
+  function colDown(i: number, e: React.PointerEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    ;(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId)
+    resizing.current = { i, startX: e.clientX, startW: colW[i] }
+  }
+  function colMove(e: React.PointerEvent) {
+    const r = resizing.current
+    if (!r) return
+    const w = Math.max(40, r.startW + (e.clientX - r.startX))
+    setColW((prev) => {
+      const n = [...prev]
+      n[r.i] = w
+      return n
+    })
+  }
+  function colUp(e: React.PointerEvent) {
+    if (!resizing.current) return
+    resizing.current = null
+    ;(e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId)
+  }
+  const grip = (i: number) => <span onPointerDown={(e) => colDown(i, e)} onPointerMove={colMove} onPointerUp={colUp} title="ลากเพื่อปรับความกว้าง" style={{ position: 'absolute', top: 0, right: -1, width: 9, height: '100%', cursor: 'col-resize', touchAction: 'none', zIndex: 2 }} />
+  const totalW = colW.reduce((a, b) => a + b, 0)
 
   // ----- preview layout (mirrors the dc app) -----
   const selected = s.selectedIndices()
@@ -220,19 +269,24 @@ export function PrintView() {
               })}
             </div>
           ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', border: '1px solid #E6E3DF', borderRadius: 8, tableLayout: 'auto' }}>
+          <table style={{ width: totalW, borderCollapse: 'collapse', background: '#fff', border: '1px solid #E6E3DF', borderRadius: 8, tableLayout: 'fixed' }}>
+            <colgroup>
+              {colW.map((w, i) => (
+                <col key={i} style={{ width: w }} />
+              ))}
+            </colgroup>
             <thead>
               <tr style={{ background: '#EFEDEA', fontSize: 10.5, fontWeight: 600, color: '#57534e', fontFamily: "'IBM Plex Mono'" }}>
-                <th style={{ ...th, textAlign: 'center' }}>#</th>
-                <th style={th}>SkuCode</th>
-                <th style={th}>PluCode</th>
-                <th style={th}>CatCode</th>
-                <th style={th}>CatName</th>
-                <th style={th}>SkuDesc</th>
-                <th style={th}>SupplierID</th>
-                <th style={th}>SupplierName</th>
-                <th style={{ ...th, textAlign: 'right' }}>Price</th>
-                <th style={{ ...th, textAlign: 'center' }}>Qty</th>
+                <th style={{ ...th, textAlign: 'center' }}>#{grip(0)}</th>
+                <th style={th}>SkuCode{grip(1)}</th>
+                <th style={th}>PluCode{grip(2)}</th>
+                <th style={th}>CatCode{grip(3)}</th>
+                <th style={th}>CatName{grip(4)}</th>
+                <th style={th}>SkuDesc{grip(5)}</th>
+                <th style={th}>SupplierID{grip(6)}</th>
+                <th style={th}>SupplierName{grip(7)}</th>
+                <th style={{ ...th, textAlign: 'right' }}>Price{grip(8)}</th>
+                <th style={{ ...th, textAlign: 'center' }}>Qty{grip(9)}</th>
                 <th style={{ ...th, borderRight: 'none' }}></th>
               </tr>
             </thead>
