@@ -154,6 +154,9 @@ export function Canvas({ onToggleLeft, onToggleRight }: { onToggleLeft?: () => v
 
   function onPointerDown(e: React.PointerEvent) {
     const vp = vpRef.current
+    // overlay controls (toolbar undo/redo/zoom, drawer toggles) live inside the
+    // viewport — don't capture their pointer or their click won't fire
+    if ((e.target as HTMLElement).closest?.('button')) return
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
 
     // second finger → start pinch-zoom, abandon any single drag
