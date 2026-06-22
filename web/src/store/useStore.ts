@@ -122,8 +122,10 @@ interface DataSlice {
   setSkuFg: (v: string) => void
   setUseQty: (v: boolean) => void
   toggleSel: (i: number) => void
+  setAllSel: (on: boolean) => void
   copiesFor: (i: number) => number
   setCopies: (i: number, n: number) => void
+  setCopiesForSelected: (n: number) => void
   addByCode: () => Promise<void>
   addAllResults: () => void
   closeScanResults: () => void
@@ -471,6 +473,14 @@ export const useStore = create<Store>((set, get) => ({
   setSkuFg: (v) => set({ skuFg: v }),
   setUseQty: (v) => set({ useQty: v }),
   toggleSel: (i) => set((s) => ({ skuSel: { ...s.skuSel, [i]: s.skuSel[i] === false } })),
+  setAllSel: (on) =>
+    set((s) => {
+      const skuSel: Record<number, boolean> = {}
+      s.skuRows.forEach((_, i) => {
+        skuSel[i] = on
+      })
+      return { skuSel }
+    }),
   copiesFor: (i) => {
     const s = get()
     const o = s.copiesMap[i]
@@ -479,6 +489,21 @@ export const useStore = create<Store>((set, get) => ({
     return Math.max(1, s.printCopies)
   },
   setCopies: (i, n) => set((s) => ({ copiesMap: { ...s.copiesMap, [i]: Math.max(0, Math.round(n)) } })),
+  setCopiesForSelected: (n) => {
+    const v = Math.max(0, Math.round(Number(n) || 0))
+    const s = get()
+    const sel = s.skuRows.map((_, i) => i).filter((i) => s.skuSel[i] !== false)
+    if (!sel.length) {
+      get().toast('ยังไม่ได้เลือกแถว')
+      return
+    }
+    const copiesMap = { ...s.copiesMap }
+    sel.forEach((i) => {
+      copiesMap[i] = v
+    })
+    set({ copiesMap })
+    get().toast('ตั้งจำนวน ' + sel.length + ' แถวเป็น ' + v)
+  },
   appendSku: (p) => {
     const s = get()
     const exist = s.skuRows.findIndex((r) => r.sku === p.sku && r.barcode === p.barcode)

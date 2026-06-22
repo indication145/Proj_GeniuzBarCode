@@ -23,8 +23,8 @@ const th: React.CSSProperties = { padding: '7px 9px', borderRight: '1px solid #E
 const td: React.CSSProperties = { padding: '6px 9px', borderRight: '1px solid #EFEDEA', borderBottom: '1px solid #F1EFEC', fontSize: 12, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
 
 // default column widths (px) — order matches the <th> cells below
-const COL_W = [42, 110, 120, 78, 150, 200, 90, 160, 92, 116, 48]
-const COL_KEY = 'ge.print.colw'
+const COL_W = [62, 110, 120, 78, 150, 196, 90, 160, 92, 116, 48]
+const COL_KEY = 'ge.print.colw2'
 
 export function PrintView() {
   const s = useStore()
@@ -33,6 +33,13 @@ export function PrintView() {
   const { isTablet, isMobile } = useBreakpoint()
   const narrow = isTablet
   const [tab, setTab] = useState<'list' | 'preview'>('list')
+  const [bulkQty, setBulkQty] = useState('1')
+
+  // row selection (checkbox) — also drives which rows print
+  const selCount = skuRows.reduce((a, _r, i) => a + (s.skuSel[i] !== false ? 1 : 0), 0)
+  const allSel = skuRows.length > 0 && selCount === skuRows.length
+  const someSel = selCount > 0 && selCount < skuRows.length
+  const applyBulkQty = () => s.setCopiesForSelected(Number(bulkQty) || 0)
 
   // resizable grid columns (desktop table only) — persisted in localStorage
   const [colW, setColW] = useState<number[]>(() => {
@@ -263,6 +270,23 @@ export function PrintView() {
           <span style={{ fontSize: 10.5, background: '#F0F7F2', color: '#1F8A5B', border: '1px solid #cde9d8', padding: '5px 10px', borderRadius: 20, fontFamily: "'IBM Plex Mono'", flexShrink: 0 }}>{skuRows.length} รายการ</span>
         </div>
 
+        {/* bulk select + set-qty bar */}
+        {skuRows.length > 0 && (
+          <div style={{ flexShrink: 0, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, padding: narrow ? '8px 12px' : '8px 16px', background: '#FBFAF9', borderBottom: '1px solid #EFEDEA' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', fontSize: 12, color: '#44403B', fontWeight: 600, flexShrink: 0 }}>
+              <input type="checkbox" checked={allSel} ref={(el) => { if (el) el.indeterminate = someSel }} onChange={(e) => s.setAllSel(e.target.checked)} />
+              เลือกทั้งหมด
+            </label>
+            <span style={{ fontSize: 11.5, color: '#9A938A', fontFamily: "'IBM Plex Mono'", flexShrink: 0 }}>เลือก {selCount}/{skuRows.length}</span>
+            <div style={{ flex: 1, minWidth: 8 }} />
+            <span style={{ fontSize: 12, color: '#57534e', flexShrink: 0 }}>ตั้งจำนวนที่เลือก</span>
+            <input type="number" min={0} value={bulkQty} onChange={(e) => setBulkQty(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && applyBulkQty()} style={{ width: 64, height: 32, textAlign: 'center', border: '1px solid #E6E3DF', borderRadius: 7, fontFamily: "'IBM Plex Mono'", flexShrink: 0 }} />
+            <button onClick={applyBulkQty} disabled={selCount === 0} title="ตั้งจำนวนของทุกแถวที่เลือกให้เท่ากัน" style={{ height: 32, padding: '0 16px', borderRadius: 7, border: 'none', cursor: selCount === 0 ? 'not-allowed' : 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, flexShrink: 0, ...(selCount === 0 ? { background: '#EDEBE8', color: '#B4ADA4' } : { background: 'var(--accent)', color: '#fff' }) }}>
+              ใช้
+            </button>
+          </div>
+        )}
+
         {/* grid */}
         <div style={{ flex: 1, overflow: 'auto', padding: narrow ? '12px' : '14px 16px', minHeight: 0 }}>
           {narrow ? (
@@ -271,6 +295,7 @@ export function PrintView() {
                 const active = s.activeSku === i
                 return (
                   <div key={i} onClick={() => useStore.setState({ activeSku: i })} style={{ background: active ? 'var(--accent-soft)' : '#fff', border: '1px solid ' + (active ? 'var(--accent-soft-border)' : '#E6E3DF'), borderRadius: 10, padding: 12, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                    <input type="checkbox" checked={s.skuSel[i] !== false} onChange={() => s.toggleSel(i)} onClick={(e) => e.stopPropagation()} style={{ marginTop: 3, flexShrink: 0, width: 18, height: 18 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 13.5, fontWeight: 600, marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.name || '—'}</div>
                       <div style={{ fontSize: 11, color: '#78716c', fontFamily: "'IBM Plex Mono'" }}>
@@ -328,7 +353,10 @@ export function PrintView() {
                 return (
                   <tr key={i} onClick={() => useStore.setState({ activeSku: i })} style={{ background: active ? 'var(--accent-soft)' : '#fff', cursor: 'pointer', boxShadow: active ? 'inset 3px 0 0 var(--accent)' : undefined }}>
                     <td style={{ ...td, textAlign: 'center', fontFamily: "'IBM Plex Mono'", fontWeight: active ? 700 : 400, color: active ? 'var(--accent)' : '#9A938A' }}>
-                      {i + 1}
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        <input type="checkbox" checked={s.skuSel[i] !== false} onChange={() => s.toggleSel(i)} onClick={(e) => e.stopPropagation()} />
+                        {i + 1}
+                      </span>
                     </td>
                     <td style={{ ...td, fontFamily: "'IBM Plex Mono'" }}>{r.sku}</td>
                     <td style={{ ...td, fontFamily: "'IBM Plex Mono'" }}>{r.pluCode}</td>
