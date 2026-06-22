@@ -128,6 +128,7 @@ interface DataSlice {
   addAllResults: () => void
   closeScanResults: () => void
   appendSku: (p: Sku) => void
+  importSkus: (rows: Sku[]) => void
   removeRow: (i: number) => void
   clearGrid: () => void
   selectedIndices: () => number[]
@@ -544,6 +545,19 @@ export const useStore = create<Store>((set, get) => ({
   clearGrid: () => {
     set({ skuRows: [], copiesMap: {}, skuSel: {}, activeSku: 0 })
     get().toast('ล้างรายการแล้ว')
+  },
+  importSkus: (rows) => {
+    if (!rows.length) {
+      get().toast('ไม่พบข้อมูลในไฟล์')
+      return
+    }
+    const cm: Record<number, number> = {}
+    rows.forEach((r, i) => {
+      cm[i] = Math.max(1, Math.round(Number(r.qty) || 1))
+    })
+    const hasQty = rows.some((r) => Number(r.qty) > 0)
+    set({ skuRows: rows, copiesMap: cm, skuSel: {}, activeSku: 0, useQty: hasQty })
+    get().toast('นำเข้า ' + rows.length + ' รายการจาก Excel')
   },
   selectedIndices: () => get().skuRows.map((_, i) => i).filter((i) => get().skuSel[i] !== false),
   printCount: () => get().selectedIndices().reduce((a, i) => a + get().copiesFor(i), 0),

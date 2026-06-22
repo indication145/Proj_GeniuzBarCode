@@ -6,6 +6,7 @@ import { LabelPreview } from '@/components/LabelPreview'
 import { PoModal } from '@/components/PoModal'
 import { ScanResultsModal } from '@/components/ScanResultsModal'
 import { useBreakpoint } from '@/lib/useMediaQuery'
+import { parseSkuFile, downloadTemplate } from '@/lib/sheet'
 import type { Sku } from '@/lib/types'
 
 const FG_OPTS = [
@@ -129,7 +130,22 @@ export function PrintView() {
     s.toast(ok ? 'เตรียม ' + items.length + ' ดวง — เลือกเครื่องพิมพ์ หรือ Save as PDF' : 'พิมพ์ไม่สำเร็จ — ลองอีกครั้ง')
   }
 
+  async function onImportFile(file?: File | null) {
+    if (!file) return
+    try {
+      const rows = await parseSkuFile(file)
+      if (!rows.length) {
+        s.toast('ไม่พบข้อมูลในไฟล์ — ตรวจหัวคอลัมน์ หรือใช้ปุ่ม "เทมเพลต Excel"')
+        return
+      }
+      s.importSkus(rows)
+    } catch (e) {
+      s.toast('อ่านไฟล์ไม่สำเร็จ: ' + ((e as Error)?.message || e))
+    }
+  }
+
   const stepBtn: React.CSSProperties = { width: 22, height: 22, border: '1px solid #E6E3DF', borderRadius: 5, background: '#fff', cursor: 'pointer', color: '#44403B', lineHeight: 1 }
+  const footBtn: React.CSSProperties = { height: 38, padding: '0 14px', borderRadius: 8, border: '1px solid #E6E3DF', background: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, color: '#44403B', display: 'inline-flex', alignItems: 'center', flexShrink: 0 }
   const rollBtn: React.CSSProperties = { width: 24, height: 24, border: '1px solid #E6E3DF', borderRadius: 5, background: '#fff', cursor: 'pointer', color: '#44403B' }
   const mediaBtn = (on: boolean): React.CSSProperties => ({ flex: 1, height: 32, border: '1px solid ' + (on ? 'var(--accent)' : '#E6E3DF'), borderRadius: 8, background: on ? 'var(--accent-soft)' : '#fff', color: on ? 'var(--accent)' : '#78716c', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12, fontWeight: 600 })
 
@@ -328,13 +344,18 @@ export function PrintView() {
             </tbody>
           </table>
           )}
-          {skuRows.length === 0 && <div style={{ padding: '40px 16px', textAlign: 'center', color: '#9A938A', fontSize: 13, lineHeight: 1.6 }}>ยังไม่มีรายการสินค้า<br />สแกน/พิมพ์รหัสด้านบน หรือกด "ใบสั่งซื้อ" เพื่อดึงทั้งใบ</div>}
+          {skuRows.length === 0 && <div style={{ padding: '40px 16px', textAlign: 'center', color: '#9A938A', fontSize: 13, lineHeight: 1.6 }}>ยังไม่มีรายการสินค้า<br />สแกน/พิมพ์รหัสด้านบน หรือกด "ใบสั่งซื้อ" เพื่อดึงทั้งใบ<br />ไม่ได้เชื่อมต่อฐานข้อมูล? กด "เทมเพลต" เพื่อโหลดไฟล์ Excel ไปกรอก แล้ว "นำเข้า Excel"</div>}
         </div>
 
         {/* footer */}
         <div style={{ flexShrink: 0, background: '#fff', borderTop: '1px solid #E6E3DF', padding: narrow ? '10px 12px' : '12px 16px', display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: narrow ? 10 : 14 }}>
-          <button onClick={s.openPo} style={{ height: 38, padding: '0 14px', borderRadius: 8, border: '1px solid #E6E3DF', background: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, color: '#44403B' }}>
-            ใบสั่งซื้อ
+          <button onClick={s.openPo} style={footBtn}>ใบสั่งซื้อ</button>
+          <label style={{ ...footBtn, cursor: 'pointer' }} title="นำเข้ารายการสินค้าจากไฟล์ Excel (.xlsx/.csv)">
+            ⬆ นำเข้า Excel
+            <input type="file" accept=".xlsx,.xls,.csv" onChange={(e) => void onImportFile(e.target.files?.[0])} onClick={(e) => ((e.target as HTMLInputElement).value = '')} style={{ display: 'none' }} />
+          </label>
+          <button onClick={() => void downloadTemplate()} style={footBtn} title="ดาวน์โหลดไฟล์ Excel ตัวอย่างไว้กรอกข้อมูล">
+            ⬇ เทมเพลต
           </button>
           <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
             <input type="checkbox" checked={s.useQty} onChange={(e) => s.setUseQty(e.target.checked)} />
