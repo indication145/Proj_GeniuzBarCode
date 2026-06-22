@@ -10,8 +10,8 @@ import type { El } from '@/lib/types'
 
 type Drag =
   | { mode: 'pan'; mx: number; my: number; panX: number; panY: number }
-  | { mode: 'move'; id: string; mx: number; my: number; sx: number; sy: number }
-  | { mode: 'resize'; dir: string; mx: number; my: number; sx: number; sy: number; sw: number; sh: number }
+  | { mode: 'move'; id: string; mx: number; my: number; sx: number; sy: number; pushed: boolean }
+  | { mode: 'resize'; dir: string; mx: number; my: number; sx: number; sy: number; sw: number; sh: number; pushed: boolean }
 
 type Pinch = { dist: number; midX: number; midY: number; zoom: number; panX: number; panY: number }
 
@@ -112,10 +112,18 @@ export function Canvas({ onToggleLeft, onToggleRight }: { onToggleLeft?: () => v
     if (d.mode === 'move') {
       const el = st.elements.find((o) => o.id === d.id)
       if (!el) return
+      if (!d.pushed) {
+        st.pushHistory() // snapshot pre-move state on first actual movement
+        d.pushed = true
+      }
       const r = altKey ? { x: snapHalf(d.sx + dxmm), y: snapHalf(d.sy + dymm), guides: [] } : snapMove(el, d.sx + dxmm, d.sy + dymm, st.labelW, st.labelH, st.elements)
       st.patchEl(d.id, { x: r.x, y: r.y })
       st.setGuides(r.guides)
     } else {
+      if (!d.pushed) {
+        st.pushHistory() // snapshot pre-resize state on first actual resize
+        d.pushed = true
+      }
       const dir = d.dir
       let x = d.sx
       let y = d.sy
@@ -172,8 +180,8 @@ export function Canvas({ onToggleLeft, onToggleRight }: { onToggleLeft?: () => v
     if (handle && st.selectedId) {
       const cur = st.elements.find((o) => o.id === st.selectedId)
       if (cur) {
-        st.pushHistory() // snapshot before resize (dedupe makes click-no-move safe)
-        drag.current = { mode: 'resize', dir: handle.getAttribute('data-handle') || 'se', mx: e.clientX, my: e.clientY, sx: cur.x, sy: cur.y, sw: cur.w, sh: cur.h }
+        // history is pushed lazily on the first move so a plain click adds nothing
+        drag.current = { mode: 'resize', dir: handle.getAttribute('data-handle') || 'se', mx: e.clientX, my: e.clientY, sx: cur.x, sy: cur.y, sw: cur.w, sh: cur.h, pushed: false }
         e.preventDefault()
         return
       }
@@ -184,8 +192,8 @@ export function Canvas({ onToggleLeft, onToggleRight }: { onToggleLeft?: () => v
       const el = st.elements.find((o) => o.id === id)
       st.setSelected(id)
       if (el) {
-        st.pushHistory() // snapshot before move
-        drag.current = { mode: 'move', id, mx: e.clientX, my: e.clientY, sx: el.x, sy: el.y }
+        // history pushed lazily on first move (selecting is not an edit)
+        drag.current = { mode: 'move', id, mx: e.clientX, my: e.clientY, sx: el.x, sy: el.y, pushed: false }
       }
       e.preventDefault()
       return
