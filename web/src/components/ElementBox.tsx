@@ -16,6 +16,7 @@ export function ElementBox({ el, ctx, idx, interactive }: { el: El; ctx: Resolve
     height: el.h * PX,
     boxSizing: 'border-box',
     userSelect: 'none',
+    ...(el.rotation ? { transform: `rotate(${el.rotation}deg)` } : null),
     ...(interactive ? { cursor: 'move' } : null),
   }
   const idAttr = interactive ? { 'data-id': el.id } : {}

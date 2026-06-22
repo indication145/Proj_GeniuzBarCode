@@ -10,6 +10,7 @@ export interface El {
   y: number
   w: number
   h: number
+  rotation?: number // degrees, clockwise, about the element centre
   // text / price
   text?: string
   fontFamily?: string

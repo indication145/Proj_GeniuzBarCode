@@ -131,6 +131,23 @@ export function Inspector() {
             </div>
           ))}
         </div>
+        {/* rotation */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+          <div style={{ ...fieldBox, flex: 1 }}>
+            <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: "'IBM Plex Mono'" }}>หมุน</span>
+            <input type="number" step="1" value={sel.rotation ?? 0} onChange={(e) => s.updateSel({ rotation: ((num(e.target.value, sel.rotation ?? 0) % 360) + 360) % 360 })} style={numInput} />
+            <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: "'IBM Plex Mono'" }}>°</span>
+          </div>
+          <button onClick={() => s.updateSel({ rotation: (((sel.rotation ?? 0) - 90) % 360 + 360) % 360 })} title="หมุนซ้าย 90°" style={{ width: 30, height: 30, borderRadius: 7, border: '1px solid var(--border)', background: 'var(--surface)', cursor: 'pointer', color: 'var(--text-2)' }}>
+            ⟲
+          </button>
+          <button onClick={() => s.updateSel({ rotation: ((sel.rotation ?? 0) + 90) % 360 })} title="หมุนขวา 90°" style={{ width: 30, height: 30, borderRadius: 7, border: '1px solid var(--border)', background: 'var(--surface)', cursor: 'pointer', color: 'var(--text-2)' }}>
+            ⟳
+          </button>
+          <button onClick={() => s.updateSel({ rotation: 0 })} title="รีเซ็ตเป็น 0°" style={{ width: 30, height: 30, borderRadius: 7, border: '1px solid var(--border)', background: 'var(--surface)', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 11 }}>
+            0°
+          </button>
+        </div>
       </div>
 
       {/* align */}

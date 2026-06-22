@@ -12,6 +12,7 @@ type Drag =
   | { mode: 'pan'; mx: number; my: number; panX: number; panY: number }
   | { mode: 'move'; id: string; mx: number; my: number; sx: number; sy: number; pushed: boolean }
   | { mode: 'resize'; dir: string; mx: number; my: number; sx: number; sy: number; sw: number; sh: number; pushed: boolean }
+  | { mode: 'rotate'; cx: number; cy: number; pushed: boolean }
 
 type Pinch = { dist: number; midX: number; midY: number; zoom: number; panX: number; panY: number }
 
@@ -107,9 +108,20 @@ export function Canvas({ onToggleLeft, onToggleRight }: { onToggleLeft?: () => v
       st.setView3({ panX: d.panX + (clientX - d.mx), panY: d.panY + (clientY - d.my) })
       return
     }
-    const dxmm = (clientX - d.mx) / (PX * z)
-    const dymm = (clientY - d.my) / (PX * z)
+    if (d.mode === 'rotate') {
+      if (!d.pushed) {
+        st.pushHistory() // snapshot pre-rotate state on first actual drag
+        d.pushed = true
+      }
+      const ang = (Math.atan2(clientY - d.cy, clientX - d.cx) * 180) / Math.PI + 90
+      let rot = ((Math.round(ang) % 360) + 360) % 360
+      if (!altKey) rot = (Math.round(rot / 15) * 15) % 360 // snap 15° (hold Alt for free)
+      if (st.selectedId) st.patchEl(st.selectedId, { rotation: rot })
+      return
+    }
     if (d.mode === 'move') {
+      const dxmm = (clientX - d.mx) / (PX * z)
+      const dymm = (clientY - d.my) / (PX * z)
       const el = st.elements.find((o) => o.id === d.id)
       if (!el) return
       if (!d.pushed) {
@@ -124,6 +136,18 @@ export function Canvas({ onToggleLeft, onToggleRight }: { onToggleLeft?: () => v
         st.pushHistory() // snapshot pre-resize state on first actual resize
         d.pushed = true
       }
+      // un-rotate the screen delta so resizing a rotated element feels natural
+      const cur = st.elements.find((o) => o.id === st.selectedId)
+      const rot = ((cur?.rotation || 0) * Math.PI) / 180
+      let rawx = clientX - d.mx
+      let rawy = clientY - d.my
+      if (rot) {
+        const c = Math.cos(-rot)
+        const si = Math.sin(-rot)
+        ;[rawx, rawy] = [rawx * c - rawy * si, rawx * si + rawy * c]
+      }
+      const dxmm = rawx / (PX * z)
+      const dymm = rawy / (PX * z)
       const dir = d.dir
       let x = d.sx
       let y = d.sy
@@ -179,6 +203,18 @@ export function Canvas({ onToggleLeft, onToggleRight }: { onToggleLeft?: () => v
       return
     }
     const target = e.target as HTMLElement
+    const rotateH = target.closest?.('[data-rotate]')
+    if (rotateH && st.selectedId && vp) {
+      const cur = st.elements.find((o) => o.id === st.selectedId)
+      if (cur) {
+        const r = vp.getBoundingClientRect()
+        const cx = r.left + st.panX + (cur.x + cur.w / 2) * PX * st.zoom
+        const cy = r.top + st.panY + (cur.y + cur.h / 2) * PX * st.zoom
+        drag.current = { mode: 'rotate', cx, cy, pushed: false }
+        e.preventDefault()
+        return
+      }
+    }
     const handle = target.closest?.('[data-handle]')
     if (handle && st.selectedId) {
       const cur = st.elements.find((o) => o.id === st.selectedId)
@@ -293,7 +329,10 @@ export function Canvas({ onToggleLeft, onToggleRight }: { onToggleLeft?: () => v
             />
           ))}
           {sel && (
-            <div style={{ position: 'absolute', left: sel.x * PX, top: sel.y * PX, width: sel.w * PX, height: sel.h * PX, border: `${1.4 / z}px solid var(--accent)`, boxSizing: 'border-box', pointerEvents: 'none', zIndex: 900 }}>
+            <div style={{ position: 'absolute', left: sel.x * PX, top: sel.y * PX, width: sel.w * PX, height: sel.h * PX, border: `${1.4 / z}px solid var(--accent)`, boxSizing: 'border-box', pointerEvents: 'none', zIndex: 900, transform: sel.rotation ? `rotate(${sel.rotation}deg)` : undefined, transformOrigin: 'center' }}>
+              {/* rotate handle: a circle above the top edge with a connector line */}
+              <div style={{ position: 'absolute', left: '50%', top: 0, width: 0, height: 22 / z, borderLeft: `${Math.max(0.5, 1.2 / z)}px solid var(--accent)`, transform: 'translateX(-50%)', marginTop: -22 / z, pointerEvents: 'none' }} />
+              <div data-rotate title="ลากเพื่อหมุน (กด Alt เพื่อหมุนอิสระ)" style={{ position: 'absolute', left: '50%', top: -22 / z, width: (handleBase + 3) / z, height: (handleBase + 3) / z, transform: 'translate(-50%,-50%)', borderRadius: '50%', background: 'var(--surface)', border: `${Math.max(0.5, 1.2 / z)}px solid var(--accent)`, cursor: 'grab', pointerEvents: 'auto', zIndex: 902, touchAction: 'none' }} />
               {HANDLES.map((dir) => {
                 const hs = handleBase / z
                 const half = hs / 2

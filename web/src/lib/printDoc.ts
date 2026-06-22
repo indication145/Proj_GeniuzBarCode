@@ -26,7 +26,8 @@ function fontFaceCss(origin: string): string {
 }
 
 async function elHTML(el: El, ctx: ResolveCtx, idx: number, cache: Map<string, string>): Promise<string> {
-  const pos = `position:absolute;left:${el.x}mm;top:${el.y}mm;width:${el.w}mm;height:${el.h}mm;box-sizing:border-box;overflow:hidden;`
+  const rot = el.rotation ? `transform:rotate(${el.rotation}deg);` : ''
+  const pos = `position:absolute;left:${el.x}mm;top:${el.y}mm;width:${el.w}mm;height:${el.h}mm;box-sizing:border-box;overflow:hidden;${rot}`
 
   if (el.type === 'text' || el.type === 'price') {
     const val = esc(resolveValue(el, ctx, idx))
