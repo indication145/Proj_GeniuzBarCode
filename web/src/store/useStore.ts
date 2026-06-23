@@ -11,6 +11,9 @@ import type { El, Guide, LabelDoc, PrintMedia, Sku, Shop } from '@/lib/types'
 export type View = 'design' | 'print' | 'settings'
 export type ConnStatus = 'connected' | 'offline' | 'checking'
 
+// Monotonic token so a slow typeahead request can't overwrite a newer one.
+let suggestToken = 0
+
 interface UiSlice {
   view: View
   setView: (v: View) => void
@@ -121,6 +124,11 @@ interface DataSlice {
   scanCode: string
   scanResults: Sku[]
   scanResultsOpen: boolean
+  suggest: Sku[]
+  suggestOpen: boolean
+  suggestBusy: boolean
+  fetchSuggest: () => Promise<void>
+  closeSuggest: () => void
   setScanCode: (v: string) => void
   setSkuFg: (v: string) => void
   setUseQty: (v: boolean) => void
@@ -483,6 +491,9 @@ export const useStore = create<Store>((set, get) => ({
   scanCode: '',
   scanResults: [],
   scanResultsOpen: false,
+  suggest: [],
+  suggestOpen: false,
+  suggestBusy: false,
   setScanCode: (v) => set({ scanCode: v }),
   setSkuFg: (v) => set({ skuFg: v }),
   setUseQty: (v) => set({ useQty: v }),
@@ -530,11 +541,31 @@ export const useStore = create<Store>((set, get) => ({
     const idx = skuRows.length - 1
     set({ skuRows, copiesMap: { ...s.copiesMap, [idx]: 1 }, activeSku: idx })
   },
+  closeSuggest: () => set({ suggest: [], suggestOpen: false, suggestBusy: false }),
+  fetchSuggest: async () => {
+    const s = get()
+    const code = s.scanCode.trim()
+    if (code.length < 2) {
+      set({ suggest: [], suggestOpen: false, suggestBusy: false })
+      return
+    }
+    const token = ++suggestToken
+    set({ suggestBusy: true, suggestOpen: true })
+    try {
+      const j = await api.getSkus({ source: s.connMode, fg: s.skuFg, code })
+      if (token !== suggestToken) return // a newer keystroke superseded this request
+      const rows = j.ok ? j.rows || [] : []
+      set({ suggest: rows.slice(0, 8), suggestBusy: false, suggestOpen: get().scanCode.trim().length >= 2 })
+    } catch {
+      if (token !== suggestToken) return
+      set({ suggest: [], suggestBusy: false })
+    }
+  },
   addByCode: async () => {
     const s = get()
     const code = s.scanCode.trim()
     if (!code) return
-    set({ scanCode: '' })
+    set({ scanCode: '', suggest: [], suggestOpen: false, suggestBusy: false })
     try {
       const j = await api.getSkus({ source: s.connMode, fg: s.skuFg, code })
       const rows = j.ok ? j.rows || [] : []

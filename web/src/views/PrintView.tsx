@@ -35,6 +35,56 @@ export function PrintView() {
   const [tab, setTab] = useState<'list' | 'preview'>('list')
   const [bulkQty, setBulkQty] = useState('1')
 
+  // --- typeahead search (scan bar) ---
+  const [sugActive, setSugActive] = useState(-1)
+  // debounce: fetch suggestions ~220ms after the user stops typing
+  useEffect(() => {
+    const code = s.scanCode.trim()
+    if (code.length < 2) {
+      s.closeSuggest()
+      return
+    }
+    const t = setTimeout(() => void s.fetchSuggest(), 220)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [s.scanCode])
+  // reset highlight whenever the result set changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setSugActive(-1), [s.suggest])
+  const pickSuggest = (p: Sku) => {
+    s.appendSku(p)
+    s.toast('เพิ่ม ' + (p.sku || p.name))
+    s.setScanCode('')
+    s.closeSuggest()
+    setSugActive(-1)
+  }
+  const onScanKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (s.suggestOpen && s.suggest.length) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        setSugActive((i) => Math.min(i + 1, s.suggest.length - 1))
+        return
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        setSugActive((i) => Math.max(i - 1, 0))
+        return
+      }
+      if (e.key === 'Escape') {
+        s.closeSuggest()
+        return
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        if (sugActive >= 0) pickSuggest(s.suggest[sugActive])
+        else void s.addByCode()
+        return
+      }
+    } else if (e.key === 'Enter') {
+      void s.addByCode()
+    }
+  }
+
   // row selection (checkbox) — also drives which rows print
   const selCount = skuRows.reduce((a, _r, i) => a + (s.skuSel[i] !== false ? 1 : 0), 0)
   const allSel = skuRows.length > 0 && selCount === skuRows.length
@@ -241,7 +291,43 @@ export function PrintView() {
               </option>
             ))}
           </select>
-          <input className="ge-field" style={{ flex: '1 1 160px', minWidth: 0, height: 38, fontFamily: "'IBM Plex Mono'" }} value={s.scanCode} onChange={(e) => s.setScanCode(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && void s.addByCode()} placeholder="สแกน หรือพิมพ์คำค้น แล้วกด Enter…" />
+          <div style={{ position: 'relative', flex: '1 1 160px', minWidth: 0 }}>
+            <input
+              className="ge-field"
+              style={{ width: '100%', height: 38, fontFamily: "'IBM Plex Mono'" }}
+              value={s.scanCode}
+              onChange={(e) => s.setScanCode(e.target.value)}
+              onKeyDown={onScanKey}
+              onFocus={() => { if (s.suggest.length) useStore.setState({ suggestOpen: true }) }}
+              onBlur={() => setTimeout(() => s.closeSuggest(), 150)}
+              placeholder="สแกน หรือพิมพ์เพื่อค้นหา…"
+              role="combobox"
+              aria-expanded={s.suggestOpen}
+              autoComplete="off"
+            />
+            {s.suggestOpen && (s.suggestBusy || s.suggest.length > 0) && (
+              <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, zIndex: 40, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, boxShadow: '0 12px 32px rgba(0,0,0,0.16)', overflow: 'hidden', maxHeight: 320, overflowY: 'auto' }}>
+                {s.suggestBusy && s.suggest.length === 0 && (
+                  <div style={{ padding: '12px 14px', fontSize: 12, color: 'var(--text-muted)' }}>กำลังค้นหา…</div>
+                )}
+                {s.suggest.map((p, i) => (
+                  <button
+                    key={i}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => pickSuggest(p)}
+                    onMouseEnter={() => setSugActive(i)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '9px 12px', border: 'none', borderBottom: i < s.suggest.length - 1 ? '1px solid var(--c-efedea)' : 'none', background: i === sugActive ? 'var(--accent-soft)' : 'var(--surface)', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'" }}
+                  >
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name || p.sku}</div>
+                      <div style={{ fontSize: 10.5, color: 'var(--text-3)', fontFamily: "'IBM Plex Mono'", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{[p.sku, p.barcode, p.unit].filter(Boolean).join(' · ')}</div>
+                    </div>
+                    <span style={{ fontSize: 12.5, fontWeight: 700, fontFamily: "'IBM Plex Mono'", color: 'var(--accent)', flexShrink: 0 }}>{fmtPrice(p.price)}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button onClick={() => void s.addByCode()} style={{ height: 38, padding: '0 16px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, flexShrink: 0 }}>
             + เพิ่ม
           </button>
