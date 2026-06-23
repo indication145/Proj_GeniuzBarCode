@@ -6,7 +6,8 @@
 ## ข้อกำหนด
 - Server ออกเน็ตไป `cli.csith.com` ได้ (proxy ยิงจาก server)
 - เครื่องผู้ใช้ออกเน็ตได้ (หน้าเว็บโหลด React/JsBarcode/QR/ฟอนต์ จาก CDN)
-- ติดตั้ง **Node.js 18+** (https://nodejs.org) — `node -v`
+- ติดตั้ง **Node.js LTS ≥ 20.19 / 22.12** (https://nodejs.org) — `node -v`
+  (Vite 8 ต้องการเวอร์ชันนี้ขึ้นไป)
 
 ## ขั้นตอน
 
@@ -17,21 +18,26 @@ git clone https://github.com/indication145/Proj_GeniuzBarCode.git
 cd Proj_GeniuzBarCode
 ```
 
-### 2. ตั้งค่า .env (ไม่อยู่ใน git — สร้างเอง)
+### 2. Build หน้าเว็บ (จำเป็น — `web\dist` ไม่อยู่ใน git)
+`server.js` เสิร์ฟไฟล์จาก `web\dist` ซึ่งถูก gitignore ไว้ ต้อง build เองบน server
+ไม่งั้นหน้าเว็บจะว่าง
+```powershell
+npm --prefix web install
+npm --prefix web run build      # สร้าง web\dist
+npm install                     # ติดตั้ง mssql (เฉพาะถ้าใช้ SQL Server)
+```
+
+### 3. ตั้งค่า .env (ไม่อยู่ใน git — สร้างเอง)
 ```powershell
 Copy-Item .env.example .env
 notepad .env     # ใส่ CSITH_API_KEY (ตัวใหม่!), CSITH_BIZ_ID, PORT=8080
-```
-
-### 3. (เฉพาะใช้ SQL Server) ติดตั้ง dependency
-```powershell
-npm install
 ```
 
 ### 4. ทดสอบรันก่อน
 ```powershell
 $env:NO_OPEN=1; node server.js
 # อีกหน้าต่าง: curl http://localhost:8080/api/health   -> {"ok":true}
+# เปิด http://localhost:8080 ดูว่าหน้าเว็บโหลดจริง (หน้าว่าง = ข้อ 2 ยังไม่ได้ build)
 ```
 
 ### 5. ติดตั้งเป็น Windows Service (NSSM)
@@ -57,6 +63,7 @@ $env:NO_OPEN=1; node server.js
 ```powershell
 cd C:\apps\Proj_GeniuzBarCode
 git pull
+npm --prefix web run build      # build ใหม่ทุกครั้งที่ web เปลี่ยน
 nssm restart LabelDesigner
 ```
 
