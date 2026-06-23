@@ -5,6 +5,7 @@ import { openPrint, openPrintFrame } from '@/lib/printDoc'
 import { LabelPreview } from '@/components/LabelPreview'
 import { PoModal } from '@/components/PoModal'
 import { ScanResultsModal } from '@/components/ScanResultsModal'
+import { Select } from '@/components/Select'
 import { useBreakpoint } from '@/lib/useMediaQuery'
 import { parseSkuFile, downloadTemplate } from '@/lib/sheet'
 import type { Sku } from '@/lib/types'
@@ -292,13 +293,7 @@ export function PrintView() {
 
         {/* scan bar */}
         <div style={{ flexShrink: 0, background: 'var(--surface)', borderBottom: '1px solid var(--c-efedea)', padding: narrow ? '10px 12px' : '10px 16px', display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: 8 }}>
-          <select className="ge-field" style={{ width: 'auto', flexShrink: 0, height: 38 }} value={s.skuFg} onChange={(e) => s.setSkuFg(e.target.value)}>
-            {FG_OPTS.map(([v, l]) => (
-              <option key={v} value={v}>
-                {l}
-              </option>
-            ))}
-          </select>
+          <Select value={s.skuFg} onChange={s.setSkuFg} ariaLabel="ค้นหาด้วยฟิลด์" options={FG_OPTS.map(([value, label]) => ({ value, label }))} />
           <div style={{ position: 'relative', flex: '1 1 220px', minWidth: 0 }}>
             {/* pill search field — magnifier + input + gradient add button, glows on focus */}
             <div
