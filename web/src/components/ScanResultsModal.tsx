@@ -2,7 +2,7 @@ import { useStore } from '@/store/useStore'
 import { fmtPrice } from '@/lib/units'
 import { useBreakpoint } from '@/lib/useMediaQuery'
 
-const overlayBase: React.CSSProperties = { position: 'fixed', inset: 0, background: 'rgba(27,26,24,0.45)', backdropFilter: 'blur(3px)', zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center' }
+const overlayBase: React.CSSProperties = { position: 'fixed', inset: 0, background: 'rgba(27,26,24,0.45)', zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center' }
 const sheetBase: React.CSSProperties = { background: 'var(--surface)', boxShadow: '0 24px 80px rgba(0,0,0,0.35)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }
 
 export function ScanResultsModal() {
