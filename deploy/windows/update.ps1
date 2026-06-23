@@ -10,7 +10,7 @@
 #   .\deploy\windows\update.ps1 -ServiceName GeniuzBarCode -Port 8282
 #
 param(
-  [string]$ServiceName = "LabelDesigner",
+  [string]$ServiceName = "GeniuzBarCode",
   [int]$Port = 8282,
   [string]$Nssm = "nssm"
 )

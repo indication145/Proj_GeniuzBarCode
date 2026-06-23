@@ -11,8 +11,8 @@
 #
 param(
   [string]$Nssm = "nssm",
-  [string]$ServiceName = "LabelDesigner",
-  [int]$Port = 8080
+  [string]$ServiceName = "GeniuzBarCode",
+  [int]$Port = 8282
 )
 $ErrorActionPreference = "Stop"
 
