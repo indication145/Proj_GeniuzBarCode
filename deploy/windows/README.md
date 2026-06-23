@@ -60,6 +60,16 @@ $env:NO_OPEN=1; node server.js
 > ทางเลือก: ถ้าไม่ใช้ IIS จะเปิด port 8080 ตรง ๆ ก็ได้ (ไม่มี HTTPS) — ไม่แนะนำสำหรับ production
 
 ### 7. อัปเดตเวอร์ชันภายหลัง
+ใช้สคริปต์ทีเดียวจบ (git pull → install → build → restart → health check) ใน
+**PowerShell แบบ Run as Administrator**:
+```powershell
+cd C:\apps\Proj_GeniuzBarCode
+.\deploy\windows\update.ps1 -ServiceName LabelDesigner -Port 8282
+```
+build เว็บก่อน restart เสมอ ถ้า build พังจะหยุดก่อน (เวอร์ชันเดิมยังรันอยู่ ไม่ดาวน์)
+`.env` ไม่ถูกแตะ ทำเสร็จเปิดเว็บแล้วกด **Ctrl+F5** เพื่อล้าง cache
+
+ทำมือทีละขั้นก็ได้:
 ```powershell
 cd C:\apps\Proj_GeniuzBarCode
 git pull
