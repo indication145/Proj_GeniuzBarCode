@@ -37,6 +37,7 @@ export function PrintView() {
 
   // --- typeahead search (scan bar) ---
   const [sugActive, setSugActive] = useState(-1)
+  const [scanFocus, setScanFocus] = useState(false)
   // debounce: fetch suggestions ~220ms after the user stops typing
   useEffect(() => {
     const code = s.scanCode.trim()
@@ -291,20 +292,48 @@ export function PrintView() {
               </option>
             ))}
           </select>
-          <div style={{ position: 'relative', flex: '1 1 160px', minWidth: 0 }}>
-            <input
-              className="ge-field"
-              style={{ width: '100%', height: 38, fontFamily: "'IBM Plex Mono'" }}
-              value={s.scanCode}
-              onChange={(e) => s.setScanCode(e.target.value)}
-              onKeyDown={onScanKey}
-              onFocus={() => { if (s.suggest.length) useStore.setState({ suggestOpen: true }) }}
-              onBlur={() => setTimeout(() => s.closeSuggest(), 150)}
-              placeholder="สแกน หรือพิมพ์เพื่อค้นหา…"
-              role="combobox"
-              aria-expanded={s.suggestOpen}
-              autoComplete="off"
-            />
+          <div style={{ position: 'relative', flex: '1 1 220px', minWidth: 0 }}>
+            {/* pill search field — magnifier + input + gradient add button, glows on focus */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                height: 40,
+                padding: '0 5px 0 13px',
+                borderRadius: 999,
+                background: 'var(--surface)',
+                border: '1px solid ' + (scanFocus ? 'transparent' : 'var(--border)'),
+                boxShadow: scanFocus ? '0 0 0 3px var(--accent-soft), 0 10px 28px var(--accent-shadow)' : 'none',
+                transition: 'box-shadow .2s ease, border-color .2s ease',
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={scanFocus ? 'var(--accent)' : 'var(--text-muted)'} strokeWidth={scanFocus ? 2.5 : 2} strokeLinecap="round" style={{ flexShrink: 0, transition: 'stroke .2s ease' }}>
+                <circle cx="11" cy="11" r="7" />
+                <line x1="21" y1="21" x2="16.5" y2="16.5" />
+              </svg>
+              <input
+                style={{ flex: 1, minWidth: 0, height: '100%', border: 'none', outline: 'none', background: 'transparent', fontFamily: "'IBM Plex Mono'", fontSize: 12.5, color: 'var(--text)' }}
+                value={s.scanCode}
+                onChange={(e) => s.setScanCode(e.target.value)}
+                onKeyDown={onScanKey}
+                onFocus={() => { setScanFocus(true); if (s.suggest.length) useStore.setState({ suggestOpen: true }) }}
+                onBlur={() => { setScanFocus(false); setTimeout(() => s.closeSuggest(), 150) }}
+                placeholder="สแกน หรือพิมพ์เพื่อค้นหา…"
+                role="combobox"
+                aria-expanded={s.suggestOpen}
+                autoComplete="off"
+              />
+              {s.scanCode.trim() && (
+                <button
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => void s.addByCode()}
+                  style={{ height: 30, padding: '0 17px', borderRadius: 999, border: 'none', background: 'linear-gradient(45deg, var(--accent) 0%, #ec4899 100%)', color: '#fff', fontWeight: 600, fontSize: 12.5, cursor: 'pointer', boxShadow: '0 4px 14px var(--accent-shadow)', flexShrink: 0, fontFamily: "'IBM Plex Sans Thai'" }}
+                >
+                  เพิ่ม
+                </button>
+              )}
+            </div>
             {s.suggestOpen && (s.suggestBusy || s.suggest.length > 0) && (
               <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, zIndex: 40, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, boxShadow: '0 12px 32px rgba(0,0,0,0.16)', overflow: 'hidden', maxHeight: 320, overflowY: 'auto' }}>
                 {s.suggestBusy && s.suggest.length === 0 && (
@@ -328,9 +357,6 @@ export function PrintView() {
               </div>
             )}
           </div>
-          <button onClick={() => void s.addByCode()} style={{ height: 38, padding: '0 16px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600, flexShrink: 0 }}>
-            + เพิ่ม
-          </button>
           <button onClick={s.clearGrid} style={{ height: 38, padding: '0 14px', border: '1px solid var(--border)', borderRadius: 8, background: 'var(--surface)', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", color: 'var(--text-2)', flexShrink: 0 }}>
             ล้างรายการ
           </button>
