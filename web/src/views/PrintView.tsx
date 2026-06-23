@@ -220,6 +220,13 @@ export function PrintView() {
       <line x1="12" y1="3" x2="12" y2="15" />
     </svg>
   )
+  const icoPrint = (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="6 9 6 2 18 2 18 9" />
+      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+      <rect x="6" y="14" width="12" height="8" />
+    </svg>
+  )
   const rollBtn: React.CSSProperties = { width: 24, height: 24, border: '1px solid var(--border)', borderRadius: 5, background: 'var(--surface)', cursor: 'pointer', color: 'var(--text-2)' }
   const mediaBtn = (on: boolean): React.CSSProperties => ({ flex: 1, height: 32, border: '1px solid ' + (on ? 'var(--accent)' : 'var(--border)'), borderRadius: 8, background: on ? 'var(--accent-soft)' : 'var(--surface)', color: on ? 'var(--accent)' : 'var(--text-3)', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontSize: 12, fontWeight: 600 })
 
@@ -372,12 +379,15 @@ export function PrintView() {
               fontFamily: "'IBM Plex Sans Thai'",
               fontWeight: 600,
               flexShrink: 0,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 7,
               ...(printCount === 0
                 ? { background: 'var(--surface-3)', color: '#B4ADA4', cursor: 'not-allowed' }
                 : { background: 'var(--accent)', color: '#fff', cursor: 'pointer', boxShadow: '0 2px 8px var(--accent-shadow)' }),
             }}
           >
-            พิมพ์เลย
+            {icoPrint} พิมพ์เลย
           </button>
           <span style={{ fontSize: 10.5, background: '#F0F7F2', color: '#1F8A5B', border: '1px solid #cde9d8', padding: '5px 10px', borderRadius: 20, fontFamily: "'IBM Plex Mono'", flexShrink: 0 }}>{skuRows.length} รายการ</span>
         </div>
