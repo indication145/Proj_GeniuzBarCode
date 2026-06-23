@@ -39,6 +39,13 @@ export function PrintView() {
   // --- typeahead search (scan bar) ---
   const [sugActive, setSugActive] = useState(-1)
   const [scanFocus, setScanFocus] = useState(false)
+  const scanInputRef = useRef<HTMLInputElement>(null)
+  // park the cursor in the search box when the Print view opens (skip mobile so
+  // the on-screen keyboard doesn't pop up unprompted)
+  useEffect(() => {
+    if (!isMobile) scanInputRef.current?.focus()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   // debounce: fetch suggestions ~220ms after the user stops typing
   useEffect(() => {
     const code = s.scanCode.trim()
@@ -315,6 +322,7 @@ export function PrintView() {
                 <line x1="21" y1="21" x2="16.5" y2="16.5" />
               </svg>
               <input
+                ref={scanInputRef}
                 style={{ flex: 1, minWidth: 0, height: '100%', border: 'none', outline: 'none', background: 'transparent', fontFamily: "'IBM Plex Mono'", fontSize: 12.5, color: 'var(--text)' }}
                 value={s.scanCode}
                 onChange={(e) => s.setScanCode(e.target.value)}
