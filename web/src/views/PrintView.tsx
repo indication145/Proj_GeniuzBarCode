@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useStore } from '@/store/useStore'
 import { fmtPrice } from '@/lib/units'
 import { openPrint, openPrintFrame } from '@/lib/printDoc'
+import * as paperang from '@/lib/paperang'
 import { LabelPreview } from '@/components/LabelPreview'
 import { PoModal } from '@/components/PoModal'
 import { ScanResultsModal } from '@/components/ScanResultsModal'
@@ -175,11 +176,11 @@ export function PrintView() {
     ? { boxSizing: 'border-box', width: 210 * ps, height: 297 * ps, padding: 8 * ps, display: 'flex', flexWrap: 'wrap', alignContent: 'flex-start', gap: gapPx, background: 'var(--surface)', borderRadius: 2, boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }
     : { display: 'flex', flexWrap: 'wrap', gap: gapPx, alignContent: 'flex-start', width: pcols * labelW * ps + (pcols - 1) * gapPx + 2 * gapPx, padding: gapPx, background: 'var(--surface)', borderRadius: 4, boxShadow: '0 4px 24px rgba(0,0,0,0.1)' }
 
-  async function doPrint() {
+  function buildPrintItems(): number[] | null {
     const sel = s.selectedIndices()
     if (!sel.length) {
       s.toast('ยังไม่ได้เลือก SKU สำหรับพิมพ์')
-      return
+      return null
     }
     const items: number[] = []
     sel.forEach((i) => {
@@ -188,12 +189,24 @@ export function PrintView() {
     })
     if (!items.length) {
       s.toast('จำนวนพิมพ์เป็น 0 — ตรวจ qty หรือปิดโหมดพิมพ์ตาม PO')
-      return
+      return null
     }
+    return items
+  }
+
+  async function doPrint() {
+    const items = buildPrintItems()
+    if (!items) return
     // Mobile: popups are routinely blocked → print via hidden iframe (native
     // sheet still offers "Save as PDF"). Desktop: popup, fall back to iframe.
     const ok = isMobile ? await openPrintFrame(s.doc(), items, ctx) : (await openPrint(s.doc(), items, ctx)) || (await openPrintFrame(s.doc(), items, ctx))
     s.toast(ok ? 'เตรียม ' + items.length + ' ดวง — เลือกเครื่องพิมพ์ หรือ Save as PDF' : 'พิมพ์ไม่สำเร็จ — ลองอีกครั้ง')
+  }
+
+  async function doPaperangPrint() {
+    const items = buildPrintItems()
+    if (!items) return
+    await s.printViaPaperang(items)
   }
 
   async function onImportFile(file?: File | null) {
@@ -392,6 +405,17 @@ export function PrintView() {
           >
             {icoPrint} พิมพ์เลย
           </button>
+          {paperang.isSupported() && (
+            <button
+              onClick={() => void doPaperangPrint()}
+              disabled={printCount === 0}
+              title={printCount === 0 ? 'ยังไม่มีรายการที่จะพิมพ์' : s.paperangConnected ? `เชื่อมต่อ ${s.paperangDeviceName} แล้ว` : 'จะขอเชื่อมต่อเครื่องพิมพ์ก่อนพิมพ์'}
+              style={{ ...footBtn, opacity: printCount === 0 ? 0.5 : 1, cursor: printCount === 0 ? 'not-allowed' : 'pointer', color: s.paperangConnected ? '#1F8A5B' : 'var(--text-2)' }}
+            >
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: s.paperangConnected ? '#1F8A5B' : 'var(--text-muted)', flexShrink: 0 }} />
+              Bluetooth (PAPERANG)
+            </button>
+          )}
           <span style={{ fontSize: 10.5, background: '#F0F7F2', color: '#1F8A5B', border: '1px solid #cde9d8', padding: '5px 10px', borderRadius: 20, fontFamily: "'IBM Plex Mono'", flexShrink: 0 }}>{skuRows.length} รายการ</span>
         </div>
 

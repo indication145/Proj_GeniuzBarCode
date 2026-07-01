@@ -7,6 +7,8 @@ import { loadTheme, saveAccent, saveMood, saveStock, saveDark, type Mood, type S
 import { tplPriceTag } from '@/lib/elements'
 import { mkEl } from '@/lib/elements'
 import type { El, Guide, LabelDoc, PrintMedia, Sku, Shop } from '@/lib/types'
+import * as paperang from '@/lib/paperang'
+import { rasterizeLabel } from '@/lib/paperangRender'
 
 export type View = 'design' | 'print' | 'settings'
 export type ConnStatus = 'connected' | 'offline' | 'checking'
@@ -162,7 +164,15 @@ interface PoSlice {
   usePo: (doc: string) => Promise<void>
 }
 
-export type Store = UiSlice & ThemeSlice & HeaderSlice & EditorSlice & DataSlice & PoSlice
+interface PaperangSlice {
+  paperangConnected: boolean
+  paperangDeviceName: string
+  connectPaperang: () => Promise<void>
+  disconnectPaperang: () => void
+  printViaPaperang: (items: number[]) => Promise<void>
+}
+
+export type Store = UiSlice & ThemeSlice & HeaderSlice & EditorSlice & DataSlice & PoSlice & PaperangSlice
 
 let toastTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -673,6 +683,46 @@ export const useStore = create<Store>((set, get) => ({
       get().toast('โหลดรายการ PO ไม่สำเร็จ: ' + ((e as Error)?.message || e))
     }
   },
+
+  // ---- PAPERANG bluetooth printer ----
+  paperangConnected: false,
+  paperangDeviceName: '',
+  connectPaperang: async () => {
+    const r = await paperang.connect()
+    if (r.ok) {
+      set({ paperangConnected: true, paperangDeviceName: r.name || 'PAPERANG' })
+      get().toast('เชื่อมต่อ ' + (r.name || 'เครื่องพิมพ์') + ' แล้ว')
+    } else {
+      set({ paperangConnected: false, paperangDeviceName: '' })
+      get().toast(r.error || 'เชื่อมต่อไม่สำเร็จ')
+    }
+  },
+  disconnectPaperang: () => {
+    paperang.disconnect()
+    set({ paperangConnected: false, paperangDeviceName: '' })
+  },
+  printViaPaperang: async (items) => {
+    const s = get()
+    if (!paperang.isConnected()) {
+      await s.connectPaperang()
+      if (!paperang.isConnected()) return
+    }
+    const doc = s.doc()
+    const rctx = { skuRows: s.skuRows, shop: s.shop }
+    let ok = 0
+    for (const idx of items) {
+      try {
+        const bits = await rasterizeLabel(doc, rctx, idx)
+        await paperang.printBits(bits)
+        ok++
+      } catch {
+        /* keep printing the rest of the batch */
+      }
+    }
+    get().toast(ok === items.length ? `พิมพ์ผ่าน Bluetooth ${ok} ดวงแล้ว` : `พิมพ์สำเร็จ ${ok}/${items.length} ดวง — ตรวจการเชื่อมต่อเครื่องพิมพ์`)
+  },
 }))
+
+paperang.onDisconnect(() => useStore.setState({ paperangConnected: false, paperangDeviceName: '' }))
 
 export { pick }
