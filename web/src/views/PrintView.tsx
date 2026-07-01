@@ -405,14 +405,14 @@ export function PrintView() {
           >
             {icoPrint} พิมพ์เลย
           </button>
-          {paperang.isSupported() && (
+          {paperang.isSupported() && s.paperangConnected && (
             <button
               onClick={() => void doPaperangPrint()}
               disabled={printCount === 0}
-              title={printCount === 0 ? 'ยังไม่มีรายการที่จะพิมพ์' : s.paperangConnected ? `เชื่อมต่อ ${s.paperangDeviceName} แล้ว` : 'จะขอเชื่อมต่อเครื่องพิมพ์ก่อนพิมพ์'}
-              style={{ ...footBtn, opacity: printCount === 0 ? 0.5 : 1, cursor: printCount === 0 ? 'not-allowed' : 'pointer', color: s.paperangConnected ? '#1F8A5B' : 'var(--text-2)' }}
+              title={printCount === 0 ? 'ยังไม่มีรายการที่จะพิมพ์' : `เชื่อมต่อ ${s.paperangDeviceName} แล้ว`}
+              style={{ ...footBtn, opacity: printCount === 0 ? 0.5 : 1, cursor: printCount === 0 ? 'not-allowed' : 'pointer', color: '#1F8A5B' }}
             >
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: s.paperangConnected ? '#1F8A5B' : 'var(--text-muted)', flexShrink: 0 }} />
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#1F8A5B', flexShrink: 0 }} />
               Bluetooth (PAPERANG)
             </button>
           )}
