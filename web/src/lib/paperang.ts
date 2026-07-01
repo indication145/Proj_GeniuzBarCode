@@ -77,6 +77,12 @@ export function isSupported(): boolean {
   return typeof navigator !== 'undefined' && !!navigator.bluetooth
 }
 
+/** iOS blocks Web Bluetooth in WebKit entirely (Safari, and every other iOS browser is WebKit
+ *  underneath) — Chrome/Edge on Android support it fine. Used to point iPhone users at Bluefy. */
+export function isIOS(): boolean {
+  return typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent)
+}
+
 export function isConnected(): boolean {
   return !!writeChar && !!device?.gatt?.connected
 }

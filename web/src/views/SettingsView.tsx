@@ -220,29 +220,36 @@ export function SettingsView() {
         </div>
 
         {/* PAPERANG bluetooth printer */}
-        {paperang.isSupported() && (
-          <div style={card}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ flex: 1 }}>
-                <div style={cardLabel}>เครื่องพิมพ์ Bluetooth · PAPERANG</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, color: 'var(--text-2)' }}>
+        <div style={card}>
+          <div style={cardLabel}>เครื่องพิมพ์ Bluetooth · PAPERANG</div>
+          {paperang.isSupported() ? (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, color: 'var(--text-2)' }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: paperangConnected ? '#1F8A5B' : 'var(--text-muted)' }} />
                   {paperangConnected ? `เชื่อมต่อ ${paperangDeviceName} แล้ว` : 'ยังไม่ได้เชื่อมต่อ'}
                 </div>
+                {paperangConnected ? (
+                  <button onClick={disconnectPaperang} style={{ height: 36, padding: '0 16px', border: '1px solid var(--border)', borderRadius: 8, background: 'var(--surface)', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", color: 'var(--text-2)' }}>
+                    ตัดการเชื่อมต่อ
+                  </button>
+                ) : (
+                  <button onClick={() => void connectPaperang()} style={{ height: 36, padding: '0 16px', border: 'none', borderRadius: 8, background: 'var(--accent)', color: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600 }}>
+                    เชื่อมต่อเครื่องพิมพ์
+                  </button>
+                )}
               </div>
-              {paperangConnected ? (
-                <button onClick={disconnectPaperang} style={{ height: 36, padding: '0 16px', border: '1px solid var(--border)', borderRadius: 8, background: 'var(--surface)', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", color: 'var(--text-2)' }}>
-                  ตัดการเชื่อมต่อ
-                </button>
-              ) : (
-                <button onClick={() => void connectPaperang()} style={{ height: 36, padding: '0 16px', border: 'none', borderRadius: 8, background: 'var(--accent)', color: '#fff', cursor: 'pointer', fontFamily: "'IBM Plex Sans Thai'", fontWeight: 600 }}>
-                  เชื่อมต่อเครื่องพิมพ์
-                </button>
-              )}
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 10, lineHeight: 1.5 }}>รองรับ PAPERANG รุ่น P1/P2/P2S · พิมพ์กว้างสูงสุด 48mm</div>
+            </>
+          ) : paperang.isIOS() ? (
+            <div style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.6 }}>
+              iPhone/iPad ปิดการใช้งาน Web Bluetooth ในทุกเบราว์เซอร์ (ข้อจำกัดของ Apple/WebKit) — ให้เปิดหน้านี้ด้วยแอป{' '}
+              <strong>Bluefy – Web BLE Browser</strong> (ดาวน์โหลดฟรีจาก App Store) แทน Safari/Chrome แล้วปุ่มเชื่อมต่อจะใช้งานได้ตามปกติ
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 10, lineHeight: 1.5 }}>รองรับ PAPERANG รุ่น P1/P2/P2S · พิมพ์กว้างสูงสุด 48mm · ต้องใช้ Chrome หรือ Edge</div>
-          </div>
-        )}
+          ) : (
+            <div style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.6 }}>เบราว์เซอร์นี้ไม่รองรับ Web Bluetooth — ใช้ Chrome หรือ Edge (บน Android ใช้ได้ปกติ)</div>
+          )}
+        </div>
 
         {/* theme */}
         <div style={{ ...card, marginBottom: 0 }}>
